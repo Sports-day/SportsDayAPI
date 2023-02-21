@@ -1,26 +1,47 @@
 package dev.t7e.plugins
 
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
+import com.auth0.jwk.GuavaCachedJwkProvider
+import com.auth0.jwk.UrlJwkProvider
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.server.auth.*
 import io.ktor.server.application.*
+import java.lang.Exception
+import java.net.URL
+import java.security.interfaces.RSAPublicKey
+
+//  Key Provider
+val azureADKeyURI = URL("https://login.microsoftonline.com/${System.getenv("AZURE_AD_TENANT_ID") ?: "common"}/discovery/keys")
 
 fun Application.configureSecurity() {
 
     authentication {
-        jwt {
-            val jwtAudience = this@configureSecurity.environment.config.property("jwt.audience").getString()
-            realm = this@configureSecurity.environment.config.property("jwt.realm").getString()
-            verifier(
-                JWT
-                    .require(Algorithm.HMAC256("secret"))
-                    .withAudience(jwtAudience)
-                    .withIssuer(this@configureSecurity.environment.config.property("jwt.domain").getString())
-                    .build()
-            )
-            validate { credential ->
-                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
+        bearer("azure-ad") {
+            realm = "Access to the / route"
+            authenticate {bearerCredential ->
+                val jwt = JWT.decode(bearerCredential.token)
+                val keyId = jwt.keyId
+                //  cached jwk provider
+                val provider = GuavaCachedJwkProvider(UrlJwkProvider(azureADKeyURI))
+                val jwk = provider.get(keyId)
+                //  create public key
+                val publicKey: RSAPublicKey = jwk.publicKey as RSAPublicKey
+                //  validate
+                val algorithm = Algorithm.RSA256(publicKey)
+                try {
+                    algorithm.verify(jwt)
+
+                    println("success")
+                    jwt.claims.forEach { (key, value) ->
+                        println("$key: $value")
+                    }
+
+                    null
+                } catch (e: Exception) {
+                    println("Failed to validate token")
+
+                    return@authenticate null
+                }
             }
         }
     }
