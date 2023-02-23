@@ -19,7 +19,7 @@ object DatabaseManager {
 
         //  connect
         database = Database.connect(
-            "jdbc:mysql://$host:$port/$db",
+            "jdbc:mariadb://$host:$port/$db",
             driver = "org.mariadb.jdbc.Driver",
             user = user,
             password = password

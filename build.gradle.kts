@@ -34,6 +34,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.auth0:jwks-rsa:0.22.0")
     implementation("com.auth0:java-jwt:4.3.0")
+    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
