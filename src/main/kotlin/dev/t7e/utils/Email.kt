@@ -1,5 +1,7 @@
 package dev.t7e.utils
 
+import dev.t7e.models.AllowedDomain
+
 /**
  * Created by testusuke on 2023/02/21
  * @author testusuke
@@ -18,8 +20,11 @@ class Email(private val email: String) {
      * check if this email is able to access to API
      * @return true if it is able to
      */
-    fun isAccessibleDomain(): Boolean {
-        // TODO: check accessible domain with match domain to DB
-        return true
+    fun isAllowedDomain(): Boolean {
+        val allowedDomain = this.domain()?.let {
+            AllowedDomain.getAllowedDomainByDomain(it)
+        }
+
+        return allowedDomain != null
     }
 }
