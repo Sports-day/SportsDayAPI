@@ -1,6 +1,7 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val exposed_version = "0.41.1"
 
 plugins {
     kotlin("jvm") version "1.8.0"
@@ -33,6 +34,10 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.auth0:jwks-rsa:0.22.0")
     implementation("com.auth0:java-jwt:4.3.0")
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
