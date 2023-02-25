@@ -11,7 +11,7 @@ import java.time.LocalDateTime
  */
 object KeyValueStore {
 
-    private val cachedValues = HashMap<String, String>()
+    private val cachedValues = mutableMapOf<String, String>()
 
     init {
         //  initialize keys
@@ -24,7 +24,7 @@ object KeyValueStore {
         return cachedValues[key.key]
     }
 
-    fun getAll(): HashMap<String, String> {
+    fun getAll(): MutableMap<String, String> {
         return cachedValues
     }
 

@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 object KeyNames {
 
 
-    private val initializeKey = mutableListOf<SafeKey>()
+    private val initializeKey = listOf<SafeKey>()
 
     init {
 
