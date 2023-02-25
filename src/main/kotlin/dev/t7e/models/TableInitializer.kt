@@ -12,5 +12,7 @@ fun initializeTables() {
     transaction {
         //  AllowedDomains
         SchemaUtils.create(AllowedDomains)
+        //  Configuration
+        SchemaUtils.create(Configurations)
     }
 }
