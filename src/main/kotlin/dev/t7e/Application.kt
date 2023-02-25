@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.netty.*
 import dev.t7e.plugins.*
 import dev.t7e.utils.DatabaseManager
+import dev.t7e.utils.configuration.KeyValueStore
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
@@ -19,4 +20,7 @@ fun Application.module() {
     DatabaseManager
     //  tables
     initializeTables()
+    //  configuration
+    KeyValueStore
+
 }

@@ -14,6 +14,8 @@ object KeyValueStore {
     private val cachedValues = HashMap<String, String>()
 
     init {
+        //  initialize keys
+        KeyNames
         //  initial fetch
         fetch()
     }
