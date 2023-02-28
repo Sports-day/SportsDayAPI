@@ -10,9 +10,19 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun initializeTables() {
     transaction {
-        //  AllowedDomains
-        SchemaUtils.create(AllowedDomains)
         //  Configuration
         SchemaUtils.create(Configurations)
+        //  AllowedDomains
+        SchemaUtils.create(AllowedDomains)
+        //  Groups
+        SchemaUtils.create(Groups)
+        //  Classes
+        SchemaUtils.create(Classes)
+        //  Users
+        SchemaUtils.create(Users)
+        //  AdminUsers
+        SchemaUtils.create(AdminUsers)
+        //  MicrosoftAccounts
+        SchemaUtils.create(MicrosoftAccounts)
     }
 }
