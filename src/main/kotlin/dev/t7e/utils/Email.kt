@@ -27,4 +27,16 @@ class Email(private val email: String) {
 
         return allowedDomain != null
     }
+
+    fun username(): String? {
+        return Regex("([^@]+)").find(email)?.value
+    }
+
+    /**
+     * get plain email
+     * @return email [String]
+     */
+    override fun toString(): String {
+        return email
+    }
 }

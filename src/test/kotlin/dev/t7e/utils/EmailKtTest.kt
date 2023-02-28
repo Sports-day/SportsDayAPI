@@ -12,4 +12,10 @@ class EmailKtTest {
         val email = Email("a1234567@super.kosen-ac.jp")
         println(email.domain())
     }
+
+    @Test
+    fun getUsername() {
+        val email = Email("a1234567@super.kosen-ac.jp")
+        println(email.username())
+    }
 }
