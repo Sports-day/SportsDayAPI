@@ -91,6 +91,7 @@ fun Application.configureSecurity() {
                     println("Failed to validate token.")
                     e.printStackTrace()
 
+                    cache[bearerCredential.token] = null
                     return@authenticate null
                 }
             }
