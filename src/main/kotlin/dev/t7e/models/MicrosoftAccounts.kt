@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.Cache
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -22,11 +23,11 @@ object MicrosoftAccounts: IntIdTable("microsoft_accounts") {
     val lastLogin = datetime("last_login")
 }
 
-class MicrosoftAccount(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<MicrosoftAccount>(MicrosoftAccounts) {
-        val getMicrosoftAccount: (email: String) -> MicrosoftAccount? = Cache.memoize(1000 * 60 * 1) { email ->
+class MicrosoftAccountEntity(id: EntityID<Int>): IntEntity(id) {
+    companion object: IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
+        val getMicrosoftAccount: (email: String) -> MicrosoftAccountEntity? = Cache.memoize(1000 * 60 * 1) { email ->
             transaction {
-                MicrosoftAccount.find{ MicrosoftAccounts.email eq email }.singleOrNull()
+                MicrosoftAccountEntity.find{ MicrosoftAccounts.email eq email }.singleOrNull()
             }
         }
 
@@ -38,7 +39,30 @@ class MicrosoftAccount(id: EntityID<Int>): IntEntity(id) {
     var email by MicrosoftAccounts.email
     var name by MicrosoftAccounts.name
     var mailAccountName by MicrosoftAccounts.mailAccountName
-    var user by User optionalReferencedOn MicrosoftAccounts.user
+    var user by UserEntity optionalReferencedOn MicrosoftAccounts.user
     var firstLogin by MicrosoftAccounts.firstLogin
     var lastLogin by MicrosoftAccounts.lastLogin
+
+    fun serializableModel(): MicrosoftAccount {
+        return MicrosoftAccount(
+            id.value,
+            email,
+            name,
+            mailAccountName,
+            user?.serializableModel(),
+            firstLogin.toString(),
+            lastLogin.toString()
+        )
+    }
 }
+
+@Serializable
+data class MicrosoftAccount(
+    val id: Int,
+    val email: String,
+    val name: String,
+    val mailAccountName: String?,
+    val user: User?,
+    val firstLogin: String,
+    val lastLogin: String
+)
