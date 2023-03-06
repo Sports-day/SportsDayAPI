@@ -15,7 +15,7 @@ fun Route.AuthorizationRouting() {
     authenticate("azure-ad") {
         route("authorization") {
             get {
-                call.respondText("Autorization route")
+                call.respondText("Authorization route")
             }
         }
     }

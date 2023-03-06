@@ -28,10 +28,9 @@ fun Application.configureSecurity() {
         bearer("azure-ad") {
             realm = "Access to the / route"
             authenticate { bearerCredential ->
+                //  TODO time based cached
                 //  cache
                 if (cache.containsKey(bearerCredential.token)) {
-                    println("Auth: use cache.")
-
                     return@authenticate cache[bearerCredential.token]
                 }
 
@@ -79,18 +78,13 @@ fun Application.configureSecurity() {
                         return@authenticate null
                     }
 
-                    println("Authorized: ${microsoftAccount.name}")
-
                     //  cache
                     cache[bearerCredential.token] = UserPrincipal(
                         microsoftAccount,
-                        if (AdminUser.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN) else setOf(Role.USER)
+                        if (AdminUser.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN, Role.USER) else setOf(Role.USER)
                     )
                     cache[bearerCredential.token]
                 } catch (e: Exception) {
-                    println("Failed to validate token.")
-                    e.printStackTrace()
-
                     cache[bearerCredential.token] = null
                     return@authenticate null
                 }
