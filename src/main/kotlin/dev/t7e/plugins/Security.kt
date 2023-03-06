@@ -46,9 +46,9 @@ fun Application.configureSecurity() {
                 try {
                     algorithm.verify(jwt)
 
-                    jwt.claims.forEach { (key, value) ->
-                        println("$key: $value")
-                    }
+//                    jwt.claims.forEach { (key, value) ->
+//                        println("$key: $value")
+//                    }
 
                     //  check email
                     val plainEmail = jwt.claims["email"]?.asString() ?: return@authenticate null
