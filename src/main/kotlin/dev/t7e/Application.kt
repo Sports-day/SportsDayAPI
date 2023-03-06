@@ -15,6 +15,7 @@ fun Application.module() {
     configureSerialization()
     configureSecurity()
     configureRouting()
+    configureRateLimit()
 
     //  DB
     DatabaseManager

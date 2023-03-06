@@ -31,6 +31,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-rate-limit:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.auth0:jwks-rsa:0.22.0")
     implementation("com.auth0:java-jwt:4.3.0")
