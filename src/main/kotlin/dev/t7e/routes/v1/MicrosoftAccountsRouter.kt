@@ -3,6 +3,7 @@ package dev.t7e.routes.v1
 import dev.t7e.plugins.Role
 import dev.t7e.plugins.withRole
 import dev.t7e.services.MicrosoftAccountsService
+import dev.t7e.utils.DataResponse
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -22,7 +23,7 @@ fun Route.microsoftAccountsRouter() {
             get {
                 val accounts = MicrosoftAccountsService.getAll()
 
-                call.respond(accounts.getOrDefault(listOf()))
+                call.respond(DataResponse(accounts.getOrDefault(listOf())))
             }
 
             /**
@@ -34,7 +35,7 @@ fun Route.microsoftAccountsRouter() {
                     HttpStatusCode.NotFound
                 )
 
-                call.respond(account)
+                call.respond(DataResponse(account))
             }
 
             /**
