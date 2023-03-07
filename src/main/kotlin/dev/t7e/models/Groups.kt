@@ -42,6 +42,7 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
     fun serializableModel(): Group {
         return Group(
             id.value,
+            name,
             description,
             createdAt.toString()
         )
@@ -51,6 +52,7 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
 @Serializable
 data class Group(
     val id: Int,
+    val name: String,
     val description: String?,
     val createdAt: String
 )
