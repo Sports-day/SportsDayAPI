@@ -20,7 +20,7 @@ fun Route.microsoftAccountsRouter() {
              * Get all microsoft accounts
              */
             get {
-                val accounts = MicrosoftAccountsService.getAllMicrosoftAccounts()
+                val accounts = MicrosoftAccountsService.getAll()
 
                 call.respond(accounts.getOrDefault(listOf()))
             }
@@ -30,7 +30,7 @@ fun Route.microsoftAccountsRouter() {
              */
             get("{id?}") {
                 val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
-                val account = MicrosoftAccountsService.getMicrosoftAccount(id).getOrNull() ?: return@get call.respond(
+                val account = MicrosoftAccountsService.getById(id).getOrNull() ?: return@get call.respond(
                     HttpStatusCode.NotFound
                 )
 
@@ -42,7 +42,7 @@ fun Route.microsoftAccountsRouter() {
              */
             delete("{id?}") {
                 val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.NotFound)
-                MicrosoftAccountsService.deleteMicrosoftAccount(id)
+                MicrosoftAccountsService.deleteById(id)
                     .onFailure {
                         call.respond(HttpStatusCode.NotFound)
                     }

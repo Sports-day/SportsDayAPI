@@ -10,26 +10,19 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Created by testusuke on 2023/03/06
  * @author testusuke
  */
-object MicrosoftAccountsService {
-
-    fun getAllMicrosoftAccounts(): Result<List<MicrosoftAccount>> = transaction {
-        Result.success(MicrosoftAccountEntity.all().map(MicrosoftAccountEntity::serializableModel))
-    }
-
-    fun getMicrosoftAccount(accountId: Int): Result<MicrosoftAccount> = transaction {
-        val account = MicrosoftAccountEntity.findById(accountId) ?: return@transaction Result.failure(NotFoundException("Microsoft account not found."))
-
-        Result.success(account.serializableModel())
-    }
-
-    fun deleteMicrosoftAccount(accountId: Int): Result<Boolean> = transaction {
-        MicrosoftAccountEntity.findById(accountId)?.delete() ?: return@transaction Result.failure(NotFoundException("Microsoft account not found."))
-        Result.success(true)
-    }
+object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, MicrosoftAccount>(
+    objectName = "Microsoft account",
+    _getAllObjectFunction = { MicrosoftAccountEntity.getAllMicrosoftAccounts() },
+    _getObjectByIdFunction = { MicrosoftAccountEntity.getMicrosoftAccountById(it) },
+    _serialize = MicrosoftAccountEntity::serializableModel
+) {
 
     fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> = transaction {
-        val account = MicrosoftAccountEntity.findById(accountId) ?: return@transaction Result.failure(NotFoundException("Microsoft account not found."))
-        val user = UserEntity.findById(userId) ?: return@transaction Result.failure(NotFoundException("target User not found."))
+        val account = MicrosoftAccountEntity.getMicrosoftAccountById(accountId) ?: return@transaction Result.failure(
+            NotFoundException("Microsoft account not found.")
+        )
+        val user =
+            UserEntity.getUser(userId) ?: return@transaction Result.failure(NotFoundException("target User not found."))
 
         //  update
         account.user = user
@@ -38,7 +31,9 @@ object MicrosoftAccountsService {
     }
 
     fun unlinkUser(accountId: Int): Result<MicrosoftAccount> = transaction {
-        val account = MicrosoftAccountEntity.findById(accountId) ?: return@transaction Result.failure(NotFoundException("Microsoft account not found."))
+        val account = MicrosoftAccountEntity.getMicrosoftAccountById(accountId) ?: return@transaction Result.failure(
+            NotFoundException("Microsoft account not found.")
+        )
 
         //  update
         account.user = null
