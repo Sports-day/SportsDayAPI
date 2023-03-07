@@ -68,9 +68,7 @@ class MatchEntity(id: EntityID<Int>): IntEntity(id) {
             leftScore,
             rightScore,
             winner?.serializableModel(),
-            status,
-            parents.map(MatchEntity::serializableModel),
-            children.map(MatchEntity::serializableModel)
+            status
         )
     }
 }
@@ -95,7 +93,5 @@ data class Match(
     val leftScore: Int,
     val rightScore: Int,
     val winner: Team?,
-    val status: MatchStatus,
-    val parents: List<Match>,
-    val children: List<Match>
+    val status: MatchStatus
 )
