@@ -8,6 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -25,13 +26,13 @@ object MicrosoftAccounts: IntIdTable("microsoft_accounts") {
 
 class MicrosoftAccountEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
-        val getMicrosoftAccount: (email: String) -> MicrosoftAccountEntity? = Cache.memoize(1000 * 60 * 1) { email ->
+        val getMicrosoftAccount: (email: String) -> MicrosoftAccountEntity? = Cache.memoize(1.minutes) { email ->
             transaction {
                 MicrosoftAccountEntity.find{ MicrosoftAccounts.email eq email }.singleOrNull()
             }
         }
 
-        val existMicrosoftAccount: (email: String) -> Boolean = Cache.memoize(1000 * 60 * 1) { email ->
+        val existMicrosoftAccount: (email: String) -> Boolean = Cache.memoize(1.minutes) { email ->
             getMicrosoftAccount(email) != null
         }
     }

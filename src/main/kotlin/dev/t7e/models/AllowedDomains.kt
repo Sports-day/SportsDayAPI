@@ -8,6 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/23
@@ -23,7 +24,7 @@ object AllowedDomains: IntIdTable("allowed_domains") {
 
 class AllowedDomainEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<AllowedDomainEntity>(AllowedDomains) {
-        val getAllowedDomainByDomain: (domain: String) -> AllowedDomainEntity? = Cache.memoize(1000 * 60 * 1) { domain ->
+        val getAllowedDomainByDomain: (domain: String) -> AllowedDomainEntity? = Cache.memoize(1.minutes) { domain ->
             transaction {
                 AllowedDomainEntity.find{ AllowedDomains.domain eq domain}.singleOrNull()
             }

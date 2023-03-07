@@ -15,6 +15,7 @@ import java.lang.Exception
 import java.net.URL
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.minutes
 
 //  Key Provider
 val azureADKeyURI =
@@ -45,7 +46,7 @@ data class UserPrincipal(
 ) : Principal
 
 object Authorization {
-    val authorize: (bearerCredential: BearerTokenCredential) -> UserPrincipal? = Cache.memoize(1000 * 60 * 5) { bearerCredential ->
+    val authorize: (bearerCredential: BearerTokenCredential) -> UserPrincipal? = Cache.memoize(5.minutes) { bearerCredential ->
         val jwt = JWT.decode(bearerCredential.token)
         val keyId = jwt.keyId
         //  cached jwk provider

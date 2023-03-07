@@ -8,6 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -22,13 +23,13 @@ object AdminUsers: IntIdTable("admin_users") {
 
 class AdminUserEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<AdminUserEntity>(AdminUsers) {
-        val getAdminUserByEmail: (email: String) -> AdminUserEntity? = Cache.memoize(1000 * 60 * 1) { email ->
+        val getAdminUserByEmail: (email: String) -> AdminUserEntity? = Cache.memoize(1.minutes) { email ->
             transaction {
                 AdminUserEntity.find{ AdminUsers.email eq email }.singleOrNull()
             }
         }
 
-        val isAdminUserByEmail: (email: String) -> Boolean = Cache.memoize(1000 * 60 * 1) { email ->
+        val isAdminUserByEmail: (email: String) -> Boolean = Cache.memoize(1.minutes) { email ->
             getAdminUserByEmail(email) != null
         }
     }

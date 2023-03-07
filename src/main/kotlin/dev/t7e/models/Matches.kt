@@ -9,6 +9,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
@@ -29,7 +30,7 @@ object Matches: IntIdTable("matches") {
 
 class MatchEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<MatchEntity>(Matches) {
-        val getAllMatchesWithTeam: (team: TeamEntity) -> MutableList<MatchEntity> = Cache.memoize(1000 * 60 * 1) { team ->
+        val getAllMatchesWithTeam: (team: TeamEntity) -> MutableList<MatchEntity> = Cache.memoize(1.minutes) { team ->
             transaction {
                 MatchEntity.find {
                     Matches.leftTeam eq team.id or
