@@ -1,6 +1,6 @@
 package dev.t7e.utils
 
-import dev.t7e.models.AllowedDomain
+import dev.t7e.models.AllowedDomainEntity
 
 /**
  * Created by testusuke on 2023/02/21
@@ -22,7 +22,7 @@ class Email(private val email: String) {
      */
     fun isAllowedDomain(): Boolean {
         val allowedDomain = this.domain()?.let {
-            AllowedDomain.getAllowedDomainByDomain(it)
+            AllowedDomainEntity.getAllowedDomainByDomain(it)
         }
 
         return allowedDomain != null

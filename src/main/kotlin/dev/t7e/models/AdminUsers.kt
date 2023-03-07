@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.Cache
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -19,11 +20,11 @@ object AdminUsers: IntIdTable("admin_users") {
     val issuedAt = datetime("issued_at")
 }
 
-class AdminUser(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<AdminUser>(AdminUsers) {
-        val getAdminUserByEmail: (email: String) -> AdminUser? = Cache.memoize(1000 * 60 * 1) { email ->
+class AdminUserEntity(id: EntityID<Int>): IntEntity(id) {
+    companion object: IntEntityClass<AdminUserEntity>(AdminUsers) {
+        val getAdminUserByEmail: (email: String) -> AdminUserEntity? = Cache.memoize(1000 * 60 * 1) { email ->
             transaction {
-                AdminUser.find{ AdminUsers.email eq email }.singleOrNull()
+                AdminUserEntity.find{ AdminUsers.email eq email }.singleOrNull()
             }
         }
 
@@ -35,4 +36,21 @@ class AdminUser(id: EntityID<Int>): IntEntity(id) {
     var email by AdminUsers.email
     var description by AdminUsers.description
     var issuedAt by AdminUsers.issuedAt
+
+    fun serializableModel(): AdminUser {
+        return AdminUser(
+            id.value,
+            email,
+            description,
+            issuedAt.toString()
+        )
+    }
 }
+
+@Serializable
+data class AdminUser(
+    val id: Int,
+    val email: String,
+    val description: String,
+    val issuedAt: String
+)

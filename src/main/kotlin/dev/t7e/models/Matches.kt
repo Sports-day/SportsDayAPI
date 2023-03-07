@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.Cache
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -26,11 +27,11 @@ object Matches: IntIdTable("matches") {
     val status = enumerationByName<MatchStatus>("status", 32)
 }
 
-class Match(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<Match>(Matches) {
-        val getAllMatchesWithTeam: (team: Team) -> MutableList<Match> = Cache.memoize(1000 * 60 * 1) { team ->
+class MatchEntity(id: EntityID<Int>): IntEntity(id) {
+    companion object: IntEntityClass<MatchEntity>(Matches) {
+        val getAllMatchesWithTeam: (team: TeamEntity) -> MutableList<MatchEntity> = Cache.memoize(1000 * 60 * 1) { team ->
             transaction {
-                Match.find {
+                MatchEntity.find {
                     Matches.leftTeam eq team.id or
                             (Matches.rightTeam eq team.id)
                 }.sortedBy {
@@ -40,19 +41,37 @@ class Match(id: EntityID<Int>): IntEntity(id) {
         }
     }
 
-    var location by Location referencedOn Matches.location
-    var game by Game referencedOn  Matches.game
-    var sport by Sport referencedOn Matches.sport
+    var location by LocationEntity referencedOn Matches.location
+    var game by GameEntity referencedOn  Matches.game
+    var sport by SportEntity referencedOn Matches.sport
     var startAt by Matches.startAt
-    var leftTeam by Team optionalReferencedOn Matches.leftTeam
-    var rightTeam by Team optionalReferencedOn Matches.rightTeam
+    var leftTeam by TeamEntity optionalReferencedOn Matches.leftTeam
+    var rightTeam by TeamEntity optionalReferencedOn Matches.rightTeam
     var leftScore by Matches.leftScore
     var rightScore by Matches.rightScore
-    var winner by Team optionalReferencedOn Matches.winner
+    var winner by TeamEntity optionalReferencedOn Matches.winner
     val status by Matches.status
     //  for tournament format
-    var parents by Match.via(TournamentPath.child, TournamentPath.parent)
-    var children by Match.via(TournamentPath.parent, TournamentPath.child)
+    var parents by MatchEntity.via(TournamentPath.child, TournamentPath.parent)
+    var children by MatchEntity.via(TournamentPath.parent, TournamentPath.child)
+
+    fun serializableModel(): Match {
+        return Match(
+            id.value,
+            location.serializableModel(),
+            game.serializableModel(),
+            sport.serializableModel(),
+            startAt.toString(),
+            leftTeam?.serializableModel(),
+            rightTeam?.serializableModel(),
+            leftScore,
+            rightScore,
+            winner?.serializableModel(),
+            status,
+            parents.map(MatchEntity::serializableModel),
+            children.map(MatchEntity::serializableModel)
+        )
+    }
 }
 
 enum class MatchStatus(val status: String) {
@@ -62,3 +81,20 @@ enum class MatchStatus(val status: String) {
     CANCELED("cancel"),
     NONE("none")
 }
+
+@Serializable
+data class Match(
+    val id: Int,
+    val location: Location,
+    val game: Game,
+    val sport: Sport,
+    val startAt: String,
+    val leftTeam: Team?,
+    val rightTeam: Team?,
+    val leftScore: Int,
+    val rightScore: Int,
+    val winner: Team?,
+    val status: MatchStatus,
+    val parents: List<Match>,
+    val children: List<Match>
+)

@@ -11,8 +11,8 @@ import io.ktor.server.routing.*
  */
 
 
-fun Route.AuthorizationRouting() {
-    authenticate("azure-ad") {
+fun Route.authorizationRouting() {
+    authenticate {
         route("authorization") {
             get {
                 call.respondText("Authorization route")

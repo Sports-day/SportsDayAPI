@@ -1,5 +1,6 @@
 package dev.t7e.models
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -18,11 +19,30 @@ object Sports: IntIdTable("sports") {
     val updatedAt = datetime("updated_at")
 }
 
-class Sport(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<Sport>(Sports)
+class SportEntity(id: EntityID<Int>): IntEntity(id) {
+    companion object: IntEntityClass<SportEntity>(Sports)
 
     var name by Sports.name
     var description by Sports.description
     var createdAt by Sports.createdAt
     var updatedAt by Sports.updatedAt
-}
+
+    fun serializableModel(): Sport {
+        return Sport(
+            id.value,
+            name,
+            description,
+            createdAt.toString(),
+            updatedAt.toString()
+        )
+    }
+ }
+
+@Serializable
+data class Sport(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val createdAt: String,
+    val updatedAt: String
+)

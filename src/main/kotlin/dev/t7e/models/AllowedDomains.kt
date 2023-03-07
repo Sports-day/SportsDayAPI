@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.Cache
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -20,11 +21,11 @@ object AllowedDomains: IntIdTable("allowed_domains") {
     val updatedAt = datetime("updated_at")
 }
 
-class AllowedDomain(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<AllowedDomain>(AllowedDomains) {
-        val getAllowedDomainByDomain: (domain: String) -> AllowedDomain? = Cache.memoize(1000 * 60 * 1) { domain ->
+class AllowedDomainEntity(id: EntityID<Int>): IntEntity(id) {
+    companion object: IntEntityClass<AllowedDomainEntity>(AllowedDomains) {
+        val getAllowedDomainByDomain: (domain: String) -> AllowedDomainEntity? = Cache.memoize(1000 * 60 * 1) { domain ->
             transaction {
-                AllowedDomain.find{ AllowedDomains.domain eq domain}.singleOrNull()
+                AllowedDomainEntity.find{ AllowedDomains.domain eq domain}.singleOrNull()
             }
         }
     }
@@ -33,4 +34,23 @@ class AllowedDomain(id: EntityID<Int>): IntEntity(id) {
     var description by AllowedDomains.description
     var createdAt by AllowedDomains.createdAt
     var updatedAt by AllowedDomains.updatedAt
+
+    fun serializableModel(): AllowedDomain {
+        return AllowedDomain(
+            id.value,
+            domain,
+            description,
+            createdAt.toString(),
+            updatedAt.toString()
+        )
+    }
 }
+
+@Serializable
+data class AllowedDomain(
+    val id: Int,
+    val domain: String,
+    val description: String,
+    val createdAt: String,
+    val updatedAt: String
+)

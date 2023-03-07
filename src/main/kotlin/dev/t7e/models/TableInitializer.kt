@@ -12,6 +12,8 @@ fun initializeTables() {
     transaction {
         //  Configuration
         SchemaUtils.create(Configurations)
+        //  Logs
+        SchemaUtils.create(Logs)
         //  AllowedDomains
         SchemaUtils.create(AllowedDomains)
         //  Groups
