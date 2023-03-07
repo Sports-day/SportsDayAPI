@@ -4,8 +4,9 @@ import com.auth0.jwk.GuavaCachedJwkProvider
 import com.auth0.jwk.UrlJwkProvider
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import dev.t7e.models.AdminUser
-import dev.t7e.models.MicrosoftAccount
+import dev.t7e.models.AdminUserEntity
+import dev.t7e.models.MicrosoftAccountEntity
+import dev.t7e.utils.Cache
 import dev.t7e.utils.Email
 import io.ktor.server.auth.*
 import io.ktor.server.application.*
@@ -19,75 +20,14 @@ import java.time.LocalDateTime
 val azureADKeyURI =
     URL("https://login.microsoftonline.com/${System.getenv("AZURE_AD_TENANT_ID") ?: "common"}/discovery/keys")
 
-//  cache
-val cache = mutableMapOf<String, UserPrincipal?>()
-
 fun Application.configureSecurity() {
 
     authentication {
-        bearer("azure-ad") {
+        bearer {
             realm = "Access to the / route"
             authenticate { bearerCredential ->
-                //  TODO time based cached
-                //  cache
-                if (cache.containsKey(bearerCredential.token)) {
-                    return@authenticate cache[bearerCredential.token]
-                }
-
-                val jwt = JWT.decode(bearerCredential.token)
-                val keyId = jwt.keyId
-                //  cached jwk provider
-                val provider = GuavaCachedJwkProvider(UrlJwkProvider(azureADKeyURI))
-                val jwk = provider.get(keyId)
-                //  create public key
-                val publicKey: RSAPublicKey = jwk.publicKey as RSAPublicKey
-                //  validate
-                val algorithm = Algorithm.RSA256(publicKey)
-                try {
-                    algorithm.verify(jwt)
-
-//                    jwt.claims.forEach { (key, value) ->
-//                        println("$key: $value")
-//                    }
-
-                    //  check email
-                    val plainEmail = jwt.claims["email"]?.asString() ?: return@authenticate null
-                    val email = Email(plainEmail)
-                    //  check if allowed domain
-                    if (!email.isAllowedDomain()) return@authenticate null
-
-                    //  get microsoft user (or create user)
-                    val microsoftAccount = if (!MicrosoftAccount.existMicrosoftAccount(email.toString())) {
-                        //  create
-                        transaction {
-                            MicrosoftAccount.new {
-                                this.email = email.toString()
-                                this.name = jwt.claims["name"]?.asString() ?: "Unknown"
-                                this.mailAccountName = email.username()
-                                this.firstLogin = LocalDateTime.now()
-                                this.lastLogin = LocalDateTime.now()
-                            }
-                        }
-                    } else {
-                        //  get
-                        MicrosoftAccount.getMicrosoftAccount(email.toString())
-                    }
-
-                    //  if not exist
-                    if (microsoftAccount == null) {
-                        return@authenticate null
-                    }
-
-                    //  cache
-                    cache[bearerCredential.token] = UserPrincipal(
-                        microsoftAccount,
-                        if (AdminUser.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN, Role.USER) else setOf(Role.USER)
-                    )
-                    cache[bearerCredential.token]
-                } catch (e: Exception) {
-                    cache[bearerCredential.token] = null
-                    return@authenticate null
-                }
+                //  auth
+                Authorization.authorize(bearerCredential)
             }
         }
     }
@@ -100,6 +40,59 @@ enum class Role(val value: String) {
 }
 
 data class UserPrincipal(
-    val microsoftAccount: MicrosoftAccount,
+    val microsoftAccount: MicrosoftAccountEntity,
     val roles: Set<Role> = emptySet()
 ) : Principal
+
+object Authorization {
+    val authorize: (bearerCredential: BearerTokenCredential) -> UserPrincipal? = Cache.memoize(1000 * 60 * 5) { bearerCredential ->
+        val jwt = JWT.decode(bearerCredential.token)
+        val keyId = jwt.keyId
+        //  cached jwk provider
+        val provider = GuavaCachedJwkProvider(UrlJwkProvider(azureADKeyURI))
+        val jwk = provider.get(keyId)
+        //  create public key
+        val publicKey: RSAPublicKey = jwk.publicKey as RSAPublicKey
+        //  validate
+        val algorithm = Algorithm.RSA256(publicKey)
+        try {
+            algorithm.verify(jwt)
+
+            //  check email
+            val plainEmail = jwt.claims["email"]?.asString() ?: return@memoize null
+            val email = Email(plainEmail)
+            //  check if allowed domain
+            if (!email.isAllowedDomain()) return@memoize null
+
+            //  get microsoft user (or create user)
+            val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
+                //  create
+                transaction {
+                    MicrosoftAccountEntity.new {
+                        this.email = email.toString()
+                        this.name = jwt.claims["name"]?.asString() ?: "Unknown"
+                        this.mailAccountName = email.username()
+                        this.firstLogin = LocalDateTime.now()
+                        this.lastLogin = LocalDateTime.now()
+                    }
+                }
+            } else {
+                //  get
+                MicrosoftAccountEntity.getMicrosoftAccount(email.toString())
+            }
+
+            //  if not exist
+            if (microsoftAccount == null) {
+                return@memoize null
+            }
+
+            //  result
+            UserPrincipal(
+                microsoftAccount,
+                if (AdminUserEntity.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN, Role.USER) else setOf(Role.USER)
+            )
+        } catch (e: Exception) {
+            return@memoize null
+        }
+    }
+}
