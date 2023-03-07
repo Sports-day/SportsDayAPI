@@ -4,6 +4,7 @@ import dev.t7e.routes.authorizationRouting
 import dev.t7e.routes.v1.microsoftAccountsRouter
 import io.ktor.server.routing.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 
 fun Application.configureRouting() {
 
@@ -11,8 +12,10 @@ fun Application.configureRouting() {
         authorizationRouting()
         //  version 1.0
         route("/v1") {
-            //  Microsoft Accounts
-            microsoftAccountsRouter()
+            authenticate {
+                //  Microsoft Accounts
+                microsoftAccountsRouter()
+            }
         }
     }
 }
