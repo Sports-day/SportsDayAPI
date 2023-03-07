@@ -26,6 +26,18 @@ object MicrosoftAccounts: IntIdTable("microsoft_accounts") {
 
 class MicrosoftAccountEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
+        val getAllMicrosoftAccounts = Cache.memoizeOneObject(1.minutes) {
+            transaction {
+                MicrosoftAccountEntity.all().toList()
+            }
+        }
+
+        val getMicrosoftAccountById: (id: Int) -> MicrosoftAccountEntity? = Cache.memoize(1.minutes) { id ->
+            transaction {
+                MicrosoftAccountEntity.findById(id)
+            }
+        }
+
         val getMicrosoftAccount: (email: String) -> MicrosoftAccountEntity? = Cache.memoize(1.minutes) { email ->
             transaction {
                 MicrosoftAccountEntity.find{ MicrosoftAccounts.email eq email }.singleOrNull()

@@ -24,4 +24,17 @@ object Cache {
             value
         }
     }
+
+    inline fun <R> memoizeOneObject(expireAfter: Duration = DEFAULT_CACHING_DURATION, crossinline fn: () -> R): () -> R {
+        var cache: Pair<R, Long>? = null
+
+        return {
+            val now = System.currentTimeMillis()
+            val (value, lastUsed) = cache ?: Pair(fn(), now)
+            if (lastUsed == now || (expireAfter.inWholeMilliseconds > 0 && now - lastUsed > expireAfter.inWholeMilliseconds)) {
+                cache = Pair(fn(), now)
+            }
+            value
+        }
+    }
 }

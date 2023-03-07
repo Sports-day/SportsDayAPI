@@ -1,11 +1,14 @@
 package dev.t7e.models
 
+import dev.t7e.utils.Cache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/27
@@ -19,7 +22,19 @@ object Users: IntIdTable("users") {
 }
 
 class UserEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<UserEntity>(Users)
+    companion object: IntEntityClass<UserEntity>(Users) {
+        val getAllUsers = Cache.memoizeOneObject(1.minutes) {
+            transaction {
+                UserEntity.all().toList()
+            }
+        }
+
+        val getUser: (id: Int) -> UserEntity? = Cache.memoize(1.minutes) { id ->
+            transaction {
+                UserEntity.findById(id)
+            }
+        }
+    }
 
     var name by Users.name
     var studentId by Users.studentId
