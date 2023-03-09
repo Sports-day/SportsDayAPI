@@ -16,6 +16,7 @@ fun Application.module() {
     configureSecurity()
     configureRouting()
     configureRateLimit()
+    configureStatusPage()
 
     //  DB
     DatabaseManager
