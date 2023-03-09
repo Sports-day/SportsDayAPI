@@ -36,7 +36,7 @@ fun Route.microsoftAccountsRouter() {
                 val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
                 MicrosoftAccountsService.getById(id)
                     .respondOrInternalError {
-                        call.respond(DataResponse(it))
+                        call.respond(HttpStatusCode.OK, DataResponse(it))
                     }
             }
 
