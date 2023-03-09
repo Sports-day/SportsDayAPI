@@ -26,5 +26,19 @@ fun initializeTables() {
         SchemaUtils.create(AdminUsers)
         //  MicrosoftAccounts
         SchemaUtils.create(MicrosoftAccounts)
+        //  Teams
+        SchemaUtils.create(Teams)
+        //  TeamUsers
+        SchemaUtils.create(TeamUsers)
+        //  Sports
+        SchemaUtils.create(Sports)
+        //  Games
+        SchemaUtils.create(Games)
+        //  Locations
+        SchemaUtils.create(Locations)
+        //  Matches
+        SchemaUtils.create(Matches)
+        //  TournamentPath
+        SchemaUtils.create(TournamentPath)
     }
 }
