@@ -38,6 +38,7 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by Groups.name
     var description by Groups.description
     var createdAt by Groups.createdAt
+    val classes by ClassEntity referrersOn Classes.group
 
     fun serializableModel(): Group {
         return Group(
