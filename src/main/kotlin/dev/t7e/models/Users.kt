@@ -46,7 +46,7 @@ class UserEntity(id: EntityID<Int>): IntEntity(id) {
             id.value,
             name,
             studentId,
-            classEntity.serializableModel(),
+            classEntity.id.value,
             createdAt.toString()
         )
     }
@@ -57,6 +57,6 @@ data class User(
     val id: Int,
     val name: String,
     val studentId: String,
-    val classEntity: Class,
+    val classId: Int,
     val createdAt: String
 )

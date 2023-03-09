@@ -62,7 +62,7 @@ class MicrosoftAccountEntity(id: EntityID<Int>): IntEntity(id) {
             email,
             name,
             mailAccountName,
-            user?.serializableModel(),
+            user?.id?.value,
             firstLogin.toString(),
             lastLogin.toString()
         )
@@ -75,7 +75,7 @@ data class MicrosoftAccount(
     val email: String,
     val name: String,
     val mailAccountName: String?,
-    val user: User?,
+    val userId: Int?,
     val firstLogin: String,
     val lastLogin: String
 )

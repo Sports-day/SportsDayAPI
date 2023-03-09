@@ -31,8 +31,8 @@ class TeamEntity(id: EntityID<Int>): IntEntity(id) {
         return Team(
             id.value,
             name,
-            classEntity.serializableModel(),
-            users.map(UserEntity::serializableModel),
+            classEntity.id.value,
+            users.map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
         )
@@ -43,8 +43,8 @@ class TeamEntity(id: EntityID<Int>): IntEntity(id) {
 data class Team(
     val id: Int,
     val name: String,
-    val classEntity: Class,
-    val users: List<User>,
+    val classId: Int,
+    val usersId: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )

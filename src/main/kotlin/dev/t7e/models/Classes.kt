@@ -1,11 +1,14 @@
 package dev.t7e.models
 
+import dev.t7e.utils.Cache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -19,29 +22,41 @@ object Classes: IntIdTable("classes") {
 }
 
 class ClassEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<ClassEntity>(Classes)
+    companion object: IntEntityClass<ClassEntity>(Classes) {
+        val getAllClasses = Cache.memoizeOneObject(1.minutes) {
+            transaction {
+                ClassEntity.all().toList()
+            }
+        }
+
+        val getClass: (id: Int) -> ClassEntity? = Cache.memoize(1.minutes) { id ->
+            transaction {
+                ClassEntity.findById(id)
+            }
+        }
+    }
 
     var name by Classes.name
     var description by Classes.description
     var group by GroupEntity referencedOn Classes.group
     var createdAt by Classes.createdAt
 
-    fun serializableModel(): Class {
-        return Class(
+    fun serializableModel(): ClassModel {
+        return ClassModel(
             id.value,
             name,
             description,
-            group.serializableModel(),
+            group.id.value,
             createdAt.toString()
         )
     }
 }
 
 @Serializable
-data class Class(
+data class ClassModel(
     val id: Int,
     val name: String,
     val description: String?,
-    val group: Group,
+    val groupId: Int,
     val createdAt: String
 )

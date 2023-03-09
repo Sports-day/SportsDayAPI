@@ -59,15 +59,15 @@ class MatchEntity(id: EntityID<Int>): IntEntity(id) {
     fun serializableModel(): Match {
         return Match(
             id.value,
-            location.serializableModel(),
-            game.serializableModel(),
-            sport.serializableModel(),
+            location.id.value,
+            game.id.value,
+            sport.id.value,
             startAt.toString(),
-            leftTeam?.serializableModel(),
-            rightTeam?.serializableModel(),
+            leftTeam?.id?.value,
+            rightTeam?.id?.value,
             leftScore,
             rightScore,
-            winner?.serializableModel(),
+            winner?.id?.value,
             status
         )
     }
@@ -84,14 +84,14 @@ enum class MatchStatus(val status: String) {
 @Serializable
 data class Match(
     val id: Int,
-    val location: Location,
-    val game: Game,
-    val sport: Sport,
+    val locationId: Int,
+    val gameId: Int,
+    val sportId: Int,
     val startAt: String,
-    val leftTeam: Team?,
-    val rightTeam: Team?,
+    val leftTeamId: Int?,
+    val rightTeamId: Int?,
     val leftScore: Int,
     val rightScore: Int,
-    val winner: Team?,
+    val winnerId: Int?,
     val status: MatchStatus
 )
