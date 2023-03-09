@@ -4,7 +4,6 @@ import com.auth0.jwk.GuavaCachedJwkProvider
 import com.auth0.jwk.UrlJwkProvider
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import dev.t7e.models.AdminUserEntity
 import dev.t7e.models.MicrosoftAccountEntity
 import dev.t7e.utils.Cache
 import dev.t7e.utils.Email
@@ -96,9 +95,8 @@ object Authorization {
                 //  result
                 UserPrincipal(
                     microsoftAccount,
-                    if (AdminUserEntity.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN, Role.USER) else setOf(
-                        Role.USER
-                    )
+                    if (microsoftAccount.role == Role.ADMIN) setOf(Role.ADMIN, Role.USER)
+                    else setOf(Role.USER)
                 )
             } catch (e: Exception) {
                 return@memoize null

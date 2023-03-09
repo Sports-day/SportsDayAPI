@@ -22,8 +22,6 @@ fun initializeTables() {
         SchemaUtils.create(Classes)
         //  Users
         SchemaUtils.create(Users)
-        //  AdminUsers
-        SchemaUtils.create(AdminUsers)
         //  MicrosoftAccounts
         SchemaUtils.create(MicrosoftAccounts)
         //  Teams
