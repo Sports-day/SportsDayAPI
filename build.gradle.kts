@@ -1,3 +1,5 @@
+import io.ktor.plugin.features.*
+
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -11,6 +13,7 @@ plugins {
 
 group = "dev.t7e"
 version = "0.0.1"
+
 application {
     mainClass.set("dev.t7e.ApplicationKt")
 
@@ -43,4 +46,19 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+}
+
+ktor {
+    docker {
+        localImageName.set("sports-day-api-image")
+        imageTag.set(version.toString())
+        //  port
+        portMappings.set(listOf(
+            DockerPortMapping(
+                8080,
+                8080,
+                DockerPortMappingProtocol.TCP
+            )
+        ))
+    }
 }
