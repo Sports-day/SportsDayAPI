@@ -40,6 +40,7 @@ class ClassEntity(id: EntityID<Int>): IntEntity(id) {
     var description by Classes.description
     var group by GroupEntity referencedOn Classes.group
     var createdAt by Classes.createdAt
+    val users by UserEntity referrersOn Users.classEntity
 
     fun serializableModel(): ClassModel {
         return ClassModel(
@@ -59,4 +60,11 @@ data class ClassModel(
     val description: String?,
     val groupId: Int,
     val createdAt: String
+)
+
+@Serializable
+data class OmittedClassModel(
+    val name: String,
+    val description: String?,
+    val groupId: Int
 )
