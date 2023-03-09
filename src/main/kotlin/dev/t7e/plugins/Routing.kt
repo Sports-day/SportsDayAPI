@@ -1,6 +1,7 @@
 package dev.t7e.plugins
 
 import dev.t7e.routes.authorizationRouting
+import dev.t7e.routes.v1.groupsRouter
 import dev.t7e.routes.v1.microsoftAccountsRouter
 import io.ktor.server.routing.*
 import io.ktor.server.application.*
@@ -15,6 +16,8 @@ fun Application.configureRouting() {
             authenticate {
                 //  Microsoft Accounts
                 microsoftAccountsRouter()
+                //  Groups
+                groupsRouter()
             }
         }
     }

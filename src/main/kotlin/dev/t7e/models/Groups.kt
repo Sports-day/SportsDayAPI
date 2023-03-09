@@ -56,3 +56,9 @@ data class Group(
     val description: String?,
     val createdAt: String
 )
+
+@Serializable
+data class OmittedGroup(
+    val name: String,
+    val description: String?
+)
