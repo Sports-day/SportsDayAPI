@@ -18,11 +18,9 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
 ) {
 
     fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> = transaction {
-        val account = MicrosoftAccountEntity.getMicrosoftAccountById(accountId) ?: return@transaction Result.failure(
-            NotFoundException("Microsoft account not found.")
-        )
-        val user =
-            UserEntity.getUser(userId) ?: return@transaction Result.failure(NotFoundException("target User not found."))
+        val account = MicrosoftAccountEntity.getMicrosoftAccountById(accountId) ?: throw NotFoundException("Microsoft account not found.")
+
+        val user = UserEntity.getUser(userId) ?: throw NotFoundException("target User not found.")
 
         //  update
         account.user = user
@@ -31,9 +29,7 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
     }
 
     fun unlinkUser(accountId: Int): Result<MicrosoftAccount> = transaction {
-        val account = MicrosoftAccountEntity.getMicrosoftAccountById(accountId) ?: return@transaction Result.failure(
-            NotFoundException("Microsoft account not found.")
-        )
+        val account = MicrosoftAccountEntity.getMicrosoftAccountById(accountId) ?: throw NotFoundException("Microsoft account not found.")
 
         //  update
         account.user = null

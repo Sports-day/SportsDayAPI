@@ -24,9 +24,7 @@ open class StandardService<T : IntEntity, R>(
     }
 
     open fun getById(id: Int): Result<R> {
-        val obj = _getObjectByIdFunction(id) ?: return Result.failure(
-            NotFoundException("$objectName not found.")
-        )
+        val obj = _getObjectByIdFunction(id) ?: throw NotFoundException("$objectName not found.")
 
         return Result.success(
             transaction {
@@ -35,9 +33,7 @@ open class StandardService<T : IntEntity, R>(
         )
     }
     open fun deleteById(id: Int): Result<Boolean> = transaction {
-        _getObjectByIdFunction(id)?.delete() ?: return@transaction Result.failure(
-            NotFoundException("$objectName not found.")
-        )
+        _getObjectByIdFunction(id)?.delete() ?: throw NotFoundException("$objectName not found.")
 
         Result.success(true)
     }

@@ -4,8 +4,11 @@ import dev.t7e.plugins.Role
 import dev.t7e.plugins.withRole
 import dev.t7e.services.MicrosoftAccountsService
 import dev.t7e.utils.DataResponse
+import dev.t7e.utils.MessageResponse
+import dev.t7e.utils.respondOrInternalError
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -23,32 +26,28 @@ fun Route.microsoftAccountsRouter() {
             get {
                 val accounts = MicrosoftAccountsService.getAll()
 
-                call.respond(DataResponse(accounts.getOrDefault(listOf())))
+                call.respond(HttpStatusCode.OK, DataResponse(accounts.getOrDefault(listOf())))
             }
 
             /**
              * Get specific microsoft account
              */
             get("{id?}") {
-                val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respond(HttpStatusCode.NotFound)
-                val account = MicrosoftAccountsService.getById(id).getOrNull() ?: return@get call.respond(
-                    HttpStatusCode.NotFound
-                )
-
-                call.respond(DataResponse(account))
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                MicrosoftAccountsService.getById(id)
+                    .respondOrInternalError {
+                        call.respond(DataResponse(it))
+                    }
             }
 
             /**
              * Delete specific microsoft account
              */
             delete("{id?}") {
-                val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.NotFound)
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
                 MicrosoftAccountsService.deleteById(id)
-                    .onFailure {
-                        call.respond(HttpStatusCode.NotFound)
-                    }
-                    .onSuccess {
-                        call.respond(HttpStatusCode.OK)
+                    .respondOrInternalError {
+                        call.respond(HttpStatusCode.OK, MessageResponse("deleted microsoft account"))
                     }
             }
         }
