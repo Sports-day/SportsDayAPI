@@ -57,6 +57,9 @@ fun Route.groupsRouter() {
 
             route("/{id?}") {
 
+                /**
+                 * Get specific group
+                 */
                 get {
                     val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
                     GroupsService.getById(id)
@@ -67,6 +70,9 @@ fun Route.groupsRouter() {
 
                 withRole(Role.ADMIN) {
 
+                    /**
+                     * Update group
+                     */
                     put {
                         val id =
                             call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
@@ -84,6 +90,9 @@ fun Route.groupsRouter() {
                             }
                     }
 
+                    /**
+                     * Delete group
+                     */
                     delete {
                         val id =
                             call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
