@@ -46,54 +46,62 @@ data class UserPrincipal(
 ) : Principal
 
 object Authorization {
-    val authorize: (bearerCredential: BearerTokenCredential) -> UserPrincipal? = Cache.memoize(5.minutes) { bearerCredential ->
-        val jwt = JWT.decode(bearerCredential.token)
-        val keyId = jwt.keyId
-        //  cached jwk provider
-        val provider = GuavaCachedJwkProvider(UrlJwkProvider(azureADKeyURI))
-        val jwk = provider.get(keyId)
-        //  create public key
-        val publicKey: RSAPublicKey = jwk.publicKey as RSAPublicKey
-        //  validate
-        val algorithm = Algorithm.RSA256(publicKey)
-        try {
-            algorithm.verify(jwt)
+    private val provider = GuavaCachedJwkProvider(UrlJwkProvider(azureADKeyURI))
 
-            //  check email
-            val plainEmail = jwt.claims["email"]?.asString() ?: return@memoize null
-            val email = Email(plainEmail)
-            //  check if allowed domain
-            if (!email.isAllowedDomain()) return@memoize null
+    val authorize: (bearerCredential: BearerTokenCredential) -> UserPrincipal? =
+        Cache.memoize(5.minutes) { bearerCredential ->
+            val jwt = JWT.decode(bearerCredential.token)
+            val keyId = jwt.keyId
+            //  cached jwk provider
+            val jwk = provider.get(keyId)
+            //  create public key
+            val publicKey: RSAPublicKey = jwk.publicKey as RSAPublicKey
+            //  validate
+            val algorithm = Algorithm.RSA256(publicKey)
+            try {
+                algorithm.verify(jwt)
 
-            //  get microsoft user (or create user)
-            val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
-                //  create
-                transaction {
-                    MicrosoftAccountEntity.new {
-                        this.email = email.toString()
-                        this.name = jwt.claims["name"]?.asString() ?: "Unknown"
-                        this.mailAccountName = email.username()
-                        this.firstLogin = LocalDateTime.now()
-                        this.lastLogin = LocalDateTime.now()
+                //  check email
+                val plainEmail = jwt.claims["email"]?.asString() ?: return@memoize null
+                val email = Email(plainEmail)
+                //  check if allowed domain
+                if (!email.isAllowedDomain()) return@memoize null
+
+                println("Entrypoint")
+
+                //  get microsoft user (or create user)
+                val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
+                    //  create
+                    transaction {
+                        println("Create new entity")
+                        MicrosoftAccountEntity.new {
+                            this.email = email.toString()
+                            this.name = jwt.claims["name"]?.asString() ?: "Unknown"
+                            this.mailAccountName = email.username()
+                            this.firstLogin = LocalDateTime.now()
+                            this.lastLogin = LocalDateTime.now()
+                        }
                     }
+                } else {
+                    println("Get already existed entity")
+                    //  get
+                    MicrosoftAccountEntity.getMicrosoftAccount(email.toString())
                 }
-            } else {
-                //  get
-                MicrosoftAccountEntity.getMicrosoftAccount(email.toString())
-            }
 
-            //  if not exist
-            if (microsoftAccount == null) {
+                //  if not exist
+                if (microsoftAccount == null) {
+                    return@memoize null
+                }
+
+                //  result
+                UserPrincipal(
+                    microsoftAccount,
+                    if (AdminUserEntity.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN, Role.USER) else setOf(
+                        Role.USER
+                    )
+                )
+            } catch (e: Exception) {
                 return@memoize null
             }
-
-            //  result
-            UserPrincipal(
-                microsoftAccount,
-                if (AdminUserEntity.isAdminUserByEmail(email.toString())) setOf(Role.ADMIN, Role.USER) else setOf(Role.USER)
-            )
-        } catch (e: Exception) {
-            return@memoize null
         }
-    }
 }

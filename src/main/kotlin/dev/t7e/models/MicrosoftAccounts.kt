@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.minutes
  * @author testusuke
  */
 
-object MicrosoftAccounts: IntIdTable("microsoft_accounts") {
+object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
     val email = varchar("email", 320).uniqueIndex()
     val name = varchar("name", 128)
     val mailAccountName = varchar("mail_account_name", 128).nullable()
@@ -24,8 +24,8 @@ object MicrosoftAccounts: IntIdTable("microsoft_accounts") {
     val lastLogin = datetime("last_login")
 }
 
-class MicrosoftAccountEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
+class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
         val getAllMicrosoftAccounts = Cache.memoizeOneObject(1.minutes) {
             transaction {
                 MicrosoftAccountEntity.all().toList()
@@ -38,15 +38,12 @@ class MicrosoftAccountEntity(id: EntityID<Int>): IntEntity(id) {
             }
         }
 
-        val getMicrosoftAccount: (email: String) -> MicrosoftAccountEntity? = Cache.memoize(1.minutes) { email ->
-            transaction {
-                MicrosoftAccountEntity.find{ MicrosoftAccounts.email eq email }.singleOrNull()
-            }
+        fun getMicrosoftAccount(email: String): MicrosoftAccountEntity? = transaction {
+            MicrosoftAccountEntity.find { MicrosoftAccounts.email eq email }.singleOrNull()
         }
 
-        val existMicrosoftAccount: (email: String) -> Boolean = Cache.memoize(1.minutes) { email ->
-            getMicrosoftAccount(email) != null
-        }
+
+        fun existMicrosoftAccount(email: String): Boolean = getMicrosoftAccount(email) != null
     }
 
     var email by MicrosoftAccounts.email
