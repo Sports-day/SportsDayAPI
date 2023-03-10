@@ -25,13 +25,19 @@ class UserEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<UserEntity>(Users) {
         val getAllUsers = Cache.memoizeOneObject(1.minutes) {
             transaction {
-                UserEntity.all().toList()
+                UserEntity.all().toList().map {
+                    it to it.serializableModel()
+                }
             }
         }
 
-        val getUser: (id: Int) -> UserEntity? = Cache.memoize(1.minutes) { id ->
+        val getUser: (id: Int) -> Pair<UserEntity, User>? = Cache.memoize(1.minutes) { id ->
             transaction {
-                UserEntity.findById(id)
+                UserEntity
+                    .findById(id)
+                    ?.let {
+                        it to it.serializableModel()
+                    }
             }
         }
     }

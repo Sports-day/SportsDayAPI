@@ -23,7 +23,7 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
         val user = UserEntity.getUser(userId) ?: throw NotFoundException("target User not found.")
 
         //  update
-        account.first.user = user
+        account.first.user = user.first
 
         Result.success(account.first.serializableModel())
     }
