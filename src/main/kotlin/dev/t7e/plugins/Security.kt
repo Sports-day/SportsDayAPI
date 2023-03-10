@@ -66,13 +66,10 @@ object Authorization {
                 //  check if allowed domain
                 if (!email.isAllowedDomain()) return@memoize null
 
-                println("Entrypoint")
-
                 //  get microsoft user (or create user)
                 val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
                     //  create
                     transaction {
-                        println("Create new entity")
                         MicrosoftAccountEntity.new {
                             this.email = email.toString()
                             this.name = jwt.claims["name"]?.asString() ?: "Unknown"
@@ -82,7 +79,6 @@ object Authorization {
                         }
                     }
                 } else {
-                    println("Get already existed entity")
                     //  get
                     MicrosoftAccountEntity.getMicrosoftAccount(email.toString())
                 }
