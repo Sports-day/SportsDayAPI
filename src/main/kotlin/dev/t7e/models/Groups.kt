@@ -24,13 +24,19 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<GroupEntity>(Groups) {
         val getAllGroups = Cache.memoizeOneObject(1.minutes) {
             transaction {
-                GroupEntity.all().toList()
+                GroupEntity.all().toList().map {
+                    it to it.serializableModel()
+                }
             }
         }
 
-        val getGroup: (id: Int) -> GroupEntity? = Cache.memoize(1.minutes) { id ->
+        val getGroup: (id: Int) -> Pair<GroupEntity, Group>? = Cache.memoize(1.minutes) { id ->
             transaction {
-                GroupEntity.findById(id)
+                GroupEntity
+                    .findById(id)
+                    ?.let {
+                        it to it.serializableModel()
+                    }
             }
         }
     }

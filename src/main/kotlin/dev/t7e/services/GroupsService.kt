@@ -16,7 +16,6 @@ object GroupsService : StandardService<GroupEntity, Group>(
     objectName = "Group",
     _getAllObjectFunction = { GroupEntity.getAllGroups() },
     _getObjectByIdFunction = { GroupEntity.getGroup(it) },
-    _serialize = GroupEntity::serializableModel
 ) {
 
     /**
@@ -46,10 +45,10 @@ object GroupsService : StandardService<GroupEntity, Group>(
         val group = GroupEntity.getGroup(id) ?: throw NotFoundException("Group not found.")
 
 
-        group.name = omittedGroup.name
-        group.description = omittedGroup.description
+        group.first.name = omittedGroup.name
+        group.first.description = omittedGroup.description
 
-        Result.success(group.serializableModel())
+        Result.success(group.first.serializableModel())
     }
 
 }

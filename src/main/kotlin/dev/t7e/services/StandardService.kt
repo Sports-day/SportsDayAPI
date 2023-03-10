@@ -17,19 +17,19 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * @property objectName the name of this object
  * @property _getAllObjectFunction the lambda of get all object
  * @property _getObjectByIdFunction the lambda of get object by id
- * @property _serialize the serializer
  */
 open class StandardService<T : IntEntity, R>(
     private val objectName: String,
-    private val _getAllObjectFunction: () -> List<T>,
-    private val _getObjectByIdFunction: (id: Int) -> T?,
-    private val _serialize: (T) -> R
+    private val _getAllObjectFunction: () -> List<Pair<T, R>>,
+    private val _getObjectByIdFunction: (id: Int) -> Pair<T, R>?,
 ) {
 
     open fun getAll(): Result<List<R>> {
         return Result.success(
             transaction {
-                _getAllObjectFunction().map(_serialize)
+                _getAllObjectFunction().map {
+                    it.second
+                }
             }
         )
     }
@@ -37,14 +37,10 @@ open class StandardService<T : IntEntity, R>(
     open fun getById(id: Int): Result<R> {
         val obj = _getObjectByIdFunction(id) ?: throw NotFoundException("$objectName not found.")
 
-        return Result.success(
-            transaction {
-                _serialize(obj)
-            }
-        )
+        return Result.success(obj.second)
     }
     open fun deleteById(id: Int): Result<Boolean> = transaction {
-        _getObjectByIdFunction(id)?.delete() ?: throw NotFoundException("$objectName not found.")
+        _getObjectByIdFunction(id)?.first?.delete() ?: throw NotFoundException("$objectName not found.")
 
         Result.success(true)
     }

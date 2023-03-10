@@ -30,13 +30,19 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
         val getAllMicrosoftAccounts = Cache.memoizeOneObject(1.minutes) {
             transaction {
-                MicrosoftAccountEntity.all().toList()
+                MicrosoftAccountEntity.all().toList().map {
+                    it to it.serializableModel()
+                }
             }
         }
 
-        val getMicrosoftAccountById: (id: Int) -> MicrosoftAccountEntity? = Cache.memoize(1.minutes) { id ->
+        val getMicrosoftAccountById: (id: Int) -> Pair<MicrosoftAccountEntity, MicrosoftAccount>? = Cache.memoize(1.minutes) { id ->
             transaction {
-                MicrosoftAccountEntity.findById(id)
+                MicrosoftAccountEntity
+                    .findById(id)
+                    ?.let {
+                        it to it.serializableModel()
+                    }
             }
         }
 

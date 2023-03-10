@@ -13,7 +13,6 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
     objectName = "Class",
     _getAllObjectFunction = { ClassEntity.getAllClasses() },
     _getObjectByIdFunction =  { ClassEntity.getClass(it) },
-    _serialize = ClassEntity::serializableModel
 ) {
 
     /**
@@ -29,7 +28,7 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
             ClassEntity.new {
                 this.name = omittedClass.name
                 this.description = omittedClass.description
-                this.group = group
+                this.group = group.first
                 this.createdAt = LocalDateTime.now()
             }.serializableModel()
         )
@@ -45,11 +44,11 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
         val classEntity = ClassEntity.getClass(id) ?: throw NotFoundException("invalid class id")
         val group = GroupEntity.getGroup(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
 
-        classEntity.name = omittedClass.name
-        classEntity.description = omittedClass.description
-        classEntity.group = group
+        classEntity.first.name = omittedClass.name
+        classEntity.first.description = omittedClass.description
+        classEntity.first.group = group.first
 
-        Result.success(classEntity.serializableModel())
+        Result.success(classEntity.first.serializableModel())
     }
 
     /**
@@ -62,7 +61,7 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
         val classEntity = ClassEntity.getClass(id) ?: throw NotFoundException("invalid class id")
 
         Result.success(
-            classEntity.users.toList().map(UserEntity::serializableModel)
+            classEntity.first.users.toList().map(UserEntity::serializableModel)
         )
     }
 
