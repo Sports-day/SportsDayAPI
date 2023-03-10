@@ -58,10 +58,10 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
      * @return [List<User>]
      */
     fun getAllUsersOfClass(id: Int): Result<List<User>> = transaction {
-        val classEntity = ClassEntity.getClass(id) ?: throw NotFoundException("invalid class id")
+        val users = ClassEntity.getClassUsers(id)?.map { it.second } ?: throw NotFoundException("invalid class id")
 
         Result.success(
-            classEntity.first.users.toList().map(UserEntity::serializableModel)
+            users
         )
     }
 

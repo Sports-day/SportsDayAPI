@@ -14,15 +14,15 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/02/25
  * @author testusuke
  */
-object Classes: IntIdTable("classes") {
+object Classes : IntIdTable("classes") {
     val name = varchar("name", 64)
     val description = varchar("description", 128).nullable()
     val group = reference("group", Groups)
     val createdAt = datetime("created_at")
 }
 
-class ClassEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<ClassEntity>(Classes) {
+class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<ClassEntity>(Classes) {
         val getAllClasses = Cache.memoizeOneObject(1.minutes) {
             transaction {
                 ClassEntity.all().toList().map {
@@ -39,6 +39,17 @@ class ClassEntity(id: EntityID<Int>): IntEntity(id) {
                         it to it.serializableModel()
                     }
             }
+        }
+
+        val getClassUsers: (id: Int) -> List<Pair<UserEntity, User>>? = Cache.memoize(1.minutes) { id ->
+            getClass(id)
+                ?.let {
+                    transaction {
+                        it.first.users.toList().map { user ->
+                            user to user.serializableModel()
+                        }
+                    }
+                }
         }
     }
 
