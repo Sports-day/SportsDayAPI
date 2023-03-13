@@ -6,6 +6,7 @@ import dev.t7e.plugins.withRole
 import dev.t7e.services.ClassesService
 import dev.t7e.utils.DataMessageResponse
 import dev.t7e.utils.DataResponse
+import dev.t7e.utils.MessageResponse
 import dev.t7e.utils.respondOrInternalError
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -108,6 +109,16 @@ fun Route.classesRouter() {
                                         it
                                     )
                                 )
+                            }
+                    }
+
+                    delete {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        ClassesService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(HttpStatusCode.OK, MessageResponse("deleted class"))
                             }
                     }
                 }
