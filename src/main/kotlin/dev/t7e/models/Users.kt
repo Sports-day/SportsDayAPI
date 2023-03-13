@@ -14,15 +14,15 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/02/27
  * @author testusuke
  */
-object Users: IntIdTable("users") {
+object Users : IntIdTable("users") {
     val name = varchar("name", 64)
     val studentId = varchar("student_id", 32)
     val classEntity = reference("class", Classes)
     val createdAt = datetime("created_at")
 }
 
-class UserEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<UserEntity>(Users) {
+class UserEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<UserEntity>(Users) {
         val getAllUsers = Cache.memoizeOneObject(1.minutes) {
             transaction {
                 UserEntity.all().toList().map {
@@ -40,12 +40,36 @@ class UserEntity(id: EntityID<Int>): IntEntity(id) {
                     }
             }
         }
+
+        val getUserTeams: (id: Int) -> List<Pair<TeamEntity, Team>>? = Cache.memoize { id ->
+            getUser(id)?.let {
+                transaction {
+                    it.first.teams.map { team ->
+                        team to team.serializableModel()
+                    }
+                }
+            }
+        }
+
+        val getMicrosoftAccounts: (id: Int) -> List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>? = Cache.memoize { id ->
+            getUser(id)?.let {
+                transaction {
+                    it.first.microsoftAccounts.map { ms ->
+                        ms to ms.serializableModel()
+                    }
+                }
+            }
+        }
     }
 
     var name by Users.name
     var studentId by Users.studentId
     var classEntity by ClassEntity referencedOn Users.classEntity
     var createdAt by Users.createdAt
+    var teams by TeamEntity via TeamUsers
+    val microsoftAccounts by MicrosoftAccountEntity optionalReferrersOn MicrosoftAccounts.user
+
+
 
     fun serializableModel(): User {
         return User(
@@ -65,4 +89,11 @@ data class User(
     val studentId: String,
     val classId: Int,
     val createdAt: String
+)
+
+@Serializable
+data class OmittedUser(
+    val name: String,
+    val studentId: String,
+    val classId: Int
 )
