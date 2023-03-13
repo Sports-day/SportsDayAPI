@@ -8,35 +8,29 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * @author testusuke
  */
 
-fun initializeTables() {
+fun initializeTables(migrate: Boolean = false) {
     transaction {
-        //  Configuration
-        SchemaUtils.create(Configurations)
-        //  Logs
-        SchemaUtils.create(Logs)
-        //  AllowedDomains
-        SchemaUtils.create(AllowedDomains)
-        //  Groups
-        SchemaUtils.create(Groups)
-        //  Classes
-        SchemaUtils.create(Classes)
-        //  Users
-        SchemaUtils.create(Users)
-        //  MicrosoftAccounts
-        SchemaUtils.create(MicrosoftAccounts)
-        //  Teams
-        SchemaUtils.create(Teams)
-        //  TeamUsers
-        SchemaUtils.create(TeamUsers)
-        //  Sports
-        SchemaUtils.create(Sports)
-        //  Games
-        SchemaUtils.create(Games)
-        //  Locations
-        SchemaUtils.create(Locations)
-        //  Matches
-        SchemaUtils.create(Matches)
-        //  TournamentPath
-        SchemaUtils.create(TournamentPath)
+        listOf(
+            Configurations,
+            Logs,
+            AllowedDomains,
+            Groups,
+            Classes,
+            Users,
+            MicrosoftAccounts,
+            Teams,
+            TeamUsers,
+            Sports,
+            Games,
+            Locations,
+            Matches,
+            TournamentPath
+        ).forEach {
+            if (migrate) {
+                SchemaUtils.createMissingTablesAndColumns(it)
+            } else {
+                SchemaUtils.create(it)
+            }
+        }
     }
 }
