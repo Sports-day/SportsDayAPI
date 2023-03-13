@@ -17,6 +17,7 @@ fun Application.configureStatusPage() {
     install(StatusPages) {
 
         exception<Throwable> { call, cause ->
+            cause.printStackTrace()
             call.respond(HttpStatusCode.InternalServerError, MessageResponse(cause.message))
         }
 
