@@ -24,6 +24,9 @@ open class StandardService<T : IntEntity, R>(
     private val _getObjectByIdFunction: (id: Int) -> Pair<T, R>?,
 ) {
 
+    /**
+     * Get all object
+     */
     open fun getAll(): Result<List<R>> {
         return Result.success(
             transaction {
@@ -34,11 +37,22 @@ open class StandardService<T : IntEntity, R>(
         )
     }
 
+    /**
+     * Get object by id
+     *
+     * @param id[Int] object id
+     */
     open fun getById(id: Int): Result<R> {
         val obj = _getObjectByIdFunction(id) ?: throw NotFoundException("$objectName not found.")
 
         return Result.success(obj.second)
     }
+
+    /**
+     * Delete object by is
+     *
+     * @param id[Int] object id
+     */
     open fun deleteById(id: Int): Result<Boolean> = transaction {
         _getObjectByIdFunction(id)?.first?.delete() ?: throw NotFoundException("$objectName not found.")
 
