@@ -77,6 +77,31 @@ fun Route.microsoftAccountsRouter() {
                             }
                     }
                 }
+
+                route("/link-user") {
+                    put {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val requestBody = call.receive<LinkUserRequest>()
+
+                        MicrosoftAccountsService
+                            .linkUser(id, requestBody.userId)
+                            .respondOrInternalError {
+                                call.respond(HttpStatusCode.OK, MessageResponse("link user"))
+                            }
+                    }
+
+                    delete {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        MicrosoftAccountsService
+                            .unlinkUser(id)
+                            .respondOrInternalError {
+                                call.respond(HttpStatusCode.OK, MessageResponse("unlink user"))
+                            }
+                    }
+                }
+
+
             }
         }
     }
@@ -84,3 +109,6 @@ fun Route.microsoftAccountsRouter() {
 
 @Serializable
 data class AccountRoleRequest(val role: String)
+
+@Serializable
+data class LinkUserRequest(val userId: Int)
