@@ -9,13 +9,12 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
  * @author testusuke
  */
-object Matches: IntIdTable("matches") {
+object Matches : IntIdTable("matches") {
     val location = reference("location", Locations)
     val game = reference("game", Games)
     val sport = reference("sport", Sports)
@@ -28,9 +27,9 @@ object Matches: IntIdTable("matches") {
     val status = enumerationByName<MatchStatus>("status", 32)
 }
 
-class MatchEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<MatchEntity>(Matches) {
-        val getAllMatchesWithTeam: (team: TeamEntity) -> MutableList<MatchEntity> = Cache.memoize(1.minutes) { team ->
+class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<MatchEntity>(Matches) {
+        val getAllMatchesWithTeam: (team: TeamEntity) -> MutableList<MatchEntity> = Cache.memoize { team ->
             transaction {
                 MatchEntity.find {
                     Matches.leftTeam eq team.id or
@@ -43,7 +42,7 @@ class MatchEntity(id: EntityID<Int>): IntEntity(id) {
     }
 
     var location by LocationEntity referencedOn Matches.location
-    var game by GameEntity referencedOn  Matches.game
+    var game by GameEntity referencedOn Matches.game
     var sport by SportEntity referencedOn Matches.sport
     var startAt by Matches.startAt
     var leftTeam by TeamEntity optionalReferencedOn Matches.leftTeam
@@ -52,6 +51,7 @@ class MatchEntity(id: EntityID<Int>): IntEntity(id) {
     var rightScore by Matches.rightScore
     var winner by TeamEntity optionalReferencedOn Matches.winner
     val status by Matches.status
+
     //  for tournament format
     var parents by MatchEntity.via(TournamentPath.child, TournamentPath.parent)
     var children by MatchEntity.via(TournamentPath.parent, TournamentPath.child)

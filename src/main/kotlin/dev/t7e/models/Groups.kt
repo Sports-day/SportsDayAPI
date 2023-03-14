@@ -8,7 +8,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -22,7 +21,7 @@ object Groups : IntIdTable("groups") {
 
 class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<GroupEntity>(Groups) {
-        val getAllGroups = Cache.memoizeOneObject(1.minutes) {
+        val getAllGroups = Cache.memoizeOneObject {
             transaction {
                 GroupEntity.all().toList().map {
                     it to it.serializableModel()
@@ -30,7 +29,7 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
             }
         }
 
-        val getGroup: (id: Int) -> Pair<GroupEntity, Group>? = Cache.memoize(1.minutes) { id ->
+        val getGroup: (id: Int) -> Pair<GroupEntity, Group>? = Cache.memoize { id ->
             transaction {
                 GroupEntity
                     .findById(id)

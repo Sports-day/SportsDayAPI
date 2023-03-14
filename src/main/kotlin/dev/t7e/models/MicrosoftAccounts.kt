@@ -9,7 +9,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -28,7 +27,7 @@ object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
 
 class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
-        val getAllMicrosoftAccounts = Cache.memoizeOneObject(1.minutes) {
+        val getAllMicrosoftAccounts = Cache.memoizeOneObject {
             transaction {
                 MicrosoftAccountEntity.all().toList().map {
                     it to it.serializableModel()
@@ -36,15 +35,16 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
             }
         }
 
-        val getMicrosoftAccountById: (id: Int) -> Pair<MicrosoftAccountEntity, MicrosoftAccount>? = Cache.memoize(1.minutes) { id ->
-            transaction {
-                MicrosoftAccountEntity
-                    .findById(id)
-                    ?.let {
-                        it to it.serializableModel()
-                    }
+        val getMicrosoftAccountById: (id: Int) -> Pair<MicrosoftAccountEntity, MicrosoftAccount>? =
+            Cache.memoize { id ->
+                transaction {
+                    MicrosoftAccountEntity
+                        .findById(id)
+                        ?.let {
+                            it to it.serializableModel()
+                        }
+                }
             }
-        }
 
         fun getMicrosoftAccount(email: String): MicrosoftAccountEntity? = transaction {
             MicrosoftAccountEntity.find { MicrosoftAccounts.email eq email }.singleOrNull()

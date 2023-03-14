@@ -8,7 +8,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/27
@@ -23,7 +22,7 @@ object Users : IntIdTable("users") {
 
 class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<UserEntity>(Users) {
-        val getAllUsers = Cache.memoizeOneObject(1.minutes) {
+        val getAllUsers = Cache.memoizeOneObject {
             transaction {
                 UserEntity.all().toList().map {
                     it to it.serializableModel()
@@ -31,7 +30,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             }
         }
 
-        val getUser: (id: Int) -> Pair<UserEntity, User>? = Cache.memoize(1.minutes) { id ->
+        val getUser: (id: Int) -> Pair<UserEntity, User>? = Cache.memoize { id ->
             transaction {
                 UserEntity
                     .findById(id)
@@ -51,15 +50,16 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             }
         }
 
-        val getMicrosoftAccounts: (id: Int) -> List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>? = Cache.memoize { id ->
-            getUser(id)?.let {
-                transaction {
-                    it.first.microsoftAccounts.map { ms ->
-                        ms to ms.serializableModel()
+        val getMicrosoftAccounts: (id: Int) -> List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>? =
+            Cache.memoize { id ->
+                getUser(id)?.let {
+                    transaction {
+                        it.first.microsoftAccounts.map { ms ->
+                            ms to ms.serializableModel()
+                        }
                     }
                 }
             }
-        }
     }
 
     var name by Users.name
@@ -68,7 +68,6 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var createdAt by Users.createdAt
     var teams by TeamEntity via TeamUsers
     val microsoftAccounts by MicrosoftAccountEntity optionalReferrersOn MicrosoftAccounts.user
-
 
 
     fun serializableModel(): User {
