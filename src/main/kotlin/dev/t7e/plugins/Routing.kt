@@ -1,10 +1,7 @@
 package dev.t7e.plugins
 
 import dev.t7e.routes.authorizationRouting
-import dev.t7e.routes.v1.classesRouter
-import dev.t7e.routes.v1.groupsRouter
-import dev.t7e.routes.v1.microsoftAccountsRouter
-import dev.t7e.routes.v1.usersRouter
+import dev.t7e.routes.v1.*
 import io.ktor.server.routing.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -24,6 +21,8 @@ fun Application.configureRouting() {
                 classesRouter()
                 //  Users
                 usersRouter()
+                //  allowed domains
+                allowedDomainsRouter()
             }
         }
     }

@@ -8,7 +8,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/23
@@ -19,14 +18,31 @@ object AllowedDomains: IntIdTable("allowed_domains") {
     val domain = varchar("domain", 256)
     val description = varchar("description", 128)
     val createdAt = datetime("created_at")
-    val updatedAt = datetime("updated_at")
 }
 
 class AllowedDomainEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: IntEntityClass<AllowedDomainEntity>(AllowedDomains) {
-        val getAllowedDomainByDomain: (domain: String) -> AllowedDomainEntity? = Cache.memoize(1.minutes) { domain ->
+        val getAllowedDomainByDomain: (domain: String) -> AllowedDomainEntity? = Cache.memoize { domain ->
             transaction {
                 AllowedDomainEntity.find{ AllowedDomains.domain eq domain}.singleOrNull()
+            }
+        }
+
+        val getAllAllowedDomains: () -> List<Pair<AllowedDomainEntity, AllowedDomain>> = Cache.memoizeOneObject {
+            transaction {
+                AllowedDomainEntity.all().toList().map {
+                    it to it.serializableModel()
+                }
+            }
+        }
+
+        val getAllowedDomain: (id: Int) -> Pair<AllowedDomainEntity, AllowedDomain>? = Cache.memoize { id ->
+            transaction {
+                AllowedDomainEntity
+                    .findById(id)
+                    ?.let {
+                        it to it.serializableModel()
+                    }
             }
         }
     }
@@ -34,15 +50,13 @@ class AllowedDomainEntity(id: EntityID<Int>): IntEntity(id) {
     var domain by AllowedDomains.domain
     var description by AllowedDomains.description
     var createdAt by AllowedDomains.createdAt
-    var updatedAt by AllowedDomains.updatedAt
 
     fun serializableModel(): AllowedDomain {
         return AllowedDomain(
             id.value,
             domain,
             description,
-            createdAt.toString(),
-            updatedAt.toString()
+            createdAt.toString()
         )
     }
 }
@@ -52,6 +66,11 @@ data class AllowedDomain(
     val id: Int,
     val domain: String,
     val description: String,
-    val createdAt: String,
-    val updatedAt: String
+    val createdAt: String
+)
+
+@Serializable
+data class OmittedAllowedDomain(
+    val domain: String,
+    val description: String
 )
