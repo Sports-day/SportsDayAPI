@@ -1,14 +1,13 @@
 package dev.t7e
 
+import dev.t7e.models.initializeTables
 import io.ktor.server.application.*
-import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import dev.t7e.plugins.*
+import dev.t7e.utils.DatabaseManager
+import dev.t7e.utils.configuration.KeyValueStore
 
-fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
-}
+fun main(args: Array<String>): Unit = EngineMain.main(args)
 
 fun Application.module() {
     configureHTTP()
@@ -16,4 +15,14 @@ fun Application.module() {
     configureSerialization()
     configureSecurity()
     configureRouting()
+    configureRateLimit()
+    configureStatusPage()
+
+    //  DB
+    DatabaseManager
+    //  tables
+    initializeTables()
+    //  configuration
+    KeyValueStore
+
 }
