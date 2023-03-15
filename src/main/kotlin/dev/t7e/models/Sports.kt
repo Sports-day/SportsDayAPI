@@ -15,6 +15,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 object Sports: IntIdTable("sports") {
     val name = varchar("name", 64)
     val description = text("description")
+    val iconImage = reference("icon_image", Images).nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -24,6 +25,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
 
     var name by Sports.name
     var description by Sports.description
+    var iconImage by ImageEntity optionalReferencedOn Sports.iconImage
     var createdAt by Sports.createdAt
     var updatedAt by Sports.updatedAt
 
