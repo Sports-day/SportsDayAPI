@@ -48,7 +48,7 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages-jvm:2.2.2")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
 
 ktor {
