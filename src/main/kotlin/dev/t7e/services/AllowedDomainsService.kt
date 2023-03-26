@@ -11,10 +11,10 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/13
  * @author testusuke
  */
-object AllowedDomainsService: StandardService<AllowedDomainEntity, AllowedDomain>(
+object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomain>(
     objectName = "allowed domain",
-    _getAllObjectFunction = { AllowedDomainEntity.getAllAllowedDomains() },
-    _getObjectByIdFunction = { AllowedDomainEntity.getAllowedDomain(it) }
+    _getAllObjectFunction = { AllowedDomainEntity.getAll() },
+    _getObjectByIdFunction = { AllowedDomainEntity.getById(it) }
 ) {
 
     fun create(omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> = transaction {
@@ -23,16 +23,24 @@ object AllowedDomainsService: StandardService<AllowedDomainEntity, AllowedDomain
                 this.domain = omittedAllowedDomain.domain
                 this.description = omittedAllowedDomain.description
                 this.createdAt = LocalDateTime.now()
-            }.serializableModel()
+            }
+                .serializableModel()
+                .apply {
+                    AllowedDomainEntity.fetch(this.id)
+                }
         )
     }
 
     fun update(id: Int, omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> = transaction {
-        val entity = AllowedDomainEntity.getAllowedDomain(id) ?: throw NotFoundException("invalid id")
+        val entity = AllowedDomainEntity.getById(id) ?: throw NotFoundException("invalid id")
 
         entity.first.domain = omittedAllowedDomain.domain
         entity.first.description = omittedAllowedDomain.description
 
-        Result.success(entity.first.serializableModel())
+        Result.success(
+            entity.first.serializableModel().apply {
+                AllowedDomainEntity.fetch(this.id)
+            }
+        )
     }
 }
