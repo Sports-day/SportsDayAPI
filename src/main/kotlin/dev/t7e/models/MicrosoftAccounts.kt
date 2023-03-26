@@ -1,14 +1,13 @@
 package dev.t7e.models
 
 import dev.t7e.plugins.Role
-import dev.t7e.utils.Cache
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -26,31 +25,21 @@ object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
 }
 
 class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<MicrosoftAccountEntity>(MicrosoftAccounts) {
-        val getAllMicrosoftAccounts = Cache.memoizeOneObject {
-            transaction {
-                MicrosoftAccountEntity.all().toList().map {
-                    it to it.serializableModel()
-                }
+    companion object: SmartCache<MicrosoftAccountEntity, MicrosoftAccount> (
+        entityName = "microsoft account",
+        table = MicrosoftAccounts,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    ) {
+        fun getByEmail(email: String): Pair<MicrosoftAccountEntity, MicrosoftAccount>? {
+            checkCacheLifetime()
+
+            return cache.values.filterNotNull().find {
+                it.second.email == email
             }
         }
 
-        val getMicrosoftAccountById: (id: Int) -> Pair<MicrosoftAccountEntity, MicrosoftAccount>? =
-            Cache.memoize { id ->
-                transaction {
-                    MicrosoftAccountEntity
-                        .findById(id)
-                        ?.let {
-                            it to it.serializableModel()
-                        }
-                }
-            }
-
-        fun getMicrosoftAccount(email: String): MicrosoftAccountEntity? = transaction {
-            MicrosoftAccountEntity.find { MicrosoftAccounts.email eq email }.singleOrNull()
-        }
-
-        fun existMicrosoftAccount(email: String): Boolean = getMicrosoftAccount(email) != null
+        fun existMicrosoftAccount(email: String): Boolean = getByEmail(email) != null
     }
 
     var email by MicrosoftAccounts.email

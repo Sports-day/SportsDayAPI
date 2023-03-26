@@ -22,7 +22,7 @@ class Email(private val email: String) {
      */
     fun isAllowedDomain(): Boolean {
         val allowedDomain = this.domain()?.let {
-            AllowedDomainEntity.getAllowedDomainByDomain(it)
+            AllowedDomainEntity.getByDomain(it)
         }
 
         return allowedDomain != null
