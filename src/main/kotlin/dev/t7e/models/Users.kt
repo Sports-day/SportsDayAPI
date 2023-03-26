@@ -1,13 +1,13 @@
 package dev.t7e.models
 
-import dev.t7e.utils.Cache
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/27
@@ -21,45 +21,90 @@ object Users : IntIdTable("users") {
 }
 
 class UserEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<UserEntity>(Users) {
-        val getAllUsers = Cache.memoizeOneObject {
-            transaction {
-                UserEntity.all().toList().map {
-                    it to it.serializableModel()
-                }
+
+    companion object : SmartCache<UserEntity, User> (
+        entityName = "user",
+        table = Users,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    ) {
+        private val userTeamsMap = mutableMapOf<Int, List<Pair<TeamEntity, Team>>?>()
+        private val userMicrosoftAccountsMap = mutableMapOf<Int, List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>?>()
+
+
+        fun getUserTeams(id: Int): List<Pair<TeamEntity, Team>>? {
+            if (!userTeamsMap.containsKey(id)) {
+                //  fetch unknown data
+                fetch(id)
             }
+
+            return userTeamsMap[id]
         }
 
-        val getUser: (id: Int) -> Pair<UserEntity, User>? = Cache.memoize { id ->
-            transaction {
-                UserEntity
-                    .findById(id)
-                    ?.let {
-                        it to it.serializableModel()
-                    }
+        fun getUserMicrosoftAccounts(id: Int): List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>? {
+            if (!userMicrosoftAccountsMap.containsKey(id)) {
+                //  fetch unknown data
+                fetch(id)
             }
+
+            return userMicrosoftAccountsMap[id]
         }
 
-        val getUserTeams: (id: Int) -> List<Pair<TeamEntity, Team>>? = Cache.memoize { id ->
-            getUser(id)?.let {
+        init {
+            //  user teams
+            registerFetchFunction { id ->
                 transaction {
-                    it.first.teams.map { team ->
-                        team to team.serializableModel()
-                    }
-                }
-            }
-        }
+                    if (id == null) {
+                        userTeamsMap.clear()
 
-        val getMicrosoftAccounts: (id: Int) -> List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>? =
-            Cache.memoize { id ->
-                getUser(id)?.let {
-                    transaction {
-                        it.first.microsoftAccounts.map { ms ->
-                            ms to ms.serializableModel()
+                        cache.values.filterNotNull().forEach { value ->
+                            val entity = value.first
+                            val teams = entity.teams.map { teams ->
+                                teams to teams.serializableModel()
+                            }
+                            userTeamsMap[entity.id.value] = teams
+                        }
+                    } else {
+                        val entity = getById(id)
+
+                        if (entity == null) {
+                            userTeamsMap[id] = null
+                        } else {
+                            userTeamsMap[id] = entity.first.teams.map { team ->
+                                team to team.serializableModel()
+                            }
                         }
                     }
                 }
             }
+
+            //  user microsoft accounts
+            registerFetchFunction { id ->
+                transaction {
+                    if (id == null) {
+                        userMicrosoftAccountsMap.clear()
+
+                        cache.values.filterNotNull().forEach { value ->
+                            val entity = value.first
+                            val microsoftAccounts = entity.microsoftAccounts.map { microsoftAccount ->
+                                microsoftAccount to microsoftAccount.serializableModel()
+                            }
+                            userMicrosoftAccountsMap[entity.id.value] = microsoftAccounts
+                        }
+                    } else {
+                        val entity = getById(id)
+
+                        if (entity == null) {
+                            userMicrosoftAccountsMap[id] = null
+                        } else {
+                            userMicrosoftAccountsMap[id] = entity.first.microsoftAccounts.map { microsoftAccount ->
+                                microsoftAccount to microsoftAccount.serializableModel()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     var name by Users.name

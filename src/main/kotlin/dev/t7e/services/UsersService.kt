@@ -11,12 +11,12 @@ import java.time.LocalDateTime
  */
 object UsersService : StandardService<UserEntity, User>(
     objectName = "User",
-    _getAllObjectFunction = { UserEntity.getAllUsers() },
-    _getObjectByIdFunction = { UserEntity.getUser(it) }
+    _getAllObjectFunction = { UserEntity.getAll() },
+    _getObjectByIdFunction = { UserEntity.getById(it) }
 ) {
 
     fun create(omittedUser: OmittedUser): Result<User> = transaction {
-        val classEntity = ClassEntity.getClass(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+        val classEntity = ClassEntity.getById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
 
         val entity = UserEntity.new {
             this.name = omittedUser.name
@@ -29,8 +29,8 @@ object UsersService : StandardService<UserEntity, User>(
     }
 
     fun update(id: Int, omittedUser: OmittedUser): Result<User> = transaction {
-        val userEntity = UserEntity.getUser(id)?.first ?: throw NotFoundException("invalid user id")
-        val classEntity = ClassEntity.getClass(omittedUser.classId)?.first ?: throw NotFoundException("invalid class id")
+        val userEntity = UserEntity.getById(id)?.first ?: throw NotFoundException("invalid user id")
+        val classEntity = ClassEntity.getById(omittedUser.classId)?.first ?: throw NotFoundException("invalid class id")
 
         userEntity.name = omittedUser.name
         userEntity.studentId = omittedUser.studentId
@@ -46,7 +46,7 @@ object UsersService : StandardService<UserEntity, User>(
     }
 
     fun getLinkedMicrosoftAccount(id: Int): Result<List<MicrosoftAccount>> = transaction {
-        val microsoftAccounts = UserEntity.getMicrosoftAccounts(id) ?: throw NotFoundException("invalid user id")
+        val microsoftAccounts = UserEntity.getUserMicrosoftAccounts(id) ?: throw NotFoundException("invalid user id")
 
         Result.success(microsoftAccounts.map { it.second })
     }

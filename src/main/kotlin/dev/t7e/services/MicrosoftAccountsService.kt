@@ -20,7 +20,7 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
     fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> = transaction {
         val account = MicrosoftAccountEntity.getById(accountId) ?: throw NotFoundException("Microsoft account not found.")
 
-        val user = UserEntity.getUser(userId) ?: throw NotFoundException("target User not found.")
+        val user = UserEntity.getById(userId) ?: throw NotFoundException("target User not found.")
 
         //  update
         account.first.user = user.first
