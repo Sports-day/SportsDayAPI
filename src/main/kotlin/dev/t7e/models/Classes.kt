@@ -1,13 +1,13 @@
 package dev.t7e.models
 
-import dev.t7e.utils.Cache
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -21,34 +21,51 @@ object Classes : IntIdTable("classes") {
 }
 
 class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<ClassEntity>(Classes) {
-        val getAllClasses = Cache.memoizeOneObject {
-            transaction {
-                ClassEntity.all().toList().map {
-                    it to it.serializableModel()
-                }
+    companion object : SmartCache<ClassEntity, ClassModel>(
+        entityName = "class",
+        table = Classes,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    ) {
+        private val classUsersMap = mutableMapOf<Int, List<Pair<UserEntity, User>>?>()
+
+        fun getClassUsers(id: Int): List<Pair<UserEntity, User>>? {
+            if (!classUsersMap.containsKey(id)) {
+                //  fetch unknown data
+                fetch(id)
             }
+
+            return classUsersMap[id]
         }
 
-        val getClass: (id: Int) -> Pair<ClassEntity, ClassModel>? = Cache.memoize { id ->
-            transaction {
-                ClassEntity
-                    .findById(id)
-                    ?.let {
-                        it to it.serializableModel()
-                    }
-            }
-        }
+        init {
 
-        val getClassUsers: (id: Int) -> List<Pair<UserEntity, User>>? = Cache.memoize { id ->
-            getClass(id)
-                ?.let {
-                    transaction {
-                        it.first.users.toList().map { user ->
-                            user to user.serializableModel()
+            //  class users
+            registerFetchFunction { id ->
+                transaction {
+                    if (id == null) {
+                        classUsersMap.clear()
+
+                        cache.values.filterNotNull().forEach { value ->
+                            val entity = value.first
+                            val users = entity.users.map { user ->
+                                user to user.serializableModel()
+                            }
+                            classUsersMap[entity.id.value] = users
+                        }
+                    } else {
+                        val entity = getById(id)
+
+                        if (entity == null) {
+                            classUsersMap[id] = null
+                        } else {
+                            classUsersMap[id] = entity.first.users.map { user ->
+                                user to user.serializableModel()
+                            }
                         }
                     }
                 }
+            }
         }
     }
 

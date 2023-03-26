@@ -11,8 +11,8 @@ import java.time.LocalDateTime
  */
 object ClassesService: StandardService<ClassEntity, ClassModel>(
     objectName = "Class",
-    _getAllObjectFunction = { ClassEntity.getAllClasses() },
-    _getObjectByIdFunction =  { ClassEntity.getClass(it) },
+    _getAllObjectFunction = { ClassEntity.getAll() },
+    _getObjectByIdFunction =  { ClassEntity.getById(it) },
 ) {
 
     /**
@@ -22,7 +22,7 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
      * @return [ClassModel]
      */
     fun create(omittedClass: OmittedClassModel): Result<ClassModel> = transaction {
-        val group = GroupEntity.getGroup(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
+        val group = GroupEntity.getById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
 
         Result.success(
             ClassEntity.new {
@@ -41,8 +41,8 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
      * @return [ClassModel]
      */
     fun update(id: Int, omittedClass: OmittedClassModel): Result<ClassModel> = transaction {
-        val classEntity = ClassEntity.getClass(id) ?: throw NotFoundException("invalid class id")
-        val group = GroupEntity.getGroup(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
+        val classEntity = ClassEntity.getById(id) ?: throw NotFoundException("invalid class id")
+        val group = GroupEntity.getById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
 
         classEntity.first.name = omittedClass.name
         classEntity.first.description = omittedClass.description

@@ -1,13 +1,12 @@
 package dev.t7e.models
 
-import dev.t7e.utils.Cache
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/25
@@ -20,25 +19,12 @@ object Groups : IntIdTable("groups") {
 }
 
 class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<GroupEntity>(Groups) {
-        val getAllGroups = Cache.memoizeOneObject {
-            transaction {
-                GroupEntity.all().toList().map {
-                    it to it.serializableModel()
-                }
-            }
-        }
-
-        val getGroup: (id: Int) -> Pair<GroupEntity, Group>? = Cache.memoize { id ->
-            transaction {
-                GroupEntity
-                    .findById(id)
-                    ?.let {
-                        it to it.serializableModel()
-                    }
-            }
-        }
-    }
+    companion object : SmartCache<GroupEntity, Group> (
+        entityName = "group",
+        table = Groups,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    ) {}
 
     var name by Groups.name
     var description by Groups.description

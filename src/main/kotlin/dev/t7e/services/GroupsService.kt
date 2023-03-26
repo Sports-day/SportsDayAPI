@@ -14,8 +14,8 @@ import java.time.LocalDateTime
 
 object GroupsService : StandardService<GroupEntity, Group>(
     objectName = "Group",
-    _getAllObjectFunction = { GroupEntity.getAllGroups() },
-    _getObjectByIdFunction = { GroupEntity.getGroup(it) },
+    _getAllObjectFunction = { GroupEntity.getAll() },
+    _getObjectByIdFunction = { GroupEntity.getById(it) },
 ) {
 
     /**
@@ -42,7 +42,7 @@ object GroupsService : StandardService<GroupEntity, Group>(
      * @return [Group]
      */
     fun update(id: Int, omittedGroup: OmittedGroup): Result<Group> = transaction {
-        val group = GroupEntity.getGroup(id) ?: throw NotFoundException("Group not found.")
+        val group = GroupEntity.getById(id) ?: throw NotFoundException("Group not found.")
 
 
         group.first.name = omittedGroup.name
