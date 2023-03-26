@@ -1,10 +1,11 @@
 package dev.t7e.models
 
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
@@ -15,7 +16,12 @@ object Locations: IntIdTable("locations") {
 }
 
 class LocationEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<LocationEntity>(Locations)
+    companion object: SmartCache<LocationEntity, Location> (
+        entityName = "location",
+        table = Locations,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    )
 
     var name by Locations.name
 

@@ -1,11 +1,12 @@
 package dev.t7e.models
 
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
@@ -23,7 +24,12 @@ object Games: IntIdTable("games") {
 }
 
 class GameEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<GameEntity>(Games)
+    companion object: SmartCache<GameEntity, Game> (
+        entityName = "group",
+        table = Games,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    )
 
     var name by Games.name
     var description by Games.description
