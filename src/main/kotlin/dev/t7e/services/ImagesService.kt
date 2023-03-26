@@ -14,8 +14,8 @@ import java.time.LocalDateTime
  */
 object ImagesService: StandardService<ImageEntity, Image>(
     objectName = "image",
-    _getAllObjectFunction = { ImageEntity.getAllImages() },
-    _getObjectByIdFunction = { ImageEntity.getImage(it) }
+    _getAllObjectFunction = { ImageEntity.getAll() },
+    _getObjectByIdFunction = { ImageEntity.getById(it) }
 ) {
 
     fun create(createdBy: Int, omittedImage: OmittedImage): Result<Image> = transaction {
