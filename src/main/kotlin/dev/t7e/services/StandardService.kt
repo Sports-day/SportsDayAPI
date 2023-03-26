@@ -29,10 +29,8 @@ open class StandardService<T : IntEntity, R>(
      */
     open fun getAll(): Result<List<R>> {
         return Result.success(
-            transaction {
-                _getAllObjectFunction().map {
-                    it.second
-                }
+            _getAllObjectFunction().map {
+                it.second
             }
         )
     }
