@@ -76,11 +76,13 @@ object Authorization {
                             this.mailAccountName = email.username()
                             this.firstLogin = LocalDateTime.now()
                             this.lastLogin = LocalDateTime.now()
+                        }.apply {
+                            MicrosoftAccountEntity.fetch(this.id.value)
                         }
                     }
                 } else {
                     //  get
-                    MicrosoftAccountEntity.getMicrosoftAccount(email.toString())
+                    MicrosoftAccountEntity.getByEmail(email.toString())?.first
                 }
 
                 //  if not exist
