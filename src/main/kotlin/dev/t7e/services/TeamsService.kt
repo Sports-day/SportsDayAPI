@@ -2,6 +2,7 @@ package dev.t7e.services
 
 import dev.t7e.models.*
 import io.ktor.server.plugins.*
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -49,6 +50,12 @@ object TeamsService : StandardService<TeamEntity, Team>(
         )
     }
 
+    fun getUsers(id: Int): Result<List<User>> = transaction {
+        val users = TeamEntity.getTeamUsers(id)?.map { it.second } ?: throw NotFoundException("Team not found.")
+
+        Result.success(users)
+    }
+
     fun addUsers(id: Int, userIds: List<Int>): Result<Team> = transaction {
         val team = TeamEntity.getById(id)?.first ?: throw NotFoundException("Team not found.")
         val users = userIds.mapNotNull {
@@ -65,4 +72,27 @@ object TeamsService : StandardService<TeamEntity, Team>(
                 }
         )
     }
+
+    fun removeUser(id: Int, userId: Int): Result<Team> = transaction {
+        val team = TeamEntity.getById(id)?.first ?: throw NotFoundException("Team not found.")
+
+        team.users = SizedCollection(
+            team.users.filterNot {
+                it.id.value == userId
+            }
+        )
+
+        Result.success(
+            team
+                .serializableModel()
+                .apply {
+                    fetchFunction(id)
+                }
+        )
+    }
 }
+
+@Serializable
+data class OmittedTeamUsers(
+    val users: List<Int>
+)

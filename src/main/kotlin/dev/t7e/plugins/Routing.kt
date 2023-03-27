@@ -21,8 +21,10 @@ fun Application.configureRouting() {
                 classesRouter()
                 //  Users
                 usersRouter()
-                //  allowed domains
+                //  Allowed domains
                 allowedDomainsRouter()
+                //  Teams
+                teamsRouter()
             }
         }
     }
