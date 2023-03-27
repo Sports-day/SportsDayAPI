@@ -15,7 +15,8 @@ import java.time.LocalDateTime
 object ImagesService: StandardService<ImageEntity, Image>(
     objectName = "image",
     _getAllObjectFunction = { ImageEntity.getAll() },
-    _getObjectByIdFunction = { ImageEntity.getById(it) }
+    _getObjectByIdFunction = { ImageEntity.getById(it) },
+    fetchFunction = { ImageEntity.fetch(it) }
 ) {
 
     fun create(createdBy: Int, omittedImage: OmittedImage): Result<Image> = transaction {
@@ -28,7 +29,11 @@ object ImagesService: StandardService<ImageEntity, Image>(
             this.createdBy = user
         }
 
-        Result.success(entity.serializableModel())
+        Result.success(
+            entity.serializableModel().apply {
+                fetchFunction(this.id)
+            }
+        )
     }
 
 }

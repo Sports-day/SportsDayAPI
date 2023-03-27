@@ -16,6 +16,7 @@ object GroupsService : StandardService<GroupEntity, Group>(
     objectName = "Group",
     _getAllObjectFunction = { GroupEntity.getAll() },
     _getObjectByIdFunction = { GroupEntity.getById(it) },
+    fetchFunction = { GroupEntity.fetch(it) }
 ) {
 
     /**
@@ -30,7 +31,9 @@ object GroupsService : StandardService<GroupEntity, Group>(
                 this.name = omittedGroup.name
                 this.description = omittedGroup.description
                 this.createdAt = LocalDateTime.now()
-            }.serializableModel()
+            }.serializableModel().apply {
+                fetchFunction(this.id)
+            }
         )
     }
 
@@ -48,7 +51,11 @@ object GroupsService : StandardService<GroupEntity, Group>(
         group.first.name = omittedGroup.name
         group.first.description = omittedGroup.description
 
-        Result.success(group.first.serializableModel())
+        Result.success(
+            group.first.serializableModel().apply {
+                fetchFunction(this.id)
+            }
+        )
     }
 
 }

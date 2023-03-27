@@ -12,11 +12,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object TeamsService : StandardService<TeamEntity, Team>(
     objectName = "Team",
     _getAllObjectFunction = { TeamEntity.getAll() },
-    _getObjectByIdFunction = { TeamEntity.getById(it) }
+    _getObjectByIdFunction = { TeamEntity.getById(it) },
+    fetchFunction = { TeamEntity.fetch(it) }
 ) {
 
     fun create(omittedTeam: OmittedTeam): Result<Team> = transaction {
-        val classEntity = ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
+        val classEntity =
+            ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
 
         Result.success(
             TeamEntity.new {
@@ -24,17 +26,27 @@ object TeamsService : StandardService<TeamEntity, Team>(
                 this.classEntity = classEntity
             }
                 .serializableModel()
+                .apply {
+                    fetchFunction(this.id)
+                }
         )
     }
 
     fun update(id: Int, omittedTeam: OmittedTeam): Result<Team> = transaction {
         val team = TeamEntity.getById(id)?.first ?: throw NotFoundException("Team not found.")
-        val classEntity = ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
+        val classEntity =
+            ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
 
         team.name = omittedTeam.name
         team.classEntity = classEntity
 
-        Result.success(team.serializableModel())
+        Result.success(
+            team
+                .serializableModel()
+                .apply {
+                    fetchFunction(this.id)
+                }
+        )
     }
 
     fun addUsers(id: Int, userIds: List<Int>): Result<Team> = transaction {
@@ -45,6 +57,12 @@ object TeamsService : StandardService<TeamEntity, Team>(
 
         team.users = SizedCollection(listOf(team.users.toList(), users).flatten().distinct())
 
-        Result.success(team.serializableModel())
+        Result.success(
+            team
+                .serializableModel()
+                .apply {
+                    fetchFunction(this.id)
+                }
+        )
     }
 }

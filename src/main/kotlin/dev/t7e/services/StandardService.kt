@@ -22,6 +22,7 @@ open class StandardService<T : IntEntity, R>(
     private val objectName: String,
     private val _getAllObjectFunction: () -> List<Pair<T, R>>,
     private val _getObjectByIdFunction: (id: Int) -> Pair<T, R>?,
+    protected val fetchFunction: (id: Int) -> Unit
 ) {
 
     /**
@@ -53,6 +54,9 @@ open class StandardService<T : IntEntity, R>(
      */
     open fun deleteById(id: Int): Result<Boolean> = transaction {
         _getObjectByIdFunction(id)?.first?.delete() ?: throw NotFoundException("$objectName not found.")
+
+        //  fetch
+        fetchFunction(id)
 
         Result.success(true)
     }

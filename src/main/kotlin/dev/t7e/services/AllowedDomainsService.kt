@@ -14,7 +14,8 @@ import java.time.LocalDateTime
 object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomain>(
     objectName = "allowed domain",
     _getAllObjectFunction = { AllowedDomainEntity.getAll() },
-    _getObjectByIdFunction = { AllowedDomainEntity.getById(it) }
+    _getObjectByIdFunction = { AllowedDomainEntity.getById(it) },
+    fetchFunction = { AllowedDomainEntity.fetch(it) }
 ) {
 
     fun create(omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> = transaction {
@@ -26,7 +27,7 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
             }
                 .serializableModel()
                 .apply {
-                    AllowedDomainEntity.fetch(this.id)
+                    fetchFunction(this.id)
                 }
         )
     }
@@ -39,7 +40,7 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
 
         Result.success(
             entity.first.serializableModel().apply {
-                AllowedDomainEntity.fetch(this.id)
+                fetchFunction(this.id)
             }
         )
     }

@@ -12,7 +12,8 @@ import java.time.LocalDateTime
 object UsersService : StandardService<UserEntity, User>(
     objectName = "User",
     _getAllObjectFunction = { UserEntity.getAll() },
-    _getObjectByIdFunction = { UserEntity.getById(it) }
+    _getObjectByIdFunction = { UserEntity.getById(it) },
+    fetchFunction = { UserEntity.fetch(it) }
 ) {
 
     fun create(omittedUser: OmittedUser): Result<User> = transaction {
@@ -25,7 +26,13 @@ object UsersService : StandardService<UserEntity, User>(
             this.createdAt = LocalDateTime.now()
         }
 
-        Result.success(entity.serializableModel())
+        Result.success(
+            entity
+                .serializableModel()
+                .apply {
+                    fetchFunction(this.id)
+                }
+        )
     }
 
     fun update(id: Int, omittedUser: OmittedUser): Result<User> = transaction {
@@ -36,7 +43,13 @@ object UsersService : StandardService<UserEntity, User>(
         userEntity.studentId = omittedUser.studentId
         userEntity.classEntity = classEntity
 
-        Result.success(userEntity.serializableModel())
+        Result.success(
+            userEntity
+                .serializableModel()
+                .apply {
+                    fetchFunction(this.id)
+                }
+        )
     }
 
     fun getTeams(id: Int): Result<List<Team>> = transaction {

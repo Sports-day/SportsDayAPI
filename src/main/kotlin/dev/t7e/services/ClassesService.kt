@@ -9,10 +9,11 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/09
  * @author testusuke
  */
-object ClassesService: StandardService<ClassEntity, ClassModel>(
+object ClassesService : StandardService<ClassEntity, ClassModel>(
     objectName = "Class",
     _getAllObjectFunction = { ClassEntity.getAll() },
-    _getObjectByIdFunction =  { ClassEntity.getById(it) },
+    _getObjectByIdFunction = { ClassEntity.getById(it) },
+    fetchFunction = { ClassEntity.fetch(it) }
 ) {
 
     /**
@@ -30,7 +31,9 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
                 this.description = omittedClass.description
                 this.group = group.first
                 this.createdAt = LocalDateTime.now()
-            }.serializableModel()
+            }.serializableModel().apply {
+                fetchFunction(this.id)
+            }
         )
     }
 
@@ -48,7 +51,11 @@ object ClassesService: StandardService<ClassEntity, ClassModel>(
         classEntity.first.description = omittedClass.description
         classEntity.first.group = group.first
 
-        Result.success(classEntity.first.serializableModel())
+        Result.success(
+            classEntity.first.serializableModel().apply {
+                fetchFunction(this.id)
+            }
+        )
     }
 
     /**
