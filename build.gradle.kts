@@ -48,6 +48,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 ktor {
@@ -63,4 +64,7 @@ ktor {
             )
         ))
     }
+}
+kotlin {
+    jvmToolchain(11)
 }
