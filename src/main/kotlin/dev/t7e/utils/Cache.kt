@@ -12,7 +12,6 @@ object Cache {
     //  default 5 minutes
     val DEFAULT_CACHING_DURATION = 20.seconds
 
-    //  TODO fetch=false/trueつけるべき？
     inline fun <T, R> memoize(expireAfter: Duration = DEFAULT_CACHING_DURATION, crossinline fn: (T) -> R): (T) -> R {
         val cache = mutableMapOf<T, Pair<R, Long>>()
 
