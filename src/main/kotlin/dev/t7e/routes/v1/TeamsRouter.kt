@@ -1,9 +1,9 @@
 package dev.t7e.routes.v1
 
 import dev.t7e.models.OmittedTeam
+import dev.t7e.models.OmittedTeamUsers
 import dev.t7e.plugins.Role
 import dev.t7e.plugins.withRole
-import dev.t7e.services.OmittedTeamUsers
 import dev.t7e.services.TeamsService
 import dev.t7e.utils.DataMessageResponse
 import dev.t7e.utils.DataResponse

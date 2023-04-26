@@ -91,8 +91,3 @@ object TeamsService : StandardService<TeamEntity, Team>(
         )
     }
 }
-
-@Serializable
-data class OmittedTeamUsers(
-    val users: List<Int>
-)

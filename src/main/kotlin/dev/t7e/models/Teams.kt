@@ -103,3 +103,8 @@ data class OmittedTeam(
     val name: String,
     val classId: Int
 )
+
+@Serializable
+data class OmittedTeamUsers(
+    val users: List<Int>
+)
