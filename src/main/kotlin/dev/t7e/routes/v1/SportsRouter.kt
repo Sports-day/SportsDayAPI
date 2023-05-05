@@ -1,7 +1,6 @@
 package dev.t7e.routes.v1
 
 import dev.t7e.models.OmittedSport
-import dev.t7e.models.Sports
 import dev.t7e.plugins.Role
 import dev.t7e.plugins.withRole
 import dev.t7e.services.SportsService

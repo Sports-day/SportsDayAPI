@@ -2,7 +2,6 @@ package dev.t7e.services
 
 import dev.t7e.models.*
 import io.ktor.server.plugins.*
-import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
