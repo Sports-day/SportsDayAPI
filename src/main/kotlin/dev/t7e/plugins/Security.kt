@@ -81,8 +81,14 @@ object Authorization {
                         }
                     }
                 } else {
-                    //  get
-                    MicrosoftAccountEntity.getByEmail(email.toString())?.first
+                    //  last login update
+                    MicrosoftAccountEntity.getByEmail(email.toString())?.first?.let { entity ->
+                        transaction {
+                            entity.lastLogin = LocalDateTime.now()
+                            MicrosoftAccountEntity.fetch(entity.id.value)
+                        }
+                        return@let entity
+                    }
                 }
 
                 //  if not exist
