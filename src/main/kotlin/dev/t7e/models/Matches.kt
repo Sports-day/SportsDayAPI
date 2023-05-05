@@ -25,6 +25,8 @@ object Matches : IntIdTable("matches") {
     val rightScore = integer("right_score").default(0)
     val winner = reference("winner", Teams).nullable()
     val status = enumerationByName<MatchStatus>("status", 32)
+    val createdAt = datetime("created_at")
+    val updatedAt = datetime("updated_at")
 }
 
 class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -50,7 +52,9 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
     var leftScore by Matches.leftScore
     var rightScore by Matches.rightScore
     var winner by TeamEntity optionalReferencedOn Matches.winner
-    val status by Matches.status
+    var status by Matches.status
+    var createdAt by Matches.createdAt
+    var updatedAt by Matches.createdAt
 
     //  for tournament format
     var parents by MatchEntity.via(TournamentPath.child, TournamentPath.parent)
@@ -68,7 +72,9 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
             leftScore,
             rightScore,
             winner?.id?.value,
-            status
+            status,
+            createdAt.toString(),
+            updatedAt.toString()
         )
     }
 }
@@ -93,5 +99,7 @@ data class Match(
     val leftScore: Int,
     val rightScore: Int,
     val winnerId: Int?,
-    val status: MatchStatus
+    val status: MatchStatus,
+    val createdAt: String,
+    val updatedAt: String
 )

@@ -31,6 +31,7 @@ object GroupsService : StandardService<GroupEntity, Group>(
                 this.name = omittedGroup.name
                 this.description = omittedGroup.description
                 this.createdAt = LocalDateTime.now()
+                this.updatedAt = LocalDateTime.now()
             }.serializableModel().apply {
                 fetchFunction(this.id)
             }
@@ -50,6 +51,8 @@ object GroupsService : StandardService<GroupEntity, Group>(
 
         group.first.name = omittedGroup.name
         group.first.description = omittedGroup.description
+        group.first.updatedAt = LocalDateTime.now()
+
 
         Result.success(
             group.first.serializableModel().apply {

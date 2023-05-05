@@ -18,6 +18,7 @@ object Sports: IntIdTable("sports") {
     val description = text("description")
     val iconImage = reference("icon_image", Images).nullable()
     val createdAt = datetime("created_at")
+    val updatedAt = datetime("updated_at")
 }
 
 class SportEntity(id: EntityID<Int>): IntEntity(id) {
@@ -32,6 +33,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
     var description by Sports.description
     var iconImage by ImageEntity optionalReferencedOn Sports.iconImage
     var createdAt by Sports.createdAt
+    var updatedAt by Sports.updatedAt
 
     fun serializableModel(): Sport {
         return Sport(
@@ -40,6 +42,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
             description,
             iconImage?.id?.value,
             createdAt.toString(),
+            updatedAt.toString()
         )
     }
  }
@@ -51,6 +54,7 @@ data class Sport(
     val description: String,
     val iconId: Int?,
     val createdAt: String,
+    val updatedAt: String
 )
 
 @Serializable

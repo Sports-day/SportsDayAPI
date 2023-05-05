@@ -18,6 +18,7 @@ object Classes : IntIdTable("classes") {
     val description = varchar("description", 128).nullable()
     val group = reference("group", Groups)
     val createdAt = datetime("created_at")
+    val updatedAt = datetime("updated_at")
 }
 
 class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -73,6 +74,7 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
     var description by Classes.description
     var group by GroupEntity referencedOn Classes.group
     var createdAt by Classes.createdAt
+    var updatedAt by Classes.updatedAt
     val users by UserEntity referrersOn Users.classEntity
 
     fun serializableModel(): ClassModel {
@@ -81,7 +83,8 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             description,
             group.id.value,
-            createdAt.toString()
+            createdAt.toString(),
+            updatedAt.toString()
         )
     }
 }
@@ -92,7 +95,8 @@ data class ClassModel(
     val name: String,
     val description: String?,
     val groupId: Int,
-    val createdAt: String
+    val createdAt: String,
+    val updatedAt: String
 )
 
 @Serializable

@@ -18,6 +18,7 @@ object Users : IntIdTable("users") {
     val studentId = varchar("student_id", 32)
     val classEntity = reference("class", Classes)
     val createdAt = datetime("created_at")
+    val updatedAt = datetime("updated_at")
 }
 
 class UserEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -111,6 +112,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var studentId by Users.studentId
     var classEntity by ClassEntity referencedOn Users.classEntity
     var createdAt by Users.createdAt
+    var updatedAt by Users.updatedAt
     var teams by TeamEntity via TeamUsers
     val microsoftAccounts by MicrosoftAccountEntity optionalReferrersOn MicrosoftAccounts.user
 
@@ -121,7 +123,8 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             studentId,
             classEntity.id.value,
-            createdAt.toString()
+            createdAt.toString(),
+            updatedAt.toString()
         )
     }
 }
@@ -132,7 +135,8 @@ data class User(
     val name: String,
     val studentId: String,
     val classId: Int,
-    val createdAt: String
+    val createdAt: String,
+    val updatedAt: String
 )
 
 @Serializable

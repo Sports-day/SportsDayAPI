@@ -5,6 +5,7 @@ import io.ktor.server.plugins.*
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 /**
  * Created by testusuke on 2023/03/19
@@ -25,6 +26,8 @@ object TeamsService : StandardService<TeamEntity, Team>(
             TeamEntity.new {
                 this.name = omittedTeam.name
                 this.classEntity = classEntity
+                this.createdAt = LocalDateTime.now()
+                this.updatedAt = LocalDateTime.now()
             }
                 .serializableModel()
                 .apply {
@@ -40,6 +43,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
 
         team.name = omittedTeam.name
         team.classEntity = classEntity
+        team.updatedAt = LocalDateTime.now()
 
         Result.success(
             team
@@ -63,6 +67,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
         }
 
         team.users = SizedCollection(listOf(team.users.toList(), users).flatten().distinct())
+        team.updatedAt = LocalDateTime.now()
 
         Result.success(
             team
@@ -81,6 +86,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
                 it.id.value == userId
             }
         )
+        team.updatedAt = LocalDateTime.now()
 
         Result.success(
             team

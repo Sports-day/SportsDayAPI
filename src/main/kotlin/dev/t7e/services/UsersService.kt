@@ -24,6 +24,7 @@ object UsersService : StandardService<UserEntity, User>(
             this.studentId = omittedUser.studentId
             this.classEntity = classEntity.first
             this.createdAt = LocalDateTime.now()
+            this.updatedAt = LocalDateTime.now()
         }
 
         Result.success(
@@ -42,6 +43,7 @@ object UsersService : StandardService<UserEntity, User>(
         userEntity.name = omittedUser.name
         userEntity.studentId = omittedUser.studentId
         userEntity.classEntity = classEntity
+        userEntity.updatedAt = LocalDateTime.now()
 
         Result.success(
             userEntity
