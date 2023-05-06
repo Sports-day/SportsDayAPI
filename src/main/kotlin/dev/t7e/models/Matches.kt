@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.Cache
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -9,6 +10,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
@@ -30,18 +32,12 @@ object Matches : IntIdTable("matches") {
 }
 
 class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<MatchEntity>(Matches) {
-        val getAllMatchesWithTeam: (team: TeamEntity) -> MutableList<MatchEntity> = Cache.memoize { team ->
-            transaction {
-                MatchEntity.find {
-                    Matches.leftTeam eq team.id or
-                            (Matches.rightTeam eq team.id)
-                }.sortedBy {
-                    it.startAt
-                }.toMutableList()
-            }
-        }
-    }
+    companion object : SmartCache<MatchEntity, Match>(
+        entityName = "match",
+        table = Matches,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    ){}
 
     var location by LocationEntity optionalReferencedOn Matches.location
     var game by GameEntity referencedOn Matches.game
