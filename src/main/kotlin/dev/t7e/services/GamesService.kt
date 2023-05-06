@@ -222,7 +222,6 @@ object GamesService: StandardService<GameEntity, Game>(
         }
 
         val match = MatchEntity.new {
-            this.location = location
             this.game = game
             this.sport = game.sport
             this.startAt = LocalDateTime.now()
