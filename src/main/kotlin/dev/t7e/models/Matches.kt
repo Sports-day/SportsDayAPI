@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * @author testusuke
  */
 object Matches : IntIdTable("matches") {
-    val location = reference("location", Locations)
+    val location = reference("location", Locations).nullable()
     val game = reference("game", Games)
     val sport = reference("sport", Sports)
     val startAt = datetime("started_at")
@@ -43,7 +43,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
         }
     }
 
-    var location by LocationEntity referencedOn Matches.location
+    var location by LocationEntity optionalReferencedOn Matches.location
     var game by GameEntity referencedOn Matches.game
     var sport by SportEntity referencedOn Matches.sport
     var startAt by Matches.startAt
@@ -63,7 +63,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
     fun serializableModel(): Match {
         return Match(
             id.value,
-            location.id.value,
+            location?.id?.value,
             game.id.value,
             sport.id.value,
             startAt.toString(),
@@ -90,7 +90,7 @@ enum class MatchStatus(val status: String) {
 @Serializable
 data class Match(
     val id: Int,
-    val locationId: Int,
+    val locationId: Int?,
     val gameId: Int,
     val sportId: Int,
     val startAt: String,
