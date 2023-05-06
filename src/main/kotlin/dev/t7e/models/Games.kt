@@ -163,3 +163,12 @@ data class Game(
     val createdAt: String,
     val updatedAt: String
 )
+
+@Serializable
+data class OmittedGame(
+    val name: String,
+    val description: String,
+    val sportId: Int,
+    val type: GameType,
+    val weight: Int
+)
