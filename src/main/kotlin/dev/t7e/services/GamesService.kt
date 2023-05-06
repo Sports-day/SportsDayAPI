@@ -102,7 +102,7 @@ object GamesService: StandardService<GameEntity, Game>(
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
         val team = TeamEntity.getById(teamId)?.first ?: throw NotFoundException("invalid team id")
 
-        game.teams = SizedCollection(game.teams.filterNot { it.id.value == teamId })
+        game.teams = SizedCollection(game.teams.filterNot { it.id.value == team.id.value })
         game.updatedAt = LocalDateTime.now()
 
         //  fetch
