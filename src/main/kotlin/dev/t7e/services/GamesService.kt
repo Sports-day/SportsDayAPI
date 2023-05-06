@@ -196,4 +196,55 @@ object GamesService: StandardService<GameEntity, Game>(
         )
     }
 
+    /**
+     * Make new tree for tournament
+     *
+     * @param id game id
+     * @param parentMatchId parent match id
+     * @return match
+     */
+    fun makeTournamentTree(id: Int, parentMatchId: Int?): Result<Match> = transaction {
+        val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
+        //  check if game type is tournament
+        if (game.type != GameType.TOURNAMENT) {
+            throw BadRequestException("invalid game type")
+        }
+
+        val parentMatch = if (parentMatchId != null) {
+            MatchEntity.getById(parentMatchId)?.first ?: throw NotFoundException("invalid parent match id")
+        } else {
+            null
+        }
+
+        //  check if child match count under two
+        if (parentMatch != null && parentMatch.children.count() >= 2) {
+            throw BadRequestException("cannot have two more child matches")
+        }
+
+        val match = MatchEntity.new {
+            this.location = location
+            this.game = game
+            this.sport = game.sport
+            this.startAt = LocalDateTime.now()
+            this.status = MatchStatus.STANDBY
+            this.createdAt = LocalDateTime.now()
+            this.updatedAt = LocalDateTime.now()
+        }
+
+        parentMatch?.let {
+            //  register parent
+            match.parents = SizedCollection(listOf(parentMatch))
+
+            //  add child to parent
+            parentMatch.children = SizedCollection(listOf(parentMatch.children.toList(), listOf(match)).flatten().distinct())
+        }
+
+        //  fetch
+        fetchFunction(id)
+
+        Result.success(
+            match.serializableModel()
+        )
+    }
+
 }
