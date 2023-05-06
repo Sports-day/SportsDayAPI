@@ -6,6 +6,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -29,7 +30,98 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
         table = Games,
         duration = 5.minutes,
         serializer = { it.serializableModel() }
-    )
+    ) {
+        private val entriesMap = mutableMapOf<Int, List<Pair<TeamEntity, Team>>?>()
+        private val matchesMap = mutableMapOf<Int, List<Pair<MatchEntity, Match>>?>()
+
+        /**
+         * Get game entries
+         *
+         * @param id Game ID
+         * @return List of entries
+         */
+        fun getGameEntries(id: Int): List<Pair<TeamEntity, Team>>? {
+            if (!entriesMap.containsKey(id)) {
+                //  fetch unknown data
+                fetch(id)
+            }
+
+            return entriesMap[id]
+        }
+
+        /**
+         * Get game matches
+         *
+         * @param id Game ID
+         * @return List of matches
+         */
+        fun getGameMatches(id: Int): List<Pair<MatchEntity, Match>>? {
+            if (!matchesMap.containsKey(id)) {
+                //  fetch unknown data
+                fetch(id)
+            }
+
+            return matchesMap[id]
+        }
+
+        init {
+            //  game entries
+            registerFetchFunction {  id ->
+                transaction {
+                    if (id == null) {
+                        entriesMap.clear()
+
+                        cache.values.filterNotNull().forEach { value ->
+                            val entity = value.first
+                            val entries = entity.teams.map { team ->
+                                team to team.serializableModel()
+                            }
+
+                            entriesMap[entity.id.value] = entries
+                        }
+                    } else {
+                        val entity = getById(id)
+
+                        if (entity == null) {
+                            entriesMap.remove(id)
+                        } else {
+                            entriesMap[id] = entity.first.teams.map { team ->
+                                team to team.serializableModel()
+                            }
+                        }
+                    }
+                }
+            }
+
+            //  game matches
+            registerFetchFunction { id ->
+                transaction {
+                    if(id == null) {
+                        matchesMap.clear()
+
+                        cache.values.filterNotNull().forEach { value ->
+                            val entity = value.first
+                            val matches = entity.matches.map { match ->
+                                match to match.serializableModel()
+                            }
+
+                            matchesMap[entity.id.value] = matches
+                        }
+                    } else {
+                        val entity = getById(id)
+
+                        if(entity == null) {
+                            matchesMap.remove(id)
+                        } else {
+                            matchesMap[id] = entity.first.matches.map { match ->
+                                match to match.serializableModel()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     var name by Games.name
     var description by Games.description
@@ -38,6 +130,8 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
     var weight by Games.weight
     var createdAt by Games.createdAt
     var updatedAt by Games.updatedAt
+    val matches by MatchEntity referrersOn Matches.game
+    var teams by TeamEntity via Entries
 
     fun serializableModel(): Game {
         return Game(

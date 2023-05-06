@@ -73,6 +73,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by Teams.name
     var classEntity by ClassEntity referencedOn Teams.classEntity
     var users by UserEntity via TeamUsers
+    var entries by GameEntity via Entries
     var createdAt by Teams.createdAt
     var updatedAt by Teams.updatedAt
 
