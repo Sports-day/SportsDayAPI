@@ -126,11 +126,11 @@ object GamesService: StandardService<GameEntity, Game>(
     }
 
     /**
-     * delete matches of game
+     * delete all matches of game
      *
      * @param id game id
      */
-    fun deleteMatches(id: Int): Result<Unit> = transaction {
+    fun deleteAllMatches(id: Int): Result<Unit> = transaction {
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
 
         //  delete
