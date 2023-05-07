@@ -37,7 +37,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
         table = Matches,
         duration = 5.minutes,
         serializer = { it.serializableModel() }
-    ){}
+    )
 
     var location by LocationEntity optionalReferencedOn Matches.location
     var game by GameEntity referencedOn Matches.game
