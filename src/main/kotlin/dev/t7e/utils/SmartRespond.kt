@@ -5,7 +5,7 @@ package dev.t7e.utils
  * @author testusuke
  */
 
-suspend inline fun <T> Result<T>.respondOrInternalError(fn: (T) -> Unit) {
+inline fun <T> Result<T>.respondOrInternalError(fn: (T) -> Unit) {
     onFailure {
         throw it
     }
