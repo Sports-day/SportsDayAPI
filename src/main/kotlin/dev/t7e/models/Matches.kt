@@ -99,3 +99,17 @@ data class Match(
     val createdAt: String,
     val updatedAt: String
 )
+
+@Serializable
+data class OmittedMatch(
+    val locationId: Int?,
+    val gameId: Int,
+    val sportId: Int,
+    val startAt: String,
+    val leftTeamId: Int?,
+    val rightTeamId: Int?,
+    val leftScore: Int,
+    val rightScore: Int,
+    val winnerId: Int?,
+    val status: MatchStatus,
+)
