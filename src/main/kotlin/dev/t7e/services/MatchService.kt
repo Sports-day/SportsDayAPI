@@ -31,9 +31,6 @@ object MatchService: StandardService<MatchEntity, Match>(
         val rightTeam = omittedMatch.rightTeamId?.let {
             TeamEntity.getById(it)?.first ?: throw NotFoundException("invalid right team id")
         }
-        val winnerTeam = omittedMatch.winnerId?.let {
-            TeamEntity.getById(it)?.first ?: throw NotFoundException("invalid winner team id")
-        }
 
         //  update
         match.location = location
@@ -44,7 +41,7 @@ object MatchService: StandardService<MatchEntity, Match>(
         match.rightTeam = rightTeam
         match.leftScore = omittedMatch.leftScore
         match.rightScore = omittedMatch.rightScore
-        match.winner = winnerTeam
+        match.result = omittedMatch.result
         match.status = omittedMatch.status
 
         match.updatedAt = LocalDateTime.now()
