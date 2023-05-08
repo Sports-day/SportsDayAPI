@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.minutes
 object Users : IntIdTable("users") {
     val name = varchar("name", 64)
     val studentId = varchar("student_id", 32)
-    val sex = enumerationByName<SexType>("sex", 10)
+    val gender = enumerationByName<GenderType>("gender", 10)
     val classEntity = reference("class", Classes)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
@@ -111,7 +111,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var name by Users.name
     var studentId by Users.studentId
-    var sex by Users.sex
+    var gender by Users.gender
     var classEntity by ClassEntity referencedOn Users.classEntity
     var createdAt by Users.createdAt
     var updatedAt by Users.updatedAt
@@ -124,7 +124,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             id.value,
             name,
             studentId,
-            sex,
+            gender,
             classEntity.id.value,
             createdAt.toString(),
             updatedAt.toString()
@@ -132,7 +132,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     }
 }
 
-enum class SexType(val sex: String) {
+enum class GenderType(val gender: String) {
     MALE("male"),
     FEMALE("female")
 }
@@ -142,7 +142,7 @@ data class User(
     val id: Int,
     val name: String,
     val studentId: String,
-    val sex: SexType,
+    val gender: GenderType,
     val classId: Int,
     val createdAt: String,
     val updatedAt: String
@@ -152,6 +152,6 @@ data class User(
 data class OmittedUser(
     val name: String,
     val studentId: String,
-    val sex: SexType,
+    val gender: GenderType,
     val classId: Int
 )
