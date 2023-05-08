@@ -74,7 +74,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
 enum class MatchStatus(val status: String) {
     STANDBY("standby"),
     IN_PROGRESS("in_progress"),
-    FINISH("finish"),
+    FINISHED("finished"),
     CANCELED("cancel"),
     NONE("none")
 }
