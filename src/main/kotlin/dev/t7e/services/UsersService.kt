@@ -22,7 +22,7 @@ object UsersService : StandardService<UserEntity, User>(
         val entity = UserEntity.new {
             this.name = omittedUser.name
             this.studentId = omittedUser.studentId
-            this.sex = omittedUser.sex
+            this.gender = omittedUser.gender
             this.classEntity = classEntity.first
             this.createdAt = LocalDateTime.now()
             this.updatedAt = LocalDateTime.now()
@@ -43,7 +43,7 @@ object UsersService : StandardService<UserEntity, User>(
 
         userEntity.name = omittedUser.name
         userEntity.studentId = omittedUser.studentId
-        userEntity.sex = omittedUser.sex
+        userEntity.gender = omittedUser.gender
         userEntity.classEntity = classEntity
         userEntity.updatedAt = LocalDateTime.now()
 
