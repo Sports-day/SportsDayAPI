@@ -19,6 +19,7 @@ object Games: IntIdTable("games") {
     val description = varchar("description", 512)
     val sport = reference("sport", Sports)
     val type = enumerationByName<GameType>("type", 32)
+    val calculationType = enumerationByName<CalculationType>("calculation_type", 32).default(CalculationType.DIFF_SCORE)
     val weight = integer("weight")
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
@@ -127,6 +128,7 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
     var description by Games.description
     var sport by SportEntity referencedOn Games.sport
     var type by Games.type
+    var calculationType by Games.calculationType
     var weight by Games.weight
     var createdAt by Games.createdAt
     var updatedAt by Games.updatedAt
@@ -140,6 +142,7 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
             description,
             sport.id.value,
             type,
+            calculationType,
             weight,
             createdAt.toString(),
             updatedAt.toString()
@@ -152,6 +155,11 @@ enum class GameType(val status: String) {
     LEAGUE("league")
 }
 
+enum class CalculationType(val type: String) {
+    TOTAL_SCORE("total_score"),
+    DIFF_SCORE("diff_score"),
+}
+
 @Serializable
 data class Game(
     val id: Int,
@@ -159,6 +167,7 @@ data class Game(
     val description: String,
     val sportId: Int,
     val type: GameType,
+    val calculationType: CalculationType,
     val weight: Int,
     val createdAt: String,
     val updatedAt: String
@@ -170,5 +179,6 @@ data class OmittedGame(
     val description: String,
     val sportId: Int,
     val type: GameType,
+    val calculationType: CalculationType?,
     val weight: Int
 )

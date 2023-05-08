@@ -28,6 +28,7 @@ object GamesService : StandardService<GameEntity, Game>(
             this.description = omittedGame.description
             this.sport = sport
             this.type = omittedGame.type
+            this.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
             this.weight = omittedGame.weight
             this.createdAt = LocalDateTime.now()
             this.updatedAt = LocalDateTime.now()
@@ -48,6 +49,7 @@ object GamesService : StandardService<GameEntity, Game>(
         entity.description = omittedGame.description
         entity.sport = sport
         entity.type = omittedGame.type
+        entity.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
         entity.weight = omittedGame.weight
         entity.updatedAt = LocalDateTime.now()
 
@@ -342,7 +344,14 @@ object GamesService : StandardService<GameEntity, Game>(
             val sortedLeagueTeamResults = leagueTeamResults.values
                 .sortedWith(
                     compareByDescending<LeagueTeamResult> { it.score }
-                        .thenByDescending { it.goalDiff }
+                        .apply {
+                            if (game.calculationType == CalculationType.DIFF_SCORE) {
+                                thenByDescending { it.goalDiff }
+                            }
+                            else if (game.calculationType == CalculationType.TOTAL_SCORE) {
+                                thenByDescending { it.goal }
+                            }
+                        }
                 )
                 .mapIndexed { index, leagueTeamResult ->
                     //  rank
