@@ -25,7 +25,8 @@ fun initializeTables(migrate: Boolean = false) {
             Locations,
             Matches,
             TournamentPath,
-            Images
+            Images,
+            Entries
         ).forEach {
             if (migrate) {
                 SchemaUtils.createMissingTablesAndColumns(it)
