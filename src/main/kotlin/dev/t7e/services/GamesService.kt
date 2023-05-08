@@ -2,6 +2,7 @@ package dev.t7e.services
 
 import dev.t7e.models.*
 import io.ktor.server.plugins.*
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -10,7 +11,7 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/05/05
  * @author testusuke
  */
-object GamesService: StandardService<GameEntity, Game>(
+object GamesService : StandardService<GameEntity, Game>(
     objectName = "game",
     _getAllObjectFunction = { GameEntity.getAll() },
     _getObjectByIdFunction = { GameEntity.getById(it) },
@@ -235,7 +236,8 @@ object GamesService: StandardService<GameEntity, Game>(
             match.parents = SizedCollection(listOf(parentMatch))
 
             //  add child to parent
-            parentMatch.children = SizedCollection(listOf(parentMatch.children.toList(), listOf(match)).flatten().distinct())
+            parentMatch.children =
+                SizedCollection(listOf(parentMatch.children.toList(), listOf(match)).flatten().distinct())
         }
 
         //  fetch
@@ -246,4 +248,141 @@ object GamesService: StandardService<GameEntity, Game>(
         )
     }
 
+    /**
+     * Calculate league results
+     *
+     * @param id game id
+     */
+    fun calculateLeagueResults(id: Int): Result<LeagueResult> = transaction {
+        val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
+
+        //  check if game type is league
+        if (game.type != GameType.LEAGUE) {
+            throw BadRequestException("invalid game type")
+        }
+
+        /**
+         * 勝ち点制を採用する。
+         * 勝ち: 3点
+         * 引き分け: 1点
+         * 負け: 0点
+         * 勝ち点が同じ場合は得失点差で順位を決める。
+         *
+         * それぞれのマッチから勝ち点と得失点差を計算し、チームごとに集計する。
+         * 集計結果を元に順位を決める。
+         */
+
+        val teams = game.teams.toList()
+        val unfilteredMatches = game.matches.toList()
+        val matches = unfilteredMatches.filter { it.status == MatchStatus.FINISHED }
+
+        //  create LeagueTeamResult
+        val leagueTeamResults = mutableMapOf<Int, LeagueTeamResult>()
+        teams.forEach { team ->
+            leagueTeamResults[team.id.value] = LeagueTeamResult(
+                teamId = team.id.value,
+                rank = 0,
+                win = 0,
+                lose = 0,
+                draw = 0,
+                score = 0,
+                goal = 0,
+                loseGoal = 0,
+                goalDiff = 0
+            )
+        }
+
+        //  calculate win score and diffGoal from each match
+        matches.forEach { match ->
+            val leftTeamResult = leagueTeamResults[match.leftTeam?.id?.value] ?: return@forEach
+            val rightTeamResult = leagueTeamResults[match.rightTeam?.id?.value] ?: return@forEach
+
+            when (match.leftScore - match.rightScore) {
+                //  draw
+                0 -> {
+                    leftTeamResult.draw += 1
+                    rightTeamResult.draw += 1
+
+                    // score
+                    leftTeamResult.score += 1
+                    rightTeamResult.score += 1
+                }
+                //  left team win
+                in 1..Int.MAX_VALUE -> {
+                    leftTeamResult.win += 1
+                    rightTeamResult.lose += 1
+
+                    // score
+                    leftTeamResult.score += 3
+                }
+                //  right team win
+                in Int.MIN_VALUE..-1 -> {
+                    leftTeamResult.lose += 1
+                    rightTeamResult.win += 1
+
+                    // score
+                    rightTeamResult.score += 3
+                }
+            }
+
+            //  goal
+            leftTeamResult.goal += match.leftScore
+            leftTeamResult.loseGoal += match.rightScore
+            leftTeamResult.goalDiff += match.leftScore - match.rightScore
+
+            rightTeamResult.goal += match.rightScore
+            rightTeamResult.loseGoal += match.leftScore
+            rightTeamResult.goalDiff += match.rightScore - match.leftScore
+        }
+
+        //  sort by score. but if score is same, sort by goal diff
+        val sortedLeagueTeamResults = leagueTeamResults.values
+            .sortedWith(
+                compareByDescending<LeagueTeamResult> { it.score }
+                    .thenByDescending { it.goalDiff }
+            )
+            .mapIndexed { index, leagueTeamResult ->
+                //  rank
+                leagueTeamResult.rank = index + 1
+
+                leagueTeamResult
+            }
+
+        //  create league result
+        val leagueResult = LeagueResult(
+            gameId = game.id.value,
+            //  is finished
+            finished = unfilteredMatches.size == matches.size,
+            teams = sortedLeagueTeamResults,
+            createdAt = LocalDateTime.now().toString()
+        )
+
+        Result.success(leagueResult)
+    }
+
 }
+
+@Serializable
+data class LeagueResult(
+    val gameId: Int,
+    val finished: Boolean,
+    val teams: List<LeagueTeamResult>,
+    val createdAt: String,
+)
+
+@Serializable
+data class LeagueTeamResult(
+    val teamId: Int,
+    var rank: Int,
+    //  3 point
+    var win: Int,
+    //  1 point
+    var lose: Int,
+    //  0 point
+    var draw: Int,
+    //  total score
+    var score: Int,
+    var goal: Int,
+    var loseGoal: Int,
+    var goalDiff: Int
+)
