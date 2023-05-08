@@ -76,7 +76,6 @@ enum class MatchStatus(val status: String) {
     IN_PROGRESS("in_progress"),
     FINISHED("finished"),
     CANCELED("cancel"),
-    NONE("none")
 }
 
 @Serializable
