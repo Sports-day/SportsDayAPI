@@ -21,8 +21,9 @@ object Matches : IntIdTable("matches") {
     val rightTeam = reference("right_team", Teams).nullable()
     val leftScore = integer("left_score").default(0)
     val rightScore = integer("right_score").default(0)
-    val winner = reference("winner", Teams).nullable()
+    val result = enumerationByName<MatchResult>("result", 32).default(MatchResult.DRAW)
     val status = enumerationByName<MatchStatus>("status", 32)
+    val note = text("note").nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -43,8 +44,9 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
     var rightTeam by TeamEntity optionalReferencedOn Matches.rightTeam
     var leftScore by Matches.leftScore
     var rightScore by Matches.rightScore
-    var winner by TeamEntity optionalReferencedOn Matches.winner
+    var result by Matches.result
     var status by Matches.status
+    var note by Matches.note
     var createdAt by Matches.createdAt
     var updatedAt by Matches.createdAt
 
@@ -63,8 +65,9 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
             rightTeam?.id?.value,
             leftScore,
             rightScore,
-            winner?.id?.value,
+            result,
             status,
+            note,
             createdAt.toString(),
             updatedAt.toString()
         )
@@ -78,6 +81,12 @@ enum class MatchStatus(val status: String) {
     CANCELED("cancel"),
 }
 
+enum class MatchResult(val result: String) {
+    LEFT_WIN("left_win"),
+    RIGHT_WIN("right_win"),
+    DRAW("draw"),
+}
+
 @Serializable
 data class Match(
     val id: Int,
@@ -89,8 +98,9 @@ data class Match(
     val rightTeamId: Int?,
     val leftScore: Int,
     val rightScore: Int,
-    val winnerId: Int?,
+    val result: MatchResult,
     val status: MatchStatus,
+    val note: String?,
     val createdAt: String,
     val updatedAt: String
 )
@@ -105,6 +115,7 @@ data class OmittedMatch(
     val rightTeamId: Int?,
     val leftScore: Int,
     val rightScore: Int,
-    val winnerId: Int?,
+    val result: MatchResult,
     val status: MatchStatus,
+    val note: String?,
 )

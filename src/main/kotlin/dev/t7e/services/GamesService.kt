@@ -300,9 +300,9 @@ object GamesService : StandardService<GameEntity, Game>(
                 val leftTeamResult = leagueTeamResults[match.leftTeam?.id?.value] ?: return@forEach
                 val rightTeamResult = leagueTeamResults[match.rightTeam?.id?.value] ?: return@forEach
 
-                when (match.leftScore - match.rightScore) {
+                when (match.result) {
                     //  draw
-                    0 -> {
+                    MatchResult.DRAW -> {
                         leftTeamResult.draw += 1
                         rightTeamResult.draw += 1
 
@@ -311,7 +311,7 @@ object GamesService : StandardService<GameEntity, Game>(
                         rightTeamResult.score += 1
                     }
                     //  left team win
-                    in 1..Int.MAX_VALUE -> {
+                    MatchResult.LEFT_WIN -> {
                         leftTeamResult.win += 1
                         rightTeamResult.lose += 1
 
@@ -319,7 +319,7 @@ object GamesService : StandardService<GameEntity, Game>(
                         leftTeamResult.score += 3
                     }
                     //  right team win
-                    in Int.MIN_VALUE..-1 -> {
+                    MatchResult.RIGHT_WIN -> {
                         leftTeamResult.lose += 1
                         rightTeamResult.win += 1
 
