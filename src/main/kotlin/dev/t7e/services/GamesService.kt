@@ -140,7 +140,11 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  delete
         game.matches.forEach {
+            val matchId = it.id.value
             it.delete()
+
+            //  delete cache
+            MatchEntity.fetch(matchId)
         }
 
         //  fetch
@@ -188,6 +192,9 @@ object GamesService : StandardService<GameEntity, Game>(
                         this.status = MatchStatus.STANDBY
                         this.createdAt = LocalDateTime.now()
                         this.updatedAt = LocalDateTime.now()
+                    }.also {
+                        //  fetch
+                        MatchEntity.fetch(it.id.value)
                     }
                 )
             }
@@ -251,6 +258,7 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  fetch
         fetchFunction(id)
+        MatchEntity.fetch(match.id.value)
 
         Result.success(
             match.serializableModel()
@@ -434,6 +442,9 @@ object GamesService : StandardService<GameEntity, Game>(
             //  update match
             match.leftTeam = leftChildWin
             match.rightTeam = rightChildWin
+
+            //  fetch
+            MatchEntity.fetch(match.id.value)
 
             return null
         } else {
