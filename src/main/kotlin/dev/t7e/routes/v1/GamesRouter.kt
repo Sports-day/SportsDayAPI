@@ -20,7 +20,7 @@ import kotlinx.serialization.Serializable
  * Created by testusuke on 2023/05/09
  * @author testusuke
  */
-fun Route.gameRoute() {
+fun Route.gamesRouter() {
     route("/games") {
         withRole(Role.USER) {
 

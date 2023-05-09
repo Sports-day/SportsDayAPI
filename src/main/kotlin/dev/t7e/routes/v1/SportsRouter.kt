@@ -20,7 +20,7 @@ import io.ktor.server.routing.*
  * @author testusuke
  */
 
-fun Route.sportsRoute() {
+fun Route.sportsRouter() {
     route("/sports") {
         withRole(Role.USER) {
 

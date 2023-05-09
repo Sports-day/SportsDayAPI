@@ -26,9 +26,11 @@ fun Application.configureRouting() {
                 //  Teams
                 teamsRouter()
                 //  Sports
-                sportsRoute()
+                sportsRouter()
                 //  Games
-                gameRoute()
+                gamesRouter()
+                //  Matches
+                matchesRouter()
             }
         }
     }
