@@ -1,5 +1,6 @@
 package dev.t7e.models
 
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -22,10 +23,25 @@ class LogEntity(id: EntityID<Int>): IntEntity(id) {
 
     var logEvent by Logs.logEvent
     var microsoftAccount by MicrosoftAccountEntity optionalReferencedOn Logs.microsoftAccount
-    val message by Logs.message
-    val createdAt by Logs.createdAt
+    var message by Logs.message
+    var createdAt by Logs.createdAt
 }
 
 enum class LogEvents(val event: String) {
-
+    CREATE("create"),
+    UPDATE("update"),
+    DELETE("delete"),
+    ERROR("error"),
+    INFO("info"),
+    DEBUG("debug"),
+    WARN("warn")
 }
+
+@Serializable
+data class Log(
+    val id: Int,
+    val logEvent: LogEvents,
+    val microsoftAccount: Int?,
+    val message: String,
+    val createdAt: String
+)
