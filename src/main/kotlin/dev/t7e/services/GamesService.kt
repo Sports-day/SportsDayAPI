@@ -167,6 +167,11 @@ object GamesService : StandardService<GameEntity, Game>(
             throw BadRequestException("invalid game type")
         }
 
+        //  check if league matches already generated
+        if (!game.matches.empty()) {
+            throw BadRequestException("league matches already generated")
+        }
+
         val teams = game.teams.toList()
         //  check if teams count is enough to make league matches
         if (teams.size < 2) {
