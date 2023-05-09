@@ -1,15 +1,19 @@
 package dev.t7e.routes.v1
 
+import dev.t7e.models.LogEvents
 import dev.t7e.models.OmittedGame
 import dev.t7e.plugins.Role
+import dev.t7e.plugins.UserPrincipal
 import dev.t7e.plugins.withRole
 import dev.t7e.services.GamesService
 import dev.t7e.utils.DataMessageResponse
 import dev.t7e.utils.DataResponse
 import dev.t7e.utils.MessageResponse
+import dev.t7e.utils.logger.Logger
 import dev.t7e.utils.respondOrInternalError
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -54,6 +58,12 @@ fun Route.gamesRouter() {
                                     it
                                 )
                             )
+                            //  Logger
+                            Logger.commit(
+                                "[GamesRouter] created game: ${it.name}",
+                                LogEvents.CREATE,
+                                call.principal<UserPrincipal>()?.microsoftAccount
+                            )
                         }
                 }
             }
@@ -96,6 +106,12 @@ fun Route.gamesRouter() {
                                         it
                                     )
                                 )
+                                //  Logger
+                                Logger.commit(
+                                    "[GamesRouter] updated game: ${it.name}",
+                                    LogEvents.UPDATE,
+                                    call.principal<UserPrincipal>()?.microsoftAccount
+                                )
                             }
                     }
 
@@ -114,6 +130,12 @@ fun Route.gamesRouter() {
                                     MessageResponse(
                                         "deleted game"
                                     )
+                                )
+                                //  Logger
+                                Logger.commit(
+                                    "[GamesRouter] deleted game: $id",
+                                    LogEvents.DELETE,
+                                    call.principal<UserPrincipal>()?.microsoftAccount
                                 )
                             }
                     }
@@ -154,6 +176,12 @@ fun Route.gamesRouter() {
                                         MessageResponse(
                                             "deleted matches"
                                         )
+                                    )
+                                    //  Logger
+                                    Logger.commit(
+                                        "[GamesRouter] deleted all matches. game: $id",
+                                        LogEvents.DELETE,
+                                        call.principal<UserPrincipal>()?.microsoftAccount
                                     )
                                 }
                         }
@@ -198,6 +226,12 @@ fun Route.gamesRouter() {
                                             it
                                         )
                                     )
+                                    //  Logger
+                                    Logger.commit(
+                                        "[GamesRouter] entered game: $id",
+                                        LogEvents.UPDATE,
+                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                    )
                                 }
                         }
 
@@ -220,48 +254,70 @@ fun Route.gamesRouter() {
                                             it
                                         )
                                     )
+                                    //  Logger
+                                    Logger.commit(
+                                        "[GamesRouter] left game: $id",
+                                        LogEvents.UPDATE,
+                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                    )
                                 }
                         }
                     }
                 }
 
                 route("/tournament") {
-                    /**
-                     * Make tournament tree
-                     */
-                    post {
-                        val id =
-                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                        val parent = call.receive<TournamentTreeCreateRequest>()
+                    withRole(Role.ADMIN) {
+                        /**
+                         * Make tournament tree
+                         */
+                        post {
+                            val id =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+                            val parent = call.receive<TournamentTreeCreateRequest>()
 
-                        GamesService
-                            .makeTournamentTree(id, parent.parentId)
-                            .respondOrInternalError {
-                                call.respond(
-                                    HttpStatusCode.OK,
-                                    DataMessageResponse(
-                                        "made tournament tree",
-                                        it
+                            GamesService
+                                .makeTournamentTree(id, parent.parentId)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "made tournament tree",
+                                            it
+                                        )
                                     )
-                                )
-                            }
-                    }
+                                    //  Logger
+                                    Logger.commit(
+                                        "[GamesRouter] made new tournament tree. game: $id match: ${it.id}",
+                                        LogEvents.CREATE,
+                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                    )
+                                }
+                        }
 
-                    /**
-                     * Update tournament tree recursively
-                     */
-                    post("/update-tree") {
-                        val id =
-                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        /**
+                         * Update tournament tree recursively
+                         */
+                        post("/update-tree") {
+                            val id =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
 
-                        GamesService
-                            .updateTournamentTree(id)
-                            .respondOrInternalError {
-                                call.respond(
-                                    HttpStatusCode.OK,
-                                    MessageResponse("updated tournament tree")
-                                )
-                            }
+                            GamesService
+                                .updateTournamentTree(id)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        MessageResponse("updated tournament tree")
+                                    )
+                                    //  Logger
+                                    Logger.commit(
+                                        "[GamesRouter] updated tournament tree. game: $id",
+                                        LogEvents.UPDATE,
+                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                    )
+                                }
+                        }
                     }
 
                     /**
@@ -286,25 +342,34 @@ fun Route.gamesRouter() {
                 }
 
                 route("/league") {
-                    /**
-                     * Make league matches
-                     */
-                    post {
-                        val id =
-                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                        val location = call.receive<LocationRequest>()
+                    withRole(Role.ADMIN) {
+                        /**
+                         * Make league matches
+                         */
+                        post {
+                            val id =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+                            val location = call.receive<LocationRequest>()
 
-                        GamesService
-                            .makeLeagueMatches(id, location.locationId)
-                            .respondOrInternalError {
-                                call.respond(
-                                    HttpStatusCode.OK,
-                                    DataMessageResponse(
-                                        "made league matches",
-                                        it
+                            GamesService
+                                .makeLeagueMatches(id, location.locationId)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "made league matches",
+                                            it
+                                        )
                                     )
-                                )
-                            }
+                                    //  Logger
+                                    Logger.commit(
+                                        "[GamesRouter] made new league matches. game: $id",
+                                        LogEvents.CREATE,
+                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                    )
+                                }
+                        }
                     }
 
                     /**

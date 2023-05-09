@@ -1,16 +1,20 @@
 package dev.t7e.routes.v1
 
+import dev.t7e.models.LogEvents
 import dev.t7e.models.OmittedTeam
 import dev.t7e.models.OmittedTeamUsers
 import dev.t7e.plugins.Role
+import dev.t7e.plugins.UserPrincipal
 import dev.t7e.plugins.withRole
 import dev.t7e.services.TeamsService
 import dev.t7e.utils.DataMessageResponse
 import dev.t7e.utils.DataResponse
 import dev.t7e.utils.MessageResponse
+import dev.t7e.utils.logger.Logger
 import dev.t7e.utils.respondOrInternalError
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -54,6 +58,12 @@ fun Route.teamsRouter() {
                                     "created team",
                                     it
                                 )
+                            )
+                            //  Logger
+                            Logger.commit(
+                                "[TeamsRouter] created team: ${it.name}",
+                                LogEvents.CREATE,
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
                             )
                         }
                 }
@@ -154,6 +164,12 @@ fun Route.teamsRouter() {
                                         it
                                     )
                                 )
+                                //  Logger
+                                Logger.commit(
+                                    "[TeamsRouter] updated team: ${it.name}",
+                                    LogEvents.UPDATE,
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                )
                             }
                     }
 
@@ -170,6 +186,12 @@ fun Route.teamsRouter() {
                                 call.respond(
                                     HttpStatusCode.OK,
                                     MessageResponse("deleted team")
+                                )
+                                //  Logger
+                                Logger.commit(
+                                    "[TeamsRouter] deleted team: $id",
+                                    LogEvents.DELETE,
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
                                 )
                             }
                     }
