@@ -40,6 +40,7 @@ enum class Role(val value: String) {
 }
 
 data class UserPrincipal(
+    val microsoftAccountId: Int,
     val microsoftAccount: MicrosoftAccountEntity,
     val roles: Set<Role> = emptySet()
 ) : Principal
@@ -98,6 +99,7 @@ object Authorization {
 
                 //  result
                 UserPrincipal(
+                    microsoftAccount.id.value,
                     microsoftAccount,
                     if (microsoftAccount.role == Role.ADMIN) setOf(Role.ADMIN, Role.USER)
                     else setOf(Role.USER)

@@ -1,6 +1,7 @@
 package dev.t7e.routes.v1
 
 import dev.t7e.plugins.Role
+import dev.t7e.plugins.UserPrincipal
 import dev.t7e.plugins.withRole
 import dev.t7e.services.MicrosoftAccountsService
 import dev.t7e.utils.DataMessageResponse
@@ -9,6 +10,7 @@ import dev.t7e.utils.MessageResponse
 import dev.t7e.utils.respondOrInternalError
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -61,7 +63,8 @@ fun Route.microsoftAccountsRouter() {
                      * Update specific microsoft account role
                      */
                     put {
-                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
                         val role = call.receive<AccountRoleRequest>()
 
                         MicrosoftAccountsService
@@ -77,11 +80,19 @@ fun Route.microsoftAccountsRouter() {
                             }
                     }
                 }
-
+            }
+            withRole(Role.USER) {
                 route("/link-user") {
                     put {
-                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
                         val requestBody = call.receive<LinkUserRequest>()
+
+                        val ms = call.authentication.principal<UserPrincipal>() ?: throw BadRequestException("failed to get user principal")
+
+                        if(!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
+                            throw BadRequestException("you dont have permission to link this account")
+                        }
 
                         MicrosoftAccountsService
                             .linkUser(id, requestBody.userId)
@@ -91,7 +102,14 @@ fun Route.microsoftAccountsRouter() {
                     }
 
                     delete {
-                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        val ms = call.authentication.principal<UserPrincipal>() ?: throw BadRequestException("failed to get user principal")
+
+                        if(!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
+                            throw BadRequestException("you dont have permission to link this account")
+                        }
 
                         MicrosoftAccountsService
                             .unlinkUser(id)
