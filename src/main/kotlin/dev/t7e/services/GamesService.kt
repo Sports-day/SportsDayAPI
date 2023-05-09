@@ -373,6 +373,84 @@ object GamesService : StandardService<GameEntity, Game>(
         }
 
     }
+
+    /**
+     * update tournament tree
+     *
+     * @param id game id
+     */
+    fun updateTournamentTree(id: Int): Result<Unit> = transaction {
+        val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
+
+        //  check if game type is tournament
+        if (game.type != GameType.TOURNAMENT) {
+            throw BadRequestException("invalid game type")
+        }
+
+        //  find top node
+        val topNode = game.matches.toList().find { it.parents.count() <= 0 } ?: throw BadRequestException("cannot find top node")
+
+        //  update tree recursively
+        updateTree(topNode)
+
+        Result.success(Unit)
+    }
+
+    private fun updateTree(match: MatchEntity): TeamEntity? {
+        if (match.children.count().toInt() != 2 && match.children.count().toInt() != 0) {
+            throw BadRequestException("invalid tree")
+        }
+
+        if (match.children.count().toInt() == 2) {
+            if (match.status == MatchStatus.FINISHED) {
+                return when(match.result) {
+                    MatchResult.LEFT_WIN -> {
+                        match.leftTeam
+                    }
+                    MatchResult.RIGHT_WIN -> {
+                        match.rightTeam
+                    }
+                    MatchResult.DRAW -> {
+                        null
+                    }
+                }
+            }
+
+            val leftChild = match.children.first()
+            val rightChild = match.children.last()
+
+            //  update left child
+            val leftChildWin = updateTree(leftChild)
+
+            //  update right child
+            val rightChildWin = updateTree(rightChild)
+
+            //  update match
+            match.leftTeam = leftChildWin
+            match.rightTeam = rightChildWin
+
+            return null
+        }
+        else {
+            //  if not finished return null
+            if (match.status != MatchStatus.FINISHED) {
+                return null
+            }
+
+            return when(match.result) {
+                MatchResult.LEFT_WIN -> {
+                    match.leftTeam
+                }
+                MatchResult.RIGHT_WIN -> {
+                    match.rightTeam
+                }
+                MatchResult.DRAW -> {
+                    null
+                }
+            }
+        }
+    }
+
 }
 
 @Serializable
