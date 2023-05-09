@@ -218,6 +218,11 @@ object GamesService : StandardService<GameEntity, Game>(
         val parentMatch = if (parentMatchId != null) {
             MatchEntity.getById(parentMatchId)?.first ?: throw NotFoundException("invalid parent match id")
         } else {
+            //  check if top node already exists
+            if (game.matches.count() >= 1) {
+                throw BadRequestException("top node already exists")
+            }
+
             null
         }
 
