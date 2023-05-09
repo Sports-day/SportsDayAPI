@@ -352,8 +352,7 @@ object GamesService : StandardService<GameEntity, Game>(
                         .apply {
                             if (game.calculationType == CalculationType.DIFF_SCORE) {
                                 thenByDescending { it.goalDiff }
-                            }
-                            else if (game.calculationType == CalculationType.TOTAL_SCORE) {
+                            } else if (game.calculationType == CalculationType.TOTAL_SCORE) {
                                 thenByDescending { it.goal }
                             }
                         }
@@ -408,13 +407,15 @@ object GamesService : StandardService<GameEntity, Game>(
 
         if (match.children.count().toInt() == 2) {
             if (match.status == MatchStatus.FINISHED) {
-                return when(match.result) {
+                return when (match.result) {
                     MatchResult.LEFT_WIN -> {
                         match.leftTeam
                     }
+
                     MatchResult.RIGHT_WIN -> {
                         match.rightTeam
                     }
+
                     MatchResult.DRAW -> {
                         null
                     }
@@ -435,20 +436,21 @@ object GamesService : StandardService<GameEntity, Game>(
             match.rightTeam = rightChildWin
 
             return null
-        }
-        else {
+        } else {
             //  if not finished return null
             if (match.status != MatchStatus.FINISHED) {
                 return null
             }
 
-            return when(match.result) {
+            return when (match.result) {
                 MatchResult.LEFT_WIN -> {
                     match.leftTeam
                 }
+
                 MatchResult.RIGHT_WIN -> {
                     match.rightTeam
                 }
+
                 MatchResult.DRAW -> {
                     null
                 }
@@ -456,6 +458,65 @@ object GamesService : StandardService<GameEntity, Game>(
         }
     }
 
+    /**
+     * get tournament result
+     *
+     * @param id game id
+     */
+    val getTournamentResult: (id: Int) -> Result<TournamentResult> = Cache.memoize(1.minutes) { id ->
+        transaction {
+            val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
+
+            //  check if game type is tournament
+            if (game.type != GameType.TOURNAMENT) {
+                throw BadRequestException("invalid game type")
+            }
+
+            //  find top node
+            val topNode = game.matches.toList().find { it.parents.count() <= 0 } ?: throw BadRequestException("cannot find top node")
+
+            //  check if game is finished
+            if (topNode.status != MatchStatus.FINISHED) {
+                throw BadRequestException("game is not finished")
+            }
+
+            //  check if result is draw
+            if (topNode.result == MatchResult.DRAW) {
+                throw BadRequestException("game result is draw")
+            }
+
+            //  check if left or right team is null
+            if (topNode.leftTeam == null || topNode.rightTeam == null) {
+                throw BadRequestException("invalid tournament tree")
+            }
+
+            //  create tournament result
+            val tournamentResult = TournamentResult(
+                gameId = game.id.value,
+                teams = listOf(
+                    TournamentTeamResult(
+                        teamId = if (topNode.result == MatchResult.LEFT_WIN) {
+                            topNode.leftTeam?.id?.value ?: throw Exception("something went wrong. left team id is null")
+                        } else {
+                            topNode.rightTeam?.id?.value ?: throw Exception("something went wrong. right team id is null")
+                        },
+                        rank = 1
+                    ),
+                    TournamentTeamResult(
+                        teamId = if (topNode.result == MatchResult.LEFT_WIN) {
+                            topNode.rightTeam?.id?.value ?: throw Exception("something went wrong. right team id is null")
+                        } else {
+                            topNode.leftTeam?.id?.value ?: throw Exception("something went wrong. left team id is null")
+                        },
+                        rank = 2
+                    )
+                ),
+                createdAt = LocalDateTime.now().toString()
+            )
+
+            Result.success(tournamentResult)
+        }
+    }
 }
 
 @Serializable
@@ -481,4 +542,17 @@ data class LeagueTeamResult(
     var goal: Int,
     var loseGoal: Int,
     var goalDiff: Int
+)
+
+@Serializable
+data class TournamentResult(
+    val gameId: Int,
+    val teams: List<TournamentTeamResult>,
+    val createdAt: String,
+)
+
+@Serializable
+data class TournamentTeamResult(
+    val teamId: Int,
+    val rank: Int
 )
