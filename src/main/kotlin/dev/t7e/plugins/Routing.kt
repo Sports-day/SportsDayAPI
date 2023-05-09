@@ -25,6 +25,10 @@ fun Application.configureRouting() {
                 allowedDomainsRouter()
                 //  Teams
                 teamsRouter()
+                //  Sports
+                sportsRoute()
+                //  Games
+                gameRoute()
             }
         }
     }
