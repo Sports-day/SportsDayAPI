@@ -31,6 +31,8 @@ fun Application.configureRouting() {
                 gamesRouter()
                 //  Matches
                 matchesRouter()
+                //  Images
+                imagesRouter()
             }
         }
     }

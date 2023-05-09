@@ -19,14 +19,12 @@ object ImagesService: StandardService<ImageEntity, Image>(
     fetchFunction = { ImageEntity.fetch(it) }
 ) {
 
-    fun create(createdBy: Int, omittedImage: OmittedImage): Result<Image> = transaction {
-        val user = MicrosoftAccountEntity.findById(createdBy) ?: throw NotFoundException("invalid microsoft account")
-
+    fun create(createdBy: MicrosoftAccountEntity, omittedImage: OmittedImage): Result<Image> = transaction {
         val entity = ImageEntity.new {
             this.name = omittedImage.name
             this.attachment = omittedImage.attachment
             this.createdAt = LocalDateTime.now()
-            this.createdBy = user
+            this.createdBy = createdBy
         }
 
         Result.success(
