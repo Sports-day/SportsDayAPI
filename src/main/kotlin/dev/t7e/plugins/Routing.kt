@@ -33,6 +33,8 @@ fun Application.configureRouting() {
                 matchesRouter()
                 //  Images
                 imagesRouter()
+                //  Locations
+                locationsRouter()
             }
         }
     }

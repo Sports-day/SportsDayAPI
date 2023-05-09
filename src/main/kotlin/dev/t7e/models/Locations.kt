@@ -38,3 +38,8 @@ data class Location(
     val id: Int,
     val name: String
 )
+
+@Serializable
+data class OmittedLocation(
+    val name: String
+)
