@@ -1,7 +1,6 @@
 package dev.t7e.services
 
 import dev.t7e.models.*
-import dev.t7e.utils.safeValueOf
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -10,7 +9,7 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/05/07
  * @author testusuke
  */
-object MatchService: StandardService<MatchEntity, Match>(
+object MatchesService: StandardService<MatchEntity, Match>(
     objectName = "match",
     _getAllObjectFunction = { MatchEntity.getAll() },
     _getObjectByIdFunction = { MatchEntity.getById(it) },
