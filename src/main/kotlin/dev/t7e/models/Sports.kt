@@ -32,6 +32,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
     var name by Sports.name
     var description by Sports.description
     var iconImage by ImageEntity optionalReferencedOn Sports.iconImage
+    val games by GameEntity referrersOn Games.sport
     var createdAt by Sports.createdAt
     var updatedAt by Sports.updatedAt
 
@@ -41,6 +42,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
             name,
             description,
             iconImage?.id?.value,
+            games.map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
         )
@@ -53,6 +55,7 @@ data class Sport(
     val name: String,
     val description: String,
     val iconId: Int?,
+    val gameIds: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )
