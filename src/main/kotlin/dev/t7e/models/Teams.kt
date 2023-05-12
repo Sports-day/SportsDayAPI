@@ -94,7 +94,7 @@ data class Team(
     val id: Int,
     val name: String,
     val classId: Int,
-    val usersId: List<Int>,
+    val userIds: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )
