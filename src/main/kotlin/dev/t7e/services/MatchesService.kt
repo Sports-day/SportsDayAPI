@@ -42,6 +42,8 @@ object MatchesService: StandardService<MatchEntity, Match>(
         match.rightScore = omittedMatch.rightScore
         match.result = omittedMatch.result
         match.status = omittedMatch.status
+        match.note = omittedMatch.note
+        match.judge = omittedMatch.judge
 
         match.updatedAt = LocalDateTime.now()
 
