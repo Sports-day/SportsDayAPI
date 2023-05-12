@@ -78,7 +78,7 @@ enum class MatchStatus(val status: String) {
     STANDBY("standby"),
     IN_PROGRESS("in_progress"),
     FINISHED("finished"),
-    CANCELED("cancel"),
+    CANCELED("cancelled")
 }
 
 enum class MatchResult(val result: String) {
