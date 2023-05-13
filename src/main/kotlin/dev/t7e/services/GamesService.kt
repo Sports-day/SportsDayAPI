@@ -447,6 +447,7 @@ object GamesService : StandardService<GameEntity, Game>(
             //  update match
             match.leftTeam = leftChildWin
             match.rightTeam = rightChildWin
+            match.updatedAt = LocalDateTime.now()
 
             //  fetch
             MatchEntity.fetch(match.id.value)
