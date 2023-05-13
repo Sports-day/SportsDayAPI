@@ -42,7 +42,7 @@ fun Route.microsoftAccountsRouter() {
                  * Get specific microsoft account
                  */
                 get {
-                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                    val id = getId(call)
                     MicrosoftAccountsService.getById(id)
                         .respondOrInternalError {
                             call.respond(HttpStatusCode.OK, DataResponse(it))
@@ -53,7 +53,7 @@ fun Route.microsoftAccountsRouter() {
                  * Delete specific microsoft account
                  */
                 delete {
-                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                    val id = getId(call)
                     MicrosoftAccountsService.deleteById(id)
                         .respondOrInternalError {
                             call.respond(HttpStatusCode.OK, MessageResponse("deleted microsoft account"))
@@ -71,8 +71,7 @@ fun Route.microsoftAccountsRouter() {
                      * Update specific microsoft account role
                      */
                     put {
-                        val id =
-                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id = getId(call)
                         val role = call.receive<AccountRoleRequest>()
 
                         MicrosoftAccountsService
@@ -92,8 +91,7 @@ fun Route.microsoftAccountsRouter() {
             withRole(Role.USER) {
                 route("/link-user") {
                     put {
-                        val id =
-                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id = getId(call)
                         val requestBody = call.receive<LinkUserRequest>()
 
                         val ms = call.authentication.principal<UserPrincipal>() ?: throw BadRequestException("failed to get user principal")
@@ -110,9 +108,7 @@ fun Route.microsoftAccountsRouter() {
                     }
 
                     delete {
-                        val id =
-                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
+                        val id = getId(call)
                         val ms = call.authentication.principal<UserPrincipal>() ?: throw BadRequestException("failed to get user principal")
 
                         if(!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
@@ -131,6 +127,17 @@ fun Route.microsoftAccountsRouter() {
             }
         }
     }
+}
+
+/**
+ * Get id from call
+ */
+private fun getId(call: ApplicationCall): Int {
+    return if (call.parameters["id"] == "me") {
+        call.authentication.principal<UserPrincipal>()?.microsoftAccountId
+    } else {
+        call.parameters["id"]?.toIntOrNull()
+    }  ?: throw BadRequestException("invalid id parameter")
 }
 
 @Serializable
