@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.SmartCache
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
@@ -150,13 +151,19 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
     }
 }
 
+@Serializable
 enum class GameType(val status: String) {
+    @SerialName("tournament")
     TOURNAMENT("tournament"),
+    @SerialName("league")
     LEAGUE("league")
 }
 
+@Serializable
 enum class CalculationType(val type: String) {
+    @SerialName("total_score")
     TOTAL_SCORE("total_score"),
+    @SerialName("diff_score")
     DIFF_SCORE("diff_score"),
 }
 

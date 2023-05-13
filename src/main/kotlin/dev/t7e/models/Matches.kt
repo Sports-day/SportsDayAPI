@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.SmartCache
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
@@ -77,16 +78,25 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
     }
 }
 
+@Serializable
 enum class MatchStatus(val status: String) {
+    @SerialName("standby")
     STANDBY("standby"),
+    @SerialName("in_progress")
     IN_PROGRESS("in_progress"),
+    @SerialName("finished")
     FINISHED("finished"),
+    @SerialName("cancelled")
     CANCELED("cancelled")
 }
 
+@Serializable
 enum class MatchResult(val result: String) {
+    @SerialName("left_win")
     LEFT_WIN("left_win"),
+    @SerialName("right_win")
     RIGHT_WIN("right_win"),
+    @SerialName("draw")
     DRAW("draw"),
 }
 

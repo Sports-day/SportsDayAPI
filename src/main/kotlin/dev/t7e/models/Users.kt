@@ -1,6 +1,7 @@
 package dev.t7e.models
 
 import dev.t7e.utils.SmartCache
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
@@ -132,8 +133,11 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     }
 }
 
+@Serializable
 enum class GenderType(val gender: String) {
+    @SerialName("male")
     MALE("male"),
+    @SerialName("female")
     FEMALE("female")
 }
 
