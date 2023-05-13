@@ -51,7 +51,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
     var note by Matches.note
     var judge by Matches.judge
     var createdAt by Matches.createdAt
-    var updatedAt by Matches.createdAt
+    var updatedAt by Matches.updatedAt
 
     //  for tournament format
     var parents by MatchEntity.via(TournamentPath.child, TournamentPath.parent)
