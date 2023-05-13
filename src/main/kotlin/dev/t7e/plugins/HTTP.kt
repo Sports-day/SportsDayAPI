@@ -14,6 +14,16 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Post)
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        if (System.getenv("ALLOWED_HOST") != null) {
+            allowHost(
+                System.getenv("ALLOWED_HOST"),
+                listOf(
+                    "http",
+                    "https"
+                )
+            )
+
+            println("Allowed host: ${System.getenv("ALLOWED_HOST")}")
+        } else anyHost()
     }
 }
