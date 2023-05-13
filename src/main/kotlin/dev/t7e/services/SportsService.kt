@@ -25,6 +25,7 @@ object SportsService : StandardService<SportEntity, Sport>(
             this.name = omittedSport.name
             this.description = omittedSport.description
             this.iconImage = image?.first
+            this.weight = omittedSport.weight
             this.createdAt = LocalDateTime.now()
             this.updatedAt = LocalDateTime.now()
         }
@@ -44,6 +45,7 @@ object SportsService : StandardService<SportEntity, Sport>(
         entity.name = omittedSport.name
         entity.description = omittedSport.description
         entity.iconImage = image?.first
+        entity.weight = omittedSport.weight
         entity.updatedAt = LocalDateTime.now()
 
 
