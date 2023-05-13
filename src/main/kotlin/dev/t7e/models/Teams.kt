@@ -73,7 +73,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by Teams.name
     var classEntity by ClassEntity referencedOn Teams.classEntity
     var users by UserEntity via TeamUsers
-    var entries by GameEntity via Entries
+    var enteredGames by GameEntity via Entries
     var createdAt by Teams.createdAt
     var updatedAt by Teams.updatedAt
 
@@ -83,6 +83,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             classEntity.id.value,
             users.map { it.id.value },
+            enteredGames.map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
         )
@@ -95,6 +96,7 @@ data class Team(
     val name: String,
     val classId: Int,
     val userIds: List<Int>,
+    val enteredGameIds: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )
