@@ -127,6 +127,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             studentId,
             gender,
             classEntity.id.value,
+            teams.map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
         )
@@ -148,6 +149,7 @@ data class User(
     val studentId: String,
     val gender: GenderType,
     val classId: Int,
+    val teamIds: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )
