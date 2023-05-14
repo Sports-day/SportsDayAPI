@@ -1,5 +1,6 @@
 package dev.t7e.routes
 
+import dev.t7e.plugins.Role
 import dev.t7e.plugins.UserPrincipal
 import dev.t7e.utils.DataMessageResponse
 import io.ktor.server.application.*
@@ -18,10 +19,15 @@ fun Route.authorizationRouting() {
     authenticate {
         route("authorization") {
             get {
+                val principal = call.authentication.principal<UserPrincipal>()
+
                 call.respond(
                     DataMessageResponse(
                         "authorized",
-                        Me(call.authentication.principal<UserPrincipal>()?.microsoftAccountId ?: -1)
+                        Me(
+                            principal?.microsoftAccountId ?: -1,
+                            if(principal?.roles?.contains(Role.ADMIN) == true) "admin" else "user"
+                        )
                     )
                 )
             }
@@ -31,5 +37,6 @@ fun Route.authorizationRouting() {
 
 @Serializable
 data class Me(
-    val microsoftAccountId: Int
+    val microsoftAccountId: Int,
+    val role: String
 )
