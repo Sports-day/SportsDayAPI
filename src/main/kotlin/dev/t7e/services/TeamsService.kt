@@ -24,6 +24,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
         Result.success(
             TeamEntity.new {
                 this.name = omittedTeam.name
+                this.description = omittedTeam.description
                 this.classEntity = classEntity
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
@@ -41,6 +42,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
             ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
 
         team.name = omittedTeam.name
+        team.description = omittedTeam.description
         team.classEntity = classEntity
         team.updatedAt = LocalDateTime.now()
 

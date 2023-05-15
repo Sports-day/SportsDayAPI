@@ -16,6 +16,7 @@ import kotlin.time.Duration.Companion.minutes
  */
 object Teams : IntIdTable("teams") {
     val name = varchar("name", 64)
+    val description = varchar("description", 128).nullable()
     val classEntity = reference(
         "class",
         Classes,
@@ -76,6 +77,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
     }
 
     var name by Teams.name
+    var description by Teams.description
     var classEntity by ClassEntity referencedOn Teams.classEntity
     var users by UserEntity via TeamUsers
     var enteredGames by GameEntity via Entries
@@ -86,6 +88,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
         return Team(
             id.value,
             name,
+            description,
             classEntity.id.value,
             users.map { it.id.value },
             enteredGames.map { it.id.value },
@@ -99,6 +102,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
 data class Team(
     val id: Int,
     val name: String,
+    val description: String?,
     val classId: Int,
     val userIds: List<Int>,
     val enteredGameIds: List<Int>,
@@ -109,6 +113,7 @@ data class Team(
 @Serializable
 data class OmittedTeam(
     val name: String,
+    val description: String?,
     val classId: Int
 )
 
