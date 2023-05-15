@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import kotlin.time.Duration.Companion.minutes
 
@@ -18,7 +19,7 @@ object Images: IntIdTable("images") {
     //  base64 encoded image
     val attachment = text("attachment")
     val createdAt = datetime("created_at")
-    val createdBy = reference("created_by", MicrosoftAccounts)
+    val createdBy = reference("created_by", MicrosoftAccounts, onDelete = ReferenceOption.SET_NULL).nullable()
 }
 
 class ImageEntity(id: EntityID<Int>): IntEntity(id) {
@@ -32,7 +33,7 @@ class ImageEntity(id: EntityID<Int>): IntEntity(id) {
     var name by Images.name
     var attachment by Images.attachment
     var createdAt by Images.createdAt
-    var createdBy by MicrosoftAccountEntity referencedOn Images.createdBy
+    var createdBy by MicrosoftAccountEntity optionalReferencedOn Images.createdBy
 
     fun serializableModel(): Image {
         return Image(
@@ -40,7 +41,7 @@ class ImageEntity(id: EntityID<Int>): IntEntity(id) {
             name,
             attachment,
             createdAt.toString(),
-            createdBy.id.value
+            createdBy?.id?.value ?: -1
         )
     }
 }

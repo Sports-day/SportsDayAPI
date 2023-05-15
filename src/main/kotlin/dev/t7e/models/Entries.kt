@@ -1,5 +1,6 @@
 package dev.t7e.models
 
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 /**
@@ -8,8 +9,8 @@ import org.jetbrains.exposed.sql.Table
  */
 
 object Entries: Table("game_entries") {
-    val game = reference("game", Games)
-    val team = reference("team", Teams)
+    val game = reference("game", Games, onDelete = ReferenceOption.CASCADE)
+    val team = reference("team", Teams, onDelete = ReferenceOption.CASCADE)
 
     override val primaryKey = PrimaryKey(game, team, name = "pk_game_entries")
 }

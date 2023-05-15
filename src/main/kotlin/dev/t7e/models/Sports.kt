@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import kotlin.time.Duration.Companion.minutes
 
@@ -16,7 +17,7 @@ import kotlin.time.Duration.Companion.minutes
 object Sports: IntIdTable("sports") {
     val name = varchar("name", 64)
     val description = text("description")
-    val iconImage = reference("icon_image", Images).nullable()
+    val iconImage = reference("icon_image", Images, onDelete = ReferenceOption.SET_NULL).nullable()
     val weight = integer("weight").default(0)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")

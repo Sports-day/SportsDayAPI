@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import kotlin.time.Duration.Companion.minutes
 
@@ -19,7 +20,7 @@ object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
     val name = varchar("name", 128)
     val mailAccountName = varchar("mail_account_name", 128).nullable()
     val role = enumerationByName<Role>("role", 32).default(Role.USER)
-    val user = reference("user", Users).nullable()
+    val user = reference("user", Users, onDelete = ReferenceOption.SET_NULL).nullable()
     val firstLogin = datetime("first_login")
     val lastLogin = datetime("last_login")
 }

@@ -1,5 +1,6 @@
 package dev.t7e.models
 
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 /**
@@ -7,6 +8,6 @@ import org.jetbrains.exposed.sql.Table
  * @author testusuke
  */
 object TournamentPath: Table("tournament_path") {
-    val parent = reference("parent_match", Matches)
-    val child = reference("child_match", Matches)
+    val parent = reference("parent_match", Matches, onDelete = ReferenceOption.CASCADE)
+    val child = reference("child_match", Matches, onDelete = ReferenceOption.CASCADE)
 }

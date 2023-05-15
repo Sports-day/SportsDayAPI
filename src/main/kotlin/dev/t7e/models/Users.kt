@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.time.Duration.Companion.minutes
@@ -18,7 +19,7 @@ object Users : IntIdTable("users") {
     val name = varchar("name", 64)
     val studentId = varchar("student_id", 32)
     val gender = enumerationByName<GenderType>("gender", 10)
-    val classEntity = reference("class", Classes)
+    val classEntity = reference("class", Classes, onDelete = ReferenceOption.CASCADE)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }

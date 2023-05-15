@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.time.Duration.Companion.minutes
@@ -18,7 +19,7 @@ import kotlin.time.Duration.Companion.minutes
 object Games: IntIdTable("games") {
     val name = varchar("name", 64)
     val description = varchar("description", 512)
-    val sport = reference("sport", Sports)
+    val sport = reference("sport", Sports, onDelete = ReferenceOption.CASCADE)
     val type = enumerationByName<GameType>("type", 32)
     val calculationType = enumerationByName<CalculationType>("calculation_type", 32).default(CalculationType.DIFF_SCORE)
     val weight = integer("weight")

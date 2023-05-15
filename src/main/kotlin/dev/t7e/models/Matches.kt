@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import kotlin.time.Duration.Companion.minutes
 
@@ -14,12 +15,12 @@ import kotlin.time.Duration.Companion.minutes
  * @author testusuke
  */
 object Matches : IntIdTable("matches") {
-    val location = reference("location", Locations).nullable()
-    val game = reference("game", Games)
-    val sport = reference("sport", Sports)
+    val location = reference("location", Locations, onDelete = ReferenceOption.SET_NULL).nullable()
+    val game = reference("game", Games, onDelete = ReferenceOption.CASCADE)
+    val sport = reference("sport", Sports, onDelete = ReferenceOption.CASCADE)
     val startAt = datetime("started_at")
-    val leftTeam = reference("left_team", Teams).nullable()
-    val rightTeam = reference("right_team", Teams).nullable()
+    val leftTeam = reference("left_team", Teams, onDelete = ReferenceOption.SET_NULL).nullable()
+    val rightTeam = reference("right_team", Teams, onDelete = ReferenceOption.SET_NULL).nullable()
     val leftScore = integer("left_score").default(0)
     val rightScore = integer("right_score").default(0)
     val result = enumerationByName<MatchResult>("result", 32).default(MatchResult.DRAW)

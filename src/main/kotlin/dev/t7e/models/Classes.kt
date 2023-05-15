@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.time.Duration.Companion.minutes
@@ -16,7 +17,11 @@ import kotlin.time.Duration.Companion.minutes
 object Classes : IntIdTable("classes") {
     val name = varchar("name", 64)
     val description = varchar("description", 128).nullable()
-    val group = reference("group", Groups)
+    val group = reference(
+        "group",
+        Groups,
+        onDelete = ReferenceOption.CASCADE
+    )
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }

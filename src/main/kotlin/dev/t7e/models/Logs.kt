@@ -5,6 +5,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 
 /**
@@ -13,7 +14,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
  */
 object Logs: IntIdTable("logs") {
     val logEvent = enumerationByName<LogEvents>("log_event", 32)
-    val microsoftAccount = reference("microsoft_account", MicrosoftAccounts).nullable()
+    val microsoftAccount = reference("microsoft_account", MicrosoftAccounts, onDelete = ReferenceOption.SET_NULL).nullable()
     val message = text("message")
     val createdAt = datetime("created_at")
 }
