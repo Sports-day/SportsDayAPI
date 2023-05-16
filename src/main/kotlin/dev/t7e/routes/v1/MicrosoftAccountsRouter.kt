@@ -87,43 +87,44 @@ fun Route.microsoftAccountsRouter() {
                             }
                     }
                 }
-            }
-            withRole(Role.USER) {
-                route("/link-user") {
-                    put {
-                        val id = getId(call)
-                        val requestBody = call.receive<LinkUserRequest>()
 
-                        val ms = call.authentication.principal<UserPrincipal>() ?: throw BadRequestException("failed to get user principal")
+                withRole(Role.USER) {
+                    route("/link-user") {
+                        put {
+                            val id = getId(call)
+                            val requestBody = call.receive<LinkUserRequest>()
 
-                        if(!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
-                            throw BadRequestException("you dont have permission to link this account")
+                            val ms = call.authentication.principal<UserPrincipal>()
+                                ?: throw BadRequestException("failed to get user principal")
+
+                            if (!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
+                                throw BadRequestException("you dont have permission to link this account")
+                            }
+
+                            MicrosoftAccountsService
+                                .linkUser(id, requestBody.userId)
+                                .respondOrInternalError {
+                                    call.respond(HttpStatusCode.OK, MessageResponse("link user"))
+                                }
                         }
 
-                        MicrosoftAccountsService
-                            .linkUser(id, requestBody.userId)
-                            .respondOrInternalError {
-                                call.respond(HttpStatusCode.OK, MessageResponse("link user"))
+                        delete {
+                            val id = getId(call)
+                            val ms = call.authentication.principal<UserPrincipal>()
+                                ?: throw BadRequestException("failed to get user principal")
+
+                            if (!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
+                                throw BadRequestException("you dont have permission to link this account")
                             }
-                    }
 
-                    delete {
-                        val id = getId(call)
-                        val ms = call.authentication.principal<UserPrincipal>() ?: throw BadRequestException("failed to get user principal")
-
-                        if(!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
-                            throw BadRequestException("you dont have permission to link this account")
+                            MicrosoftAccountsService
+                                .unlinkUser(id)
+                                .respondOrInternalError {
+                                    call.respond(HttpStatusCode.OK, MessageResponse("unlink user"))
+                                }
                         }
-
-                        MicrosoftAccountsService
-                            .unlinkUser(id)
-                            .respondOrInternalError {
-                                call.respond(HttpStatusCode.OK, MessageResponse("unlink user"))
-                            }
                     }
                 }
-
-
             }
         }
     }
@@ -137,7 +138,7 @@ private fun getId(call: ApplicationCall): Int {
         call.authentication.principal<UserPrincipal>()?.microsoftAccountId
     } else {
         call.parameters["id"]?.toIntOrNull()
-    }  ?: throw BadRequestException("invalid id parameter")
+    } ?: throw BadRequestException("invalid id parameter")
 }
 
 @Serializable
