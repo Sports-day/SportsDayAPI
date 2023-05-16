@@ -70,6 +70,11 @@ object TeamsService : StandardService<TeamEntity, Team>(
         team.users = SizedCollection(listOf(team.users.toList(), users).flatten().distinct())
         team.updatedAt = LocalDateTime.now()
 
+        //  re-fetch
+        users.forEach {
+            UserEntity.fetch(it.id.value)
+        }
+
         Result.success(
             team
                 .serializableModel()
@@ -88,6 +93,9 @@ object TeamsService : StandardService<TeamEntity, Team>(
             }
         )
         team.updatedAt = LocalDateTime.now()
+
+        //  re-fetch
+        UserEntity.fetch(userId)
 
         Result.success(
             team
