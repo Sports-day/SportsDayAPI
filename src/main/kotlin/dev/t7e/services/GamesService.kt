@@ -37,6 +37,7 @@ object GamesService : StandardService<GameEntity, Game>(
         Result.success(
             entity.serializableModel().apply {
                 fetchFunction(this.id)
+                SportEntity.fetch(this.sportId)
             }
         )
     }
