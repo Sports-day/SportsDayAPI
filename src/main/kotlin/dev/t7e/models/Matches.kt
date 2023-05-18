@@ -73,6 +73,8 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
             status,
             note,
             judge,
+            parents.toList().map { it.id.value  },
+            children.toList().map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
         )
@@ -116,6 +118,8 @@ data class Match(
     val status: MatchStatus,
     val note: String?,
     val judge: String?,
+    val parent: List<Int>,
+    val child: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )
