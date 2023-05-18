@@ -118,8 +118,8 @@ data class Match(
     val status: MatchStatus,
     val note: String?,
     val judge: String?,
-    val parent: List<Int>,
-    val child: List<Int>,
+    val parents: List<Int>,
+    val children: List<Int>,
     val createdAt: String,
     val updatedAt: String
 )
