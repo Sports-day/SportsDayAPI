@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.minutes
 object Images: IntIdTable("images") {
     val name = varchar("name", 64)
     //  base64 encoded image
-    val attachment = text("attachment")
+    val attachment = mediumText("attachment")
     val createdAt = datetime("created_at")
     val createdBy = reference("created_by", MicrosoftAccounts, onDelete = ReferenceOption.SET_NULL).nullable()
 }
