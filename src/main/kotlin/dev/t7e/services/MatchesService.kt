@@ -50,6 +50,7 @@ object MatchesService: StandardService<MatchEntity, Match>(
         Result.success(
             match.serializableModel().apply {
                 fetchFunction(this.id)
+                GameEntity.fetch(this.gameId)
             }
         )
     }
