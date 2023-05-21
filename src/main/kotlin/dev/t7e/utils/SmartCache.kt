@@ -43,7 +43,7 @@ open class SmartCache<T : IntEntity, R>(
 
         //  redis
         RedisManager.registerFetchFunction(entityName) {
-            fetch(it)
+            fetch(it, redisPublish = false)
         }
     }
 
