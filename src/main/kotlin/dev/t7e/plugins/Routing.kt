@@ -5,10 +5,16 @@ import dev.t7e.routes.v1.*
 import io.ktor.server.routing.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 
 fun Application.configureRouting() {
 
     routing {
+        //  health check
+        get {
+            call.respondText("Hello")
+        }
+
         authorizationRouting()
         //  version 1.0
         route("/v1") {
