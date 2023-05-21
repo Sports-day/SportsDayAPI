@@ -368,6 +368,8 @@ object GamesService : StandardService<GameEntity, Game>(
                 rightTeamResult.goalDiff += match.rightScore - match.leftScore
             }
 
+            var lastResult: LeagueTeamResult? = null
+            var lastRank = 0
             //  sort by score. but if score is same, sort by goal diff
             val sortedLeagueTeamResults = leagueTeamResults.values
                 .sortedWith(
@@ -380,9 +382,35 @@ object GamesService : StandardService<GameEntity, Game>(
                             }
                         }
                 )
-                .mapIndexed { index, leagueTeamResult ->
-                    //  rank
-                    leagueTeamResult.rank = index + 1
+                .map { leagueTeamResult ->
+                    if (lastResult == null) {
+                        leagueTeamResult.rank = 1
+                    } else {
+                        //  if score is same, rank is same
+                        if (game.calculationType == CalculationType.TOTAL_SCORE) {
+                            if (
+                                lastResult!!.score == leagueTeamResult.score
+                                && lastResult!!.goal == leagueTeamResult.goal
+                            ) {
+                                leagueTeamResult.rank = lastRank
+                            } else {
+                                leagueTeamResult.rank = lastRank + 1
+                            }
+                        } else {
+                            if (
+                                lastResult!!.score == leagueTeamResult.score
+                                && lastResult!!.goalDiff == leagueTeamResult.goalDiff
+                            ) {
+                                leagueTeamResult.rank = lastRank
+                            } else {
+                                leagueTeamResult.rank = lastRank + 1
+                            }
+                        }
+                    }
+
+                    //  last result
+                    lastResult = leagueTeamResult
+                    lastRank = leagueTeamResult.rank
 
                     leagueTeamResult
                 }
@@ -415,7 +443,8 @@ object GamesService : StandardService<GameEntity, Game>(
         }
 
         //  find top node
-        val topNode = game.matches.toList().find { it.parents.count() <= 0 } ?: throw BadRequestException("cannot find top node")
+        val topNode =
+            game.matches.toList().find { it.parents.count() <= 0 } ?: throw BadRequestException("cannot find top node")
 
         //  update tree recursively
         updateTree(topNode)
@@ -501,7 +530,8 @@ object GamesService : StandardService<GameEntity, Game>(
             }
 
             //  find top node
-            val topNode = game.matches.toList().find { it.parents.count() <= 0 } ?: throw BadRequestException("cannot find top node")
+            val topNode = game.matches.toList().find { it.parents.count() <= 0 }
+                ?: throw BadRequestException("cannot find top node")
 
             //  check if game is finished
             if (topNode.status != MatchStatus.FINISHED) {
@@ -526,13 +556,15 @@ object GamesService : StandardService<GameEntity, Game>(
                         teamId = if (topNode.result == MatchResult.LEFT_WIN) {
                             topNode.leftTeam?.id?.value ?: throw Exception("something went wrong. left team id is null")
                         } else {
-                            topNode.rightTeam?.id?.value ?: throw Exception("something went wrong. right team id is null")
+                            topNode.rightTeam?.id?.value
+                                ?: throw Exception("something went wrong. right team id is null")
                         },
                         rank = 1
                     ),
                     TournamentTeamResult(
                         teamId = if (topNode.result == MatchResult.LEFT_WIN) {
-                            topNode.rightTeam?.id?.value ?: throw Exception("something went wrong. right team id is null")
+                            topNode.rightTeam?.id?.value
+                                ?: throw Exception("something went wrong. right team id is null")
                         } else {
                             topNode.leftTeam?.id?.value ?: throw Exception("something went wrong. left team id is null")
                         },
