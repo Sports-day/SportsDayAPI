@@ -10,4 +10,6 @@ import org.jetbrains.exposed.sql.Table
 object TournamentPath: Table("tournament_path") {
     val parent = reference("parent_match", Matches, onDelete = ReferenceOption.CASCADE)
     val child = reference("child_match", Matches, onDelete = ReferenceOption.CASCADE)
+
+    override val primaryKey = PrimaryKey(parent, child, name = "pk_tournament_path")
 }
