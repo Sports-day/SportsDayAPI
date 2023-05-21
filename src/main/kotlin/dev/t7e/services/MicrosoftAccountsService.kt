@@ -15,7 +15,13 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
     objectName = "Microsoft account",
     _getAllObjectFunction = { MicrosoftAccountEntity.getAll() },
     _getObjectByIdFunction = { MicrosoftAccountEntity.getById(it) },
-    fetchFunction = { MicrosoftAccountEntity.fetch(it) }
+    fetchFunction = { MicrosoftAccountEntity.fetch(it) },
+    onDeleteFunction = {
+        //  User -> MicrosoftAccount
+        it.userId?.let { userId ->
+            UserEntity.fetch(userId)
+        }
+    }
 ) {
 
     fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> = transaction {
@@ -28,6 +34,7 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
 
         //  fetch
         fetchFunction(accountId)
+        UserEntity.fetch(userId)
 
         Result.success(account.first.serializableModel())
     }
@@ -40,6 +47,7 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
 
         //  fetch
         fetchFunction(accountId)
+        UserEntity.fetch(account.second.userId)
 
         Result.success(account.first.serializableModel())
     }

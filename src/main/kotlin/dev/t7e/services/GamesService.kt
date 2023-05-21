@@ -17,7 +17,12 @@ object GamesService : StandardService<GameEntity, Game>(
     objectName = "game",
     _getAllObjectFunction = { GameEntity.getAll() },
     _getObjectByIdFunction = { GameEntity.getById(it) },
-    fetchFunction = { GameEntity.fetch(it) }
+    fetchFunction = { GameEntity.fetch(it) },
+    onDeleteFunction = {
+        //  Sport -> Game
+        SportEntity.fetch(it.sportId)
+
+    }
 ) {
 
     fun create(omittedGame: OmittedGame): Result<Game> = transaction {
@@ -91,6 +96,9 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  fetch
         fetchFunction(id)
+        teams.forEach { team ->
+            TeamEntity.fetch(team.id.value)
+        }
 
         Result.success(
             game.teams.map { it.serializableModel() }
@@ -113,6 +121,7 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  fetch
         fetchFunction(id)
+        TeamEntity.fetch(teamId)
 
         Result.success(
             game.teams.map { it.serializableModel() }
@@ -410,6 +419,7 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  update tree recursively
         updateTree(topNode)
+        fetchFunction(id)
 
         Result.success(Unit)
     }

@@ -1,10 +1,6 @@
 package dev.t7e.services
 
-import dev.t7e.models.Image
-import dev.t7e.models.ImageEntity
-import dev.t7e.models.MicrosoftAccountEntity
-import dev.t7e.models.OmittedImage
-import io.ktor.server.plugins.*
+import dev.t7e.models.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
@@ -16,7 +12,15 @@ object ImagesService: StandardService<ImageEntity, Image>(
     objectName = "image",
     _getAllObjectFunction = { ImageEntity.getAll() },
     _getObjectByIdFunction = { ImageEntity.getById(it) },
-    fetchFunction = { ImageEntity.fetch(it) }
+    fetchFunction = { ImageEntity.fetch(it) },
+    onDeleteFunction = {
+        //  Sport -> Image
+        SportEntity.getAll().forEach { pair ->
+            if (pair.second.iconId == it.id) {
+                SportEntity.fetch(pair.second.id)
+            }
+        }
+    }
 ) {
 
     fun create(createdBy: MicrosoftAccountEntity, omittedImage: OmittedImage): Result<Image> = transaction {

@@ -1,5 +1,6 @@
 package dev.t7e.services
 
+import dev.t7e.models.ClassEntity
 import dev.t7e.models.Group
 import dev.t7e.models.GroupEntity
 import dev.t7e.models.OmittedGroup
@@ -16,7 +17,15 @@ object GroupsService : StandardService<GroupEntity, Group>(
     objectName = "Group",
     _getAllObjectFunction = { GroupEntity.getAll() },
     _getObjectByIdFunction = { GroupEntity.getById(it) },
-    fetchFunction = { GroupEntity.fetch(it) }
+    fetchFunction = { GroupEntity.fetch(it) },
+    onDeleteFunction = {
+        //  Class -> Group
+        ClassEntity.getAll().forEach { pair ->
+            if (pair.second.groupId == it.id) {
+                ClassEntity.fetch(pair.second.id)
+            }
+        }
+    }
 ) {
 
     /**

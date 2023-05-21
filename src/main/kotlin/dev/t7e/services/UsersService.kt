@@ -13,7 +13,23 @@ object UsersService : StandardService<UserEntity, User>(
     objectName = "User",
     _getAllObjectFunction = { UserEntity.getAll() },
     _getObjectByIdFunction = { UserEntity.getById(it) },
-    fetchFunction = { UserEntity.fetch(it) }
+    fetchFunction = { UserEntity.fetch(it) },
+    onDeleteFunction = {
+        //  Team -> User
+        it.teamIds.forEach { teamId ->
+            TeamEntity.fetch(teamId)
+        }
+
+        //  Microsoft Account -> User
+        MicrosoftAccountEntity.getAll().forEach { pair ->
+            if (pair.second.userId == it.id) {
+                MicrosoftAccountEntity.fetch(pair.second.id)
+            }
+        }
+
+        //  Class -> User
+        ClassEntity.fetch(it.classId)
+    }
 ) {
 
     fun create(omittedUser: OmittedUser): Result<User> = transaction {
@@ -33,6 +49,8 @@ object UsersService : StandardService<UserEntity, User>(
                 .serializableModel()
                 .apply {
                     fetchFunction(this.id)
+                    //  Class
+                    ClassEntity.fetch(omittedUser.classId)
                 }
         )
     }
@@ -52,6 +70,8 @@ object UsersService : StandardService<UserEntity, User>(
                 .serializableModel()
                 .apply {
                     fetchFunction(this.id)
+                    //  Class
+                    ClassEntity.fetch(omittedUser.classId)
                 }
         )
     }

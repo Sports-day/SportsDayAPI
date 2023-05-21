@@ -13,7 +13,22 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
     objectName = "Class",
     _getAllObjectFunction = { ClassEntity.getAll() },
     _getObjectByIdFunction = { ClassEntity.getById(it) },
-    fetchFunction = { ClassEntity.fetch(it) }
+    fetchFunction = { ClassEntity.fetch(it) },
+    onDeleteFunction = {
+        //  User -> Class
+        UserEntity.getAll().forEach { pair ->
+            if (pair.second.classId == it.id) {
+                UserEntity.fetch(pair.second.id)
+            }
+        }
+
+        //  Team -> Class
+        TeamEntity.getAll().forEach { pair ->
+            if (pair.second.classId == it.id) {
+                TeamEntity.fetch(pair.second.id)
+            }
+        }
+    }
 ) {
 
     /**

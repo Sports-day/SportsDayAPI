@@ -13,7 +13,11 @@ object MatchesService: StandardService<MatchEntity, Match>(
     objectName = "match",
     _getAllObjectFunction = { MatchEntity.getAll() },
     _getObjectByIdFunction = { MatchEntity.getById(it) },
-    fetchFunction = { MatchEntity.fetch(it) }
+    fetchFunction = { MatchEntity.fetch(it) },
+    onDeleteFunction = {
+        //  Game
+        GameEntity.fetch(it.gameId)
+    }
 ) {
 
     fun update(id: Int, omittedMatch: OmittedMatch): Result<Match> = transaction {

@@ -2,6 +2,7 @@ package dev.t7e.services
 
 import dev.t7e.models.Location
 import dev.t7e.models.LocationEntity
+import dev.t7e.models.MatchEntity
 import dev.t7e.models.OmittedLocation
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,7 +15,15 @@ object LocationsService: StandardService<LocationEntity, Location>(
     objectName = "location",
     _getAllObjectFunction = { LocationEntity.getAll() },
     _getObjectByIdFunction = { LocationEntity.getById(it) },
-    fetchFunction = { LocationEntity.fetch(it) }
+    fetchFunction = { LocationEntity.fetch(it) },
+    onDeleteFunction = {
+        //  Location -> Match
+        MatchEntity.getAll().forEach { pair ->
+            if (pair.second.locationId == it.id) {
+                MatchEntity.fetch(pair.second.id)
+            }
+        }
+    }
 ) {
 
     fun create(omittedLocation: OmittedLocation): Result<Location> = transaction {

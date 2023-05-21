@@ -14,7 +14,15 @@ object TeamsService : StandardService<TeamEntity, Team>(
     objectName = "Team",
     _getAllObjectFunction = { TeamEntity.getAll() },
     _getObjectByIdFunction = { TeamEntity.getById(it) },
-    fetchFunction = { TeamEntity.fetch(it) }
+    fetchFunction = { TeamEntity.fetch(it) },
+    onDeleteFunction = {
+        //  User -> Team
+        UserEntity.getAll().forEach { pair ->
+            if (pair.second.teamIds.contains(it.id)) {
+                UserEntity.fetch(pair.second.id)
+            }
+        }
+    }
 ) {
 
     fun create(omittedTeam: OmittedTeam): Result<Team> = transaction {
@@ -51,6 +59,12 @@ object TeamsService : StandardService<TeamEntity, Team>(
                 .serializableModel()
                 .apply {
                     fetchFunction(this.id)
+                    //  User -> Team
+                    UserEntity.getAll().forEach { pair ->
+                        if (pair.second.teamIds.contains(this.id)) {
+                            UserEntity.fetch(pair.second.id)
+                        }
+                    }
                 }
         )
     }
@@ -96,6 +110,9 @@ object TeamsService : StandardService<TeamEntity, Team>(
 
         //  re-fetch
         UserEntity.fetch(userId)
+        team.users.forEach {
+            UserEntity.fetch(it.id.value)
+        }
 
         Result.success(
             team
