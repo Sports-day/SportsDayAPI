@@ -19,6 +19,7 @@ object Sports: IntIdTable("sports") {
     val description = text("description")
     val iconImage = reference("icon_image", Images, onDelete = ReferenceOption.SET_NULL).nullable()
     val weight = integer("weight").default(0)
+    val ruleId = integer("rule_id").default(0)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -35,6 +36,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
     var description by Sports.description
     var iconImage by ImageEntity optionalReferencedOn Sports.iconImage
     var weight by Sports.weight
+    var ruleId by Sports.ruleId
     val games by GameEntity referrersOn Games.sport
     var createdAt by Sports.createdAt
     var updatedAt by Sports.updatedAt
@@ -46,6 +48,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
             description,
             iconImage?.id?.value,
             weight,
+            ruleId,
             games.map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
@@ -60,6 +63,7 @@ data class Sport(
     val description: String,
     val iconId: Int?,
     val weight: Int,
+    val ruleId: Int,
     val gameIds: List<Int>,
     val createdAt: String,
     val updatedAt: String
@@ -71,4 +75,5 @@ data class OmittedSport(
     val description: String,
     val iconId: Int?,
     val weight: Int,
+    val ruleId: Int,
 )
