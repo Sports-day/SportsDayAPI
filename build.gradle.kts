@@ -39,7 +39,7 @@ dependencies {
     implementation("com.auth0:jwks-rsa:0.22.0")
     implementation("com.auth0:java-jwt:4.3.0")
 //    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
-    implementation("mysql:mysql-connector-java:8.0.28")
+    implementation("mysql:mysql-connector-java:8.0.30")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
