@@ -10,8 +10,20 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
         allowHeader(HttpHeaders.Authorization)
-        allowHeader("MyCustomHeader")
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        allowHeader(HttpHeaders.ContentType)
+        if (System.getenv("ALLOWED_HOST") != null) {
+            allowHost(
+                System.getenv("ALLOWED_HOST"),
+                listOf(
+                    "http",
+                    "https"
+                )
+            )
+
+            println("Allowed host: ${System.getenv("ALLOWED_HOST")}")
+        } else anyHost()
     }
 }

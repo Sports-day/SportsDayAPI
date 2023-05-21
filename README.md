@@ -2,6 +2,20 @@
 
 Sports-dayのバックエンド用レポジトリです。
 
+## Environment Variables
+
+| Name               | Description         | Default |
+|--------------------|---------------------|---------|
+| AZURE_AD_TENANT_ID | Azure AD テナントID     |         |
+| DATABASE_HOST      | データベースホスト           |         |
+| DATABASE_PORT      | データベースポート           |         |
+| DATABASE_USER      | データベースユーザー名         |         |
+| DATABASE_PASSWORD  | データベースパスワード         |         |
+| DATABASE_DB        | データベース名             |         |
+| DISCORD_WEBHOOK    | Discord Webhook URL |         |
+| REDIS_HOST         | Redis ホスト           |         |
+| ALLOWED_HOSTS      | 許可するホスト(CORS)       |         |
+
 ## Develop
 
 ### Git branch
@@ -29,5 +43,6 @@ Sports-dayのバックエンド用レポジトリです。
 - **debug**: デバック用のコード
 
 ## LICENSE
+
 Apache-2.0
 Copyright Sports-day

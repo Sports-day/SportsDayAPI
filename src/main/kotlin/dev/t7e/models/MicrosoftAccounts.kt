@@ -1,0 +1,78 @@
+package dev.t7e.models
+
+import dev.t7e.plugins.Role
+import dev.t7e.utils.SmartCache
+import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.javatime.datetime
+import kotlin.time.Duration.Companion.minutes
+
+/**
+ * Created by testusuke on 2023/02/25
+ * @author testusuke
+ */
+
+object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
+    val email = varchar("email", 320).uniqueIndex()
+    val name = varchar("name", 128)
+    val mailAccountName = varchar("mail_account_name", 128).nullable()
+    val role = enumerationByName<Role>("role", 32).default(Role.USER)
+    val user = reference("user", Users, onDelete = ReferenceOption.SET_NULL).nullable()
+    val firstLogin = datetime("first_login")
+    val lastLogin = datetime("last_login")
+}
+
+class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object: SmartCache<MicrosoftAccountEntity, MicrosoftAccount> (
+        entityName = "microsoft account",
+        table = MicrosoftAccounts,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() }
+    ) {
+        fun getByEmail(email: String): Pair<MicrosoftAccountEntity, MicrosoftAccount>? {
+            checkCacheLifetime()
+
+            return cache.values.filterNotNull().find {
+                it.second.email == email
+            }
+        }
+
+        fun existMicrosoftAccount(email: String): Boolean = getByEmail(email) != null
+    }
+
+    var email by MicrosoftAccounts.email
+    var name by MicrosoftAccounts.name
+    var mailAccountName by MicrosoftAccounts.mailAccountName
+    var role by MicrosoftAccounts.role
+    var user by UserEntity optionalReferencedOn MicrosoftAccounts.user
+    var firstLogin by MicrosoftAccounts.firstLogin
+    var lastLogin by MicrosoftAccounts.lastLogin
+
+    fun serializableModel(): MicrosoftAccount {
+        return MicrosoftAccount(
+            id.value,
+            email,
+            name,
+            mailAccountName,
+            role.value,
+            user?.id?.value,
+            firstLogin.toString(),
+            lastLogin.toString()
+        )
+    }
+}
+
+@Serializable
+data class MicrosoftAccount(
+    val id: Int,
+    val email: String,
+    val name: String,
+    val mailAccountName: String?,
+    val role: String,
+    val userId: Int?,
+    val firstLogin: String,
+    val lastLogin: String
+)
