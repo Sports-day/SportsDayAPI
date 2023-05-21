@@ -19,7 +19,7 @@ import kotlin.time.Duration
  * @param R the serializable model
  */
 open class SmartCache<T : IntEntity, R>(
-    entityName: String,
+    private val entityName: String,
     table: IdTable<Int>,
     private val duration: Duration,
     private val serializer: (T) -> R
@@ -40,9 +40,14 @@ open class SmartCache<T : IntEntity, R>(
 
     init {
         println("initializing cache system for $entityName")
+
+        //  redis
+        RedisManager.registerFetchFunction(entityName) {
+            fetch(it)
+        }
     }
 
-    fun fetch(id: Int? = null) {
+    fun fetch(id: Int? = null, redisPublish: Boolean = true) {
         transaction {
             if(id == null) {
                 cache.clear()
@@ -65,6 +70,16 @@ open class SmartCache<T : IntEntity, R>(
 
         //  outside fetch function
         fetchFunctionList.forEach { it(id) }
+
+        if (id != null && redisPublish) {
+            //  redis
+            RedisManager.publish(
+                RedisMessageContent(
+                    type = entityName,
+                    id = id
+                )
+            )
+        }
     }
 
     /**
@@ -79,7 +94,7 @@ open class SmartCache<T : IntEntity, R>(
 
         if (lastUpdate == now || (duration.inWholeMilliseconds > 0 && now - lastUpdate > duration.inWholeMilliseconds)) {
             //  fetch
-            fetch()
+            fetch(redisPublish = false)
 
             //  update
             lastUpdate = now
@@ -110,7 +125,7 @@ open class SmartCache<T : IntEntity, R>(
 
         if(!cache.containsKey(id)) {
             //  fetch unknown data
-            fetch(id)
+            fetch(id, redisPublish = false)
         }
 
         return cache[id]

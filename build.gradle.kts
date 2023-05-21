@@ -48,6 +48,8 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+//    implementation("io.github.crackthecodeabhi:kreds:0.8.1")
+    implementation("redis.clients:jedis:4.4.1")
     implementation(kotlin("stdlib-jdk8"))
 }
 

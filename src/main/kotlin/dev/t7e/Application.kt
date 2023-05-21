@@ -6,8 +6,12 @@ import io.ktor.server.application.*
 import io.ktor.server.netty.*
 import dev.t7e.plugins.*
 import dev.t7e.utils.DatabaseManager
+import dev.t7e.utils.RedisManager
+import dev.t7e.utils.RedisMessageContent
 import dev.t7e.utils.configuration.KeyValueStore
 import dev.t7e.utils.logger.Logger
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 
@@ -28,4 +32,6 @@ fun Application.module() {
     KeyValueStore
     //  Log
     Logger
+    //  Redis Manager
+    RedisManager
 }
