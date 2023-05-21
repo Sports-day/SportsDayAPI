@@ -23,7 +23,7 @@ fun Application.module() {
     //  DB
     DatabaseManager
     //  tables
-    initializeTables(true)
+    initializeTables()
     //  configuration
     KeyValueStore
     //  Log
