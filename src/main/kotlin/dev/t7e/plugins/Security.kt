@@ -86,7 +86,7 @@ object Authorization {
                     MicrosoftAccountEntity.getByEmail(email.toString())?.first?.let { entity ->
                         transaction {
                             entity.lastLogin = LocalDateTime.now()
-                            MicrosoftAccountEntity.fetch(entity.id.value)
+                            //  MicrosoftAccountEntity.fetch(entity.id.value)
                         }
                         return@let entity
                     }

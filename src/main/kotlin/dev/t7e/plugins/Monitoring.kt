@@ -6,6 +6,9 @@ import io.ktor.server.request.*
 import io.ktor.server.application.*
 
 fun Application.configureMonitoring() {
+    if (System.getenv("OUTPUT_REQUEST_LOG") == null) {
+        return
+    }
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
