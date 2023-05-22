@@ -38,6 +38,7 @@ object RedisManager {
                 redisPool.resource.use { jedis ->
                     val listener = FetchListener(
                         uuid = uuid,
+                        isLogging = System.getenv("OUTPUT_REDIS_LOG") != null,
                         callback = {
                             //  fetch
                             val fetchFunction = fetchFunctionList[it.type]
@@ -74,7 +75,7 @@ object RedisManager {
 
 }
 
-class FetchListener(private val uuid: String, private val callback: (RedisMessageContent) -> Unit): JedisPubSub() {
+class FetchListener(private val uuid: String, private val isLogging: Boolean, private val callback: (RedisMessageContent) -> Unit): JedisPubSub() {
     override fun onMessage(channel: String?, message: String?) {
         if (channel != RedisManager.CHANNEL || message == null) {
             return
@@ -90,8 +91,10 @@ class FetchListener(private val uuid: String, private val callback: (RedisMessag
         //  callback
         callback(messageObject.data)
 
-        //  log
-        println("${messageObject.data.type}:${messageObject.data.id ?: "all"} from ${messageObject.from}")
+        if (isLogging) {
+            //  log
+            println("${messageObject.data.type}:${messageObject.data.id ?: "all"} from ${messageObject.from}")
+        }
     }
 
     override fun onSubscribe(channel: String?, subscribedChannels: Int) {
