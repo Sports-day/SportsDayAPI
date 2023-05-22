@@ -15,6 +15,8 @@ Sports-dayのバックエンド用レポジトリです。
 | DISCORD_WEBHOOK    | Discord Webhook URL |         |
 | REDIS_HOST         | Redis ホスト           |         |
 | ALLOWED_HOSTS      | 許可するホスト(CORS)       |         |
+| OUTPUT_REQUEST_LOG | リクエストログを出力するかどうか |    |
+| OUTPUT_REDIS_LOG | Redisログを出力するかどうか |    |
 
 ## Develop
 
