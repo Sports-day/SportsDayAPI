@@ -64,9 +64,7 @@ object RedisManager {
             )
             //  publish
             val encoded = Json.encodeToString(message)
-            for (i in 0..3) {
-                jedis.publish(CHANNEL, encoded)
-            }
+            jedis.publish(CHANNEL, encoded)
         }
     }
 
@@ -77,9 +75,6 @@ object RedisManager {
 }
 
 class FetchListener(private val uuid: String, private val callback: (RedisMessageContent) -> Unit): JedisPubSub() {
-
-    private val receivedMessages = mutableListOf<String>()
-
     override fun onMessage(channel: String?, message: String?) {
         if (channel != RedisManager.CHANNEL || message == null) {
             return
@@ -91,19 +86,6 @@ class FetchListener(private val uuid: String, private val callback: (RedisMessag
         if (uuid == messageObject.from) {
             return
         }
-
-        //  is already received
-        if (receivedMessages.contains(messageObject.id)) {
-            return
-        }
-
-        //  size over 500 clear list
-        if (receivedMessages.size > 500) {
-            receivedMessages.clear()
-        }
-
-        //  store already received
-        receivedMessages.add(messageObject.id)
 
         //  callback
         callback(messageObject.data)
@@ -130,6 +112,5 @@ data class RedisMessageContent(
 @Serializable
 data class RedisMessage(
     val from: String,
-    val id: String = UUID.randomUUID().toString(),
     val data: RedisMessageContent
 )
