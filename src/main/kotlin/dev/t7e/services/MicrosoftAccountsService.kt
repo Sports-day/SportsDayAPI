@@ -44,6 +44,8 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
 
         //  update
         account.first.user = null
+        //  link later disable
+        account.first.linkLater = false
 
         //  fetch
         fetchFunction(accountId)
@@ -60,6 +62,22 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
 
         //  update
         account.role = roleObj
+
+        //  fetch
+        fetchFunction(accountId)
+
+        Result.success(account.serializableModel())
+    }
+
+    fun linkLater(accountId: Int): Result<MicrosoftAccount> = transaction {
+        val account = MicrosoftAccountEntity.getById(accountId)?.first ?: throw NotFoundException("Microsoft account not found")
+
+        if (account.user != null) {
+            throw BadRequestException("already linked")
+        }
+
+        //  update
+        account.linkLater = true
 
         //  fetch
         fetchFunction(accountId)
