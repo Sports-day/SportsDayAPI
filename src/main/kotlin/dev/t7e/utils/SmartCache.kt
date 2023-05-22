@@ -71,7 +71,7 @@ open class SmartCache<T : IntEntity, R>(
         //  outside fetch function
         fetchFunctionList.forEach { it(id) }
 
-        if (id != null && redisPublish) {
+        if (redisPublish) {
             //  redis
             RedisManager.publish(
                 RedisMessageContent(

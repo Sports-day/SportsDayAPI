@@ -150,13 +150,11 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  delete
         game.matches.forEach {
-            val matchId = it.id.value
             it.delete()
-
-            //  delete cache
-            MatchEntity.fetch(matchId)
         }
 
+        //  delete cache
+        MatchEntity.fetch()
         //  fetch
         fetchFunction(id)
 
@@ -207,15 +205,13 @@ object GamesService : StandardService<GameEntity, Game>(
                         this.status = MatchStatus.STANDBY
                         this.createdAt = LocalDateTime.now()
                         this.updatedAt = LocalDateTime.now()
-                    }.also {
-                        //  fetch
-                        MatchEntity.fetch(it.id.value)
                     }
                 )
             }
         }
 
         //  fetch
+        MatchEntity.fetch()
         fetchFunction(id)
 
         Result.success(

@@ -21,7 +21,7 @@ object RedisManager {
     private var uuid: String
 
     //  fetchFunction list
-    private val fetchFunctionList = mutableMapOf<String, (id: Int) -> Unit>()
+    private val fetchFunctionList = mutableMapOf<String, (id: Int?) -> Unit>()
 
     init {
         println("initializing redis manager")
@@ -68,7 +68,7 @@ object RedisManager {
         }
     }
 
-    fun registerFetchFunction(type: String, function: (id: Int) -> Unit) {
+    fun registerFetchFunction(type: String, function: (id: Int?) -> Unit) {
         fetchFunctionList[type] = function
     }
 
@@ -91,7 +91,7 @@ class FetchListener(private val uuid: String, private val callback: (RedisMessag
         callback(messageObject.data)
 
         //  log
-        println("received message: ${messageObject.data.type}:${messageObject.data.id} from ${channel}:${messageObject.from}")
+        println("${messageObject.data.type}:${messageObject.data.id ?: "all"} from ${messageObject.from}")
     }
 
     override fun onSubscribe(channel: String?, subscribedChannels: Int) {
@@ -106,7 +106,7 @@ class FetchListener(private val uuid: String, private val callback: (RedisMessag
 @Serializable
 data class RedisMessageContent(
     val type: String,
-    val id: Int
+    val id: Int?
 )
 
 @Serializable
