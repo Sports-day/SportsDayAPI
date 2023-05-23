@@ -21,6 +21,7 @@ object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
     val mailAccountName = varchar("mail_account_name", 128).nullable()
     val role = enumerationByName<Role>("role", 32).default(Role.USER)
     val user = reference("user", Users, onDelete = ReferenceOption.SET_NULL).nullable()
+    val linkLater = bool("link_later").default(false)
     val firstLogin = datetime("first_login")
     val lastLogin = datetime("last_login")
 }
@@ -48,6 +49,7 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
     var mailAccountName by MicrosoftAccounts.mailAccountName
     var role by MicrosoftAccounts.role
     var user by UserEntity optionalReferencedOn MicrosoftAccounts.user
+    var linkLater by MicrosoftAccounts.linkLater
     var firstLogin by MicrosoftAccounts.firstLogin
     var lastLogin by MicrosoftAccounts.lastLogin
 
@@ -59,6 +61,7 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
             mailAccountName,
             role.value,
             user?.id?.value,
+            linkLater,
             firstLogin.toString(),
             lastLogin.toString()
         )
@@ -73,6 +76,7 @@ data class MicrosoftAccount(
     val mailAccountName: String?,
     val role: String,
     val userId: Int?,
+    val linkLater: Boolean,
     val firstLogin: String,
     val lastLogin: String
 )

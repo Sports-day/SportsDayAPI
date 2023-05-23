@@ -134,6 +134,23 @@ fun Route.microsoftAccountsRouter() {
                                 call.respond(HttpStatusCode.OK, MessageResponse("unlink user"))
                             }
                     }
+
+                    post("later") {
+                        val id = getId(call)
+
+                        val ms = call.authentication.principal<UserPrincipal>()
+                            ?: throw BadRequestException("failed to get user principal")
+
+                        if (!ms.roles.contains(Role.ADMIN) && ms.microsoftAccount.id.value != id) {
+                            throw BadRequestException("you dont have permission to link this account")
+                        }
+
+                        MicrosoftAccountsService
+                            .linkLater(id)
+                            .respondOrInternalError {
+                                call.respond(HttpStatusCode.OK, MessageResponse("link user"))
+                            }
+                    }
                 }
 
             }
