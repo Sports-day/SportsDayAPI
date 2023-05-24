@@ -8,6 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.sql.transactions.transaction
 import kotlin.time.Duration.Companion.minutes
 
 /**
@@ -33,12 +34,10 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
         duration = 5.minutes,
         serializer = { it.serializableModel() }
     ) {
-        fun getByEmail(email: String): Pair<MicrosoftAccountEntity, MicrosoftAccount>? {
-            checkCacheLifetime()
+        fun getByEmail(email: String): Pair<MicrosoftAccountEntity, MicrosoftAccount>? = transaction {
+            val entity = find { MicrosoftAccounts.email eq email }.firstOrNull() ?: return@transaction null
 
-            return cache.values.filterNotNull().find {
-                it.second.email == email
-            }
+            entity to entity.serializableModel()
         }
 
         fun existMicrosoftAccount(email: String): Boolean = getByEmail(email) != null
