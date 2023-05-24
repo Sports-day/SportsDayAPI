@@ -18,9 +18,9 @@ object DatabaseManager {
         val password = System.getenv("DATABASE_PASSWORD")
         val db = System.getenv("DATABASE_DB")
 
-        val config = DatabaseConfig.invoke {
-            maxEntitiesToStoreInCachePerEntity = 0
-        }
+//        val config = DatabaseConfig.invoke {
+//            maxEntitiesToStoreInCachePerEntity = 0
+//        }
 
         //  connect
         database = Database.connect(
@@ -28,7 +28,7 @@ object DatabaseManager {
             driver = "com.mysql.cj.jdbc.Driver",
             user = user,
             password = password,
-            databaseConfig = config
+//            databaseConfig = config
         )
 
         //  set default db
