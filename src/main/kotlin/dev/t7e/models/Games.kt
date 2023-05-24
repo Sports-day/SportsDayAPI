@@ -29,7 +29,7 @@ object Games: IntIdTable("games") {
 
 class GameEntity(id: EntityID<Int>): IntEntity(id) {
     companion object: SmartCache<GameEntity, Game> (
-        entityName = "group",
+        entityName = "game",
         table = Games,
         duration = 5.minutes,
         serializer = { it.serializableModel() }
