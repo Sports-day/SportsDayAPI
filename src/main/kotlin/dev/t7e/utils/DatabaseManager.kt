@@ -1,7 +1,6 @@
 package dev.t7e.utils
 
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 /**
@@ -18,17 +17,12 @@ object DatabaseManager {
         val password = System.getenv("DATABASE_PASSWORD")
         val db = System.getenv("DATABASE_DB")
 
-        val config = DatabaseConfig.invoke {
-            maxEntitiesToStoreInCachePerEntity = 0
-        }
-
         //  connect
         database = Database.connect(
             "jdbc:mysql://$host:$port/$db",
             driver = "com.mysql.cj.jdbc.Driver",
             user = user,
-            password = password,
-            databaseConfig = config
+            password = password
         )
 
         //  set default db
