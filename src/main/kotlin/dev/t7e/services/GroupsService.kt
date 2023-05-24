@@ -34,16 +34,20 @@ object GroupsService : StandardService<GroupEntity, Group>(
      * @param omittedGroup[OmittedGroup] Group content
      * @return [Group]
      */
-    fun create(omittedGroup: OmittedGroup): Result<Group> = transaction {
-        Result.success(
+    fun create(omittedGroup: OmittedGroup): Result<Group> {
+        val model = transaction {
             GroupEntity.new {
                 this.name = omittedGroup.name
                 this.description = omittedGroup.description
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }.serializableModel().apply {
-                fetchFunction(this.id)
-            }
+            }.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
+
+        return Result.success(
+            model
         )
     }
 
@@ -54,20 +58,21 @@ object GroupsService : StandardService<GroupEntity, Group>(
      * @param omittedGroup[OmittedGroup] Group content
      * @return [Group]
      */
-    fun update(id: Int, omittedGroup: OmittedGroup): Result<Group> = transaction {
+    fun update(id: Int, omittedGroup: OmittedGroup): Result<Group> {
         val group = GroupEntity.getById(id) ?: throw NotFoundException("Group not found.")
 
+        val model = transaction {
+            group.first.name = omittedGroup.name
+            group.first.description = omittedGroup.description
+            group.first.updatedAt = LocalDateTime.now()
 
-        group.first.name = omittedGroup.name
-        group.first.description = omittedGroup.description
-        group.first.updatedAt = LocalDateTime.now()
+            //  serialize
+            group.first.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
 
-
-        Result.success(
-            group.first.serializableModel().apply {
-                fetchFunction(this.id)
-            }
-        )
+        return Result.success(model)
     }
 
 }

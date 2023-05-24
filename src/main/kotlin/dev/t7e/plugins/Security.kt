@@ -74,23 +74,26 @@ object Authorization {
                 //  get microsoft user (or create user)
                 val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
                     //  create
-                    transaction {
-                        MicrosoftAccountEntity.new {
+                    val pair = transaction {
+                        val entity = MicrosoftAccountEntity.new {
                             this.email = email.toString()
                             this.name = jwt.claims["name"]?.asString() ?: "Unknown"
                             this.mailAccountName = email.username()
                             this.firstLogin = LocalDateTime.now()
                             this.lastLogin = LocalDateTime.now()
-                        }.apply {
-                            MicrosoftAccountEntity.fetch(this.id.value)
                         }
+
+                        entity to entity.serializableModel()
+                    }.apply {
+                        MicrosoftAccountEntity.fetch(this.second.id)
                     }
+
+                    pair.first
                 } else {
                     //  last login update
                     MicrosoftAccountEntity.getByEmail(email.toString())?.first?.let { entity ->
                         transaction {
                             entity.lastLogin = LocalDateTime.now()
-                            //  MicrosoftAccountEntity.fetch(entity.id.value)
                         }
                         return@let entity
                     }

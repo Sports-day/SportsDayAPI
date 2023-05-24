@@ -18,30 +18,36 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
     fetchFunction = { AllowedDomainEntity.fetch(it) }
 ) {
 
-    fun create(omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> = transaction {
-        Result.success(
+    fun create(omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> {
+        val model = transaction {
             AllowedDomainEntity.new {
                 this.domain = omittedAllowedDomain.domain
                 this.description = omittedAllowedDomain.description
                 this.createdAt = LocalDateTime.now()
-            }
-                .serializableModel()
-                .apply {
-                    fetchFunction(this.id)
-                }
+            }.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
+
+        return Result.success(
+            model
         )
     }
 
-    fun update(id: Int, omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> = transaction {
+    fun update(id: Int, omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> {
         val entity = AllowedDomainEntity.getById(id) ?: throw NotFoundException("invalid id")
 
-        entity.first.domain = omittedAllowedDomain.domain
-        entity.first.description = omittedAllowedDomain.description
+        val model = transaction {
+            entity.first.domain = omittedAllowedDomain.domain
+            entity.first.description = omittedAllowedDomain.description
+            //  serialize
+            entity.first.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
 
-        Result.success(
-            entity.first.serializableModel().apply {
-                fetchFunction(this.id)
-            }
+        return Result.success(
+            model
         )
     }
 }

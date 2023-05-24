@@ -24,34 +24,44 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
     }
 ) {
 
-    fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> = transaction {
+    fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> {
         val account = MicrosoftAccountEntity.getById(accountId) ?: throw NotFoundException("Microsoft account not found.")
 
         val user = UserEntity.getById(userId) ?: throw NotFoundException("target User not found.")
 
-        //  update
-        account.first.user = user.first
+        val model = transaction {
+            //  update
+            account.first.user = user.first
+
+            //  serialize
+            account.first.serializableModel()
+        }
 
         //  fetch
         fetchFunction(accountId)
         UserEntity.fetch(userId)
 
-        Result.success(account.first.serializableModel())
+        return Result.success(model)
     }
 
-    fun unlinkUser(accountId: Int): Result<MicrosoftAccount> = transaction {
+    fun unlinkUser(accountId: Int): Result<MicrosoftAccount> {
         val account = MicrosoftAccountEntity.getById(accountId) ?: throw NotFoundException("Microsoft account not found.")
 
-        //  update
-        account.first.user = null
-        //  link later disable
-        account.first.linkLater = false
+        val model = transaction {
+            //  update
+            account.first.user = null
+            //  link later disable
+            account.first.linkLater = false
 
-        //  fetch
-        fetchFunction(accountId)
-        UserEntity.fetch(account.second.userId)
+            //  serialize
+            account.first.serializableModel()
+        }.apply {
+            //  fetch
+            fetchFunction(accountId)
+            UserEntity.fetch(account.second.userId)
+        }
 
-        Result.success(account.first.serializableModel())
+        return Result.success(model)
     }
 
     fun setAccountRole(accountId: Int, role: String): Result<MicrosoftAccount> = transaction {
@@ -69,20 +79,25 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
         Result.success(account.serializableModel())
     }
 
-    fun linkLater(accountId: Int): Result<MicrosoftAccount> = transaction {
+    fun linkLater(accountId: Int): Result<MicrosoftAccount> {
         val account = MicrosoftAccountEntity.getById(accountId)?.first ?: throw NotFoundException("Microsoft account not found")
 
-        if (account.user != null) {
-            throw BadRequestException("already linked")
-        }
+        val model = transaction {
+            if (account.user != null) {
+                throw BadRequestException("already linked")
+            }
 
-        //  update
-        account.linkLater = true
+            //  update
+            account.linkLater = true
+
+            //  serialize
+            account.serializableModel()
+        }
 
         //  fetch
         fetchFunction(accountId)
 
-        Result.success(account.serializableModel())
+        return Result.success(model)
     }
 
 }

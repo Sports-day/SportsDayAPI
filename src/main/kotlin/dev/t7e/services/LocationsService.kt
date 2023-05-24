@@ -26,27 +26,29 @@ object LocationsService: StandardService<LocationEntity, Location>(
     }
 ) {
 
-    fun create(omittedLocation: OmittedLocation): Result<Location> = transaction {
-        val entity = LocationEntity.new {
-            this.name = omittedLocation.name
+    fun create(omittedLocation: OmittedLocation): Result<Location> {
+        val model = transaction {
+            LocationEntity.new {
+                this.name = omittedLocation.name
+            }.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
         }
 
-        Result.success(
-            entity.serializableModel().apply {
-                fetchFunction(this.id)
-            }
-        )
+        return Result.success(model)
     }
 
-    fun update(id: Int, omittedLocation: OmittedLocation): Result<Location> = transaction {
+    fun update(id: Int, omittedLocation: OmittedLocation): Result<Location> {
         val entity = LocationEntity.getById(id)?.first ?: throw NotFoundException("invalid location id")
 
-        entity.name = omittedLocation.name
+        val model = transaction {
+            entity.name = omittedLocation.name
+            //  serialize
+            entity.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
 
-        Result.success(
-            entity.serializableModel().apply {
-                fetchFunction(this.id)
-            }
-        )
+        return Result.success(model)
     }
 }

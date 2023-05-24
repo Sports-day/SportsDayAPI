@@ -25,45 +25,47 @@ object GamesService : StandardService<GameEntity, Game>(
     }
 ) {
 
-    fun create(omittedGame: OmittedGame): Result<Game> = transaction {
+    fun create(omittedGame: OmittedGame): Result<Game> {
         val sport = SportEntity.getById(omittedGame.sportId)?.first ?: throw NotFoundException("invalid sport id")
 
-        val entity = GameEntity.new {
-            this.name = omittedGame.name
-            this.description = omittedGame.description
-            this.sport = sport
-            this.type = omittedGame.type
-            this.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
-            this.weight = omittedGame.weight
-            this.createdAt = LocalDateTime.now()
-            this.updatedAt = LocalDateTime.now()
+        val model = transaction {
+            GameEntity.new {
+                this.name = omittedGame.name
+                this.description = omittedGame.description
+                this.sport = sport
+                this.type = omittedGame.type
+                this.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
+                this.weight = omittedGame.weight
+                this.createdAt = LocalDateTime.now()
+                this.updatedAt = LocalDateTime.now()
+            }.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+            SportEntity.fetch(this.sportId)
         }
 
-        Result.success(
-            entity.serializableModel().apply {
-                fetchFunction(this.id)
-                SportEntity.fetch(this.sportId)
-            }
-        )
+        return Result.success(model)
     }
 
-    fun update(id: Int, omittedGame: OmittedGame): Result<Game> = transaction {
+    fun update(id: Int, omittedGame: OmittedGame): Result<Game> {
         val entity = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
         val sport = SportEntity.getById(omittedGame.sportId)?.first ?: throw NotFoundException("invalid sport id")
 
-        entity.name = omittedGame.name
-        entity.description = omittedGame.description
-        entity.sport = sport
-        entity.type = omittedGame.type
-        entity.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
-        entity.weight = omittedGame.weight
-        entity.updatedAt = LocalDateTime.now()
+        val model = transaction {
+            entity.name = omittedGame.name
+            entity.description = omittedGame.description
+            entity.sport = sport
+            entity.type = omittedGame.type
+            entity.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
+            entity.weight = omittedGame.weight
+            entity.updatedAt = LocalDateTime.now()
+            //  serialize
+            entity.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
 
-        Result.success(
-            entity.serializableModel().apply {
-                fetchFunction(this.id)
-            }
-        )
+        return Result.success(model)
     }
 
     /**
@@ -72,10 +74,10 @@ object GamesService : StandardService<GameEntity, Game>(
      * @param id game id
      * @return entries
      */
-    fun getEntries(id: Int): Result<List<Team>> = transaction {
+    fun getEntries(id: Int): Result<List<Team>> {
         val entries = GameEntity.getGameEntries(id)?.map { it.second } ?: throw NotFoundException("invalid game id")
 
-        Result.success(entries)
+        return Result.success(entries)
     }
 
     /**
@@ -85,24 +87,29 @@ object GamesService : StandardService<GameEntity, Game>(
      * @param teamIds team ids
      * @return teams
      */
-    fun enterGame(id: Int, teamIds: List<Int>): Result<List<Team>> = transaction {
+    fun enterGame(id: Int, teamIds: List<Int>): Result<List<Team>> {
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
         val teams = teamIds.mapNotNull {
             TeamEntity.getById(it)?.first
         }
 
-        game.teams = SizedCollection(listOf(game.teams.toList(), teams).flatten().distinct())
-        game.updatedAt = LocalDateTime.now()
+        val teamModels = transaction {
+            game.teams = SizedCollection(listOf(game.teams.toList(), teams).flatten().distinct())
+            game.updatedAt = LocalDateTime.now()
 
-        //  fetch
-        fetchFunction(id)
-        teams.forEach { team ->
-            TeamEntity.fetch(team.id.value)
+            //  serialize
+            game.teams.map { it.serializableModel() }
+        }.apply {
+            transaction {
+                //  fetch
+                fetchFunction(id)
+                teams.forEach { team ->
+                    TeamEntity.fetch(team.id.value)
+                }
+            }
         }
 
-        Result.success(
-            game.teams.map { it.serializableModel() }
-        )
+        return Result.success(teamModels)
     }
 
     /**
@@ -112,20 +119,22 @@ object GamesService : StandardService<GameEntity, Game>(
      * @param teamId team id
      * @return teams
      */
-    fun cancelEntry(id: Int, teamId: Int): Result<List<Team>> = transaction {
+    fun cancelEntry(id: Int, teamId: Int): Result<List<Team>> {
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
         val team = TeamEntity.getById(teamId)?.first ?: throw NotFoundException("invalid team id")
 
-        game.teams = SizedCollection(game.teams.filterNot { it.id.value == team.id.value })
-        game.updatedAt = LocalDateTime.now()
+        val teamModels = transaction {
+            game.teams = SizedCollection(game.teams.filterNot { it.id.value == team.id.value })
+            game.updatedAt = LocalDateTime.now()
+            //  serialize
+            game.teams.map { it.serializableModel() }
+        }
 
         //  fetch
         fetchFunction(id)
         TeamEntity.fetch(teamId)
 
-        Result.success(
-            game.teams.map { it.serializableModel() }
-        )
+        return Result.success(teamModels)
     }
 
     /**
@@ -134,10 +143,10 @@ object GamesService : StandardService<GameEntity, Game>(
      * @param id game id
      * @return matches
      */
-    fun getMatches(id: Int): Result<List<Match>> = transaction {
+    fun getMatches(id: Int): Result<List<Match>> {
         val matches = GameEntity.getGameMatches(id)?.map { it.second } ?: throw NotFoundException("invalid game id")
 
-        Result.success(matches)
+        return Result.success(matches)
     }
 
     /**
@@ -145,12 +154,14 @@ object GamesService : StandardService<GameEntity, Game>(
      *
      * @param id game id
      */
-    fun deleteAllMatches(id: Int): Result<Unit> = transaction {
+    fun deleteAllMatches(id: Int): Result<Unit> {
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
 
-        //  delete
-        game.matches.forEach {
-            it.delete()
+        transaction {
+            //  delete
+            game.matches.forEach {
+                it.delete()
+            }
         }
 
         //  delete cache
@@ -158,7 +169,7 @@ object GamesService : StandardService<GameEntity, Game>(
         //  fetch
         fetchFunction(id)
 
-        Result.success(Unit)
+        return Result.success(Unit)
     }
 
 
@@ -168,55 +179,57 @@ object GamesService : StandardService<GameEntity, Game>(
      * @param id game id
      * @return matches
      */
-    fun makeLeagueMatches(id: Int, defaultLocationId: Int?): Result<List<Match>> = transaction {
+    fun makeLeagueMatches(id: Int, defaultLocationId: Int?): Result<List<Match>> {
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
-        //  check if game type is league
-        if (game.type != GameType.LEAGUE) {
-            throw BadRequestException("invalid game type")
-        }
-
-        //  check if league matches already generated
-        if (!game.matches.empty()) {
-            throw BadRequestException("league matches already generated")
-        }
-
-        val teams = game.teams.toList()
-        //  check if teams count is enough to make league matches
-        if (teams.size < 2) {
-            throw BadRequestException("two more teams are required to make league matches")
-        }
-
         val location = defaultLocationId?.let {
             LocationEntity.getById(it)?.first ?: throw NotFoundException("invalid location id")
         }
 
-        val matches = mutableListOf<MatchEntity>()
-
-        for (i in teams.indices) {
-            for (j in i + 1 until teams.size) {
-                matches.add(
-                    MatchEntity.new {
-                        this.location = location
-                        this.game = game
-                        this.sport = game.sport
-                        this.startAt = LocalDateTime.now()
-                        this.leftTeam = teams[i]
-                        this.rightTeam = teams[j]
-                        this.status = MatchStatus.STANDBY
-                        this.createdAt = LocalDateTime.now()
-                        this.updatedAt = LocalDateTime.now()
-                    }
-                )
+        val matchModels = transaction {
+            //  check if game type is league
+            if (game.type != GameType.LEAGUE) {
+                throw BadRequestException("invalid game type")
             }
+
+            //  check if league matches already generated
+            if (!game.matches.empty()) {
+                throw BadRequestException("league matches already generated")
+            }
+
+            val teams = game.teams.toList()
+            //  check if teams count is enough to make league matches
+            if (teams.size < 2) {
+                throw BadRequestException("two more teams are required to make league matches")
+            }
+
+            val matches = mutableListOf<MatchEntity>()
+
+            for (i in teams.indices) {
+                for (j in i + 1 until teams.size) {
+                    matches.add(
+                        MatchEntity.new {
+                            this.location = location
+                            this.game = game
+                            this.sport = game.sport
+                            this.startAt = LocalDateTime.now()
+                            this.leftTeam = teams[i]
+                            this.rightTeam = teams[j]
+                            this.status = MatchStatus.STANDBY
+                            this.createdAt = LocalDateTime.now()
+                            this.updatedAt = LocalDateTime.now()
+                        }
+                    )
+                }
+            }
+
+            matches.map { it.serializableModel() }
         }
 
         //  fetch
         MatchEntity.fetch()
         fetchFunction(id)
 
-        Result.success(
-            matches.map { it.serializableModel() }
-        )
+        return Result.success(matchModels)
     }
 
     /**
@@ -226,54 +239,57 @@ object GamesService : StandardService<GameEntity, Game>(
      * @param parentMatchId parent match id
      * @return match
      */
-    fun makeTournamentTree(id: Int, parentMatchId: Int?): Result<Match> = transaction {
+    fun makeTournamentTree(id: Int, parentMatchId: Int?): Result<Match> {
         val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
-        //  check if game type is tournament
-        if (game.type != GameType.TOURNAMENT) {
-            throw BadRequestException("invalid game type")
-        }
 
-        val parentMatch = if (parentMatchId != null) {
-            MatchEntity.getById(parentMatchId)?.first ?: throw NotFoundException("invalid parent match id")
-        } else {
-            //  check if top node already exists
-            if (game.matches.count() >= 1) {
-                throw BadRequestException("top node already exists")
+        val model = transaction {
+            //  check if game type is tournament
+            if (game.type != GameType.TOURNAMENT) {
+                throw BadRequestException("invalid game type")
             }
 
-            null
-        }
+            val parentMatch = if (parentMatchId != null) {
+                MatchEntity.getById(parentMatchId)?.first ?: throw NotFoundException("invalid parent match id")
+            } else {
+                //  check if top node already exists
+                if (game.matches.count() >= 1) {
+                    throw BadRequestException("top node already exists")
+                }
 
-        //  check if child match count under two
-        if (parentMatch != null && parentMatch.children.count() >= 2) {
-            throw BadRequestException("cannot have two more child matches")
-        }
+                null
+            }
 
-        val match = MatchEntity.new {
-            this.game = game
-            this.sport = game.sport
-            this.startAt = LocalDateTime.now()
-            this.status = MatchStatus.STANDBY
-            this.createdAt = LocalDateTime.now()
-            this.updatedAt = LocalDateTime.now()
-        }
+            //  check if child match count under two
+            if (parentMatch != null && parentMatch.children.count() >= 2) {
+                throw BadRequestException("cannot have two more child matches")
+            }
 
-        parentMatch?.let {
-            //  register parent
-            match.parents = SizedCollection(listOf(parentMatch))
+            val match = MatchEntity.new {
+                this.game = game
+                this.sport = game.sport
+                this.startAt = LocalDateTime.now()
+                this.status = MatchStatus.STANDBY
+                this.createdAt = LocalDateTime.now()
+                this.updatedAt = LocalDateTime.now()
+            }
 
-            //  add child to parent
-            parentMatch.children =
-                SizedCollection(listOf(parentMatch.children.toList(), listOf(match)).flatten().distinct())
+            parentMatch?.let {
+                //  register parent
+                match.parents = SizedCollection(listOf(parentMatch))
+
+                //  add child to parent
+                parentMatch.children =
+                    SizedCollection(listOf(parentMatch.children.toList(), listOf(match)).flatten().distinct())
+            }
+
+            match.serializableModel()
         }
 
         //  fetch
         fetchFunction(id)
-        MatchEntity.fetch(match.id.value)
+        MatchEntity.fetch(model.id)
 
-        Result.success(
-            match.serializableModel()
-        )
+        return Result.success(model)
     }
 
     /**
@@ -430,23 +446,32 @@ object GamesService : StandardService<GameEntity, Game>(
      *
      * @param id game id
      */
-    fun updateTournamentTree(id: Int): Result<Unit> = transaction {
-        val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
+    fun updateTournamentTree(id: Int): Result<Unit> {
+        transaction {
+            val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
 
-        //  check if game type is tournament
-        if (game.type != GameType.TOURNAMENT) {
-            throw BadRequestException("invalid game type")
+            //  check if game type is tournament
+            if (game.type != GameType.TOURNAMENT) {
+                throw BadRequestException("invalid game type")
+            }
+
+            //  find top node
+            val topNode =
+                game.matches.toList().find { it.parents.count() <= 0 }
+                    ?: throw BadRequestException("cannot find top node")
+
+            //  update tree recursively
+            updateTree(topNode)
         }
 
-        //  find top node
-        val topNode =
-            game.matches.toList().find { it.parents.count() <= 0 } ?: throw BadRequestException("cannot find top node")
-
-        //  update tree recursively
-        updateTree(topNode)
         fetchFunction(id)
+        //  fetch matches
+        val matches = GameEntity.getGameMatches(id)
+        matches?.forEach { match ->
+            MatchEntity.fetch(match.second.id)
+        }
 
-        Result.success(Unit)
+        return Result.success(Unit)
     }
 
     private fun updateTree(match: MatchEntity): TeamEntity? {
@@ -486,7 +511,7 @@ object GamesService : StandardService<GameEntity, Game>(
             match.updatedAt = LocalDateTime.now()
 
             //  fetch
-            MatchEntity.fetch(match.id.value)
+//            MatchEntity.fetch(match.id.value)
 
             return null
         } else {

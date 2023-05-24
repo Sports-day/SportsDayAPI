@@ -37,19 +37,23 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
      * @param omittedClass[OmittedClassModel] class content
      * @return [ClassModel]
      */
-    fun create(omittedClass: OmittedClassModel): Result<ClassModel> = transaction {
+    fun create(omittedClass: OmittedClassModel): Result<ClassModel> {
         val group = GroupEntity.getById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
 
-        Result.success(
+        val model = transaction {
             ClassEntity.new {
                 this.name = omittedClass.name
                 this.description = omittedClass.description
                 this.group = group.first
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }.serializableModel().apply {
-                fetchFunction(this.id)
-            }
+            }.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
+
+        return Result.success(
+            model
         )
     }
 
@@ -59,20 +63,23 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
      * @param omittedClass[OmittedClassModel] class content
      * @return [ClassModel]
      */
-    fun update(id: Int, omittedClass: OmittedClassModel): Result<ClassModel> = transaction {
+    fun update(id: Int, omittedClass: OmittedClassModel): Result<ClassModel> {
         val classEntity = ClassEntity.getById(id) ?: throw NotFoundException("invalid class id")
         val group = GroupEntity.getById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
 
-        classEntity.first.name = omittedClass.name
-        classEntity.first.description = omittedClass.description
-        classEntity.first.group = group.first
-        classEntity.first.updatedAt = LocalDateTime.now()
+        val model = transaction {
+            classEntity.first.name = omittedClass.name
+            classEntity.first.description = omittedClass.description
+            classEntity.first.group = group.first
+            classEntity.first.updatedAt = LocalDateTime.now()
+            //  serialize
+            classEntity.first.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
 
-
-        Result.success(
-            classEntity.first.serializableModel().apply {
-                fetchFunction(this.id)
-            }
+        return Result.success(
+            model
         )
     }
 
@@ -82,10 +89,10 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
      * @param id[Int] class id
      * @return [List<User>]
      */
-    fun getAllUsersOfClass(id: Int): Result<List<User>> = transaction {
+    fun getAllUsersOfClass(id: Int): Result<List<User>> {
         val users = ClassEntity.getClassUsers(id)?.map { it.second } ?: throw NotFoundException("invalid class id")
 
-        Result.success(
+        return Result.success(
             users
         )
     }
