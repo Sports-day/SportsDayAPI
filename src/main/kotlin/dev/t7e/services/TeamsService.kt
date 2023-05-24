@@ -25,101 +25,101 @@ object TeamsService : StandardService<TeamEntity, Team>(
     }
 ) {
 
-    fun create(omittedTeam: OmittedTeam): Result<Team> = transaction {
-        val classEntity =
-            ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
+    fun create(omittedTeam: OmittedTeam): Result<Team> {
+        val classEntity = ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
 
-        Result.success(
+        val model = transaction {
             TeamEntity.new {
                 this.name = omittedTeam.name
                 this.description = omittedTeam.description
                 this.classEntity = classEntity
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }
-                .serializableModel()
-                .apply {
-                    fetchFunction(this.id)
-                }
-        )
+            }.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+        }
+
+        return Result.success(model)
     }
 
-    fun update(id: Int, omittedTeam: OmittedTeam): Result<Team> = transaction {
+    fun update(id: Int, omittedTeam: OmittedTeam): Result<Team> {
         val team = TeamEntity.getById(id)?.first ?: throw NotFoundException("Team not found.")
-        val classEntity =
-            ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
+        val classEntity = ClassEntity.getById(omittedTeam.classId)?.first ?: throw BadRequestException("invalid class id")
 
-        team.name = omittedTeam.name
-        team.description = omittedTeam.description
-        team.classEntity = classEntity
-        team.updatedAt = LocalDateTime.now()
+        val model = transaction {
+            team.name = omittedTeam.name
+            team.description = omittedTeam.description
+            team.classEntity = classEntity
+            team.updatedAt = LocalDateTime.now()
 
-        Result.success(
-            team
-                .serializableModel()
-                .apply {
-                    fetchFunction(this.id)
-                    //  User -> Team
-                    UserEntity.getAll().forEach { pair ->
-                        if (pair.second.teamIds.contains(this.id)) {
-                            UserEntity.fetch(pair.second.id)
-                        }
-                    }
+            team.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+
+            //  User -> Team
+            UserEntity.getAll().forEach { pair ->
+                if (pair.second.teamIds.contains(this.id)) {
+                    UserEntity.fetch(pair.second.id)
                 }
-        )
+            }
+        }
+
+        return Result.success(model)
     }
 
-    fun getUsers(id: Int): Result<List<User>> = transaction {
+    fun getUsers(id: Int): Result<List<User>> {
         val users = TeamEntity.getTeamUsers(id)?.map { it.second } ?: throw NotFoundException("Team not found.")
 
-        Result.success(users)
+        return Result.success(users)
     }
 
-    fun addUsers(id: Int, userIds: List<Int>): Result<Team> = transaction {
+    fun addUsers(id: Int, userIds: List<Int>): Result<Team> {
         val team = TeamEntity.getById(id)?.first ?: throw NotFoundException("Team not found.")
         val users = userIds.mapNotNull {
             UserEntity.getById(it)?.first
         }
 
-        team.users = SizedCollection(listOf(team.users.toList(), users).flatten().distinct())
-        team.updatedAt = LocalDateTime.now()
+        val model = transaction {
+            team.users = SizedCollection(listOf(team.users.toList(), users).flatten().distinct())
+            team.updatedAt = LocalDateTime.now()
 
-        //  re-fetch
-        users.forEach {
-            UserEntity.fetch(it.id.value)
+            team.serializableModel()
         }
 
-        Result.success(
-            team
-                .serializableModel()
-                .apply {
-                    fetchFunction(this.id)
-                }
-        )
+        fetchFunction(id)
+        //  re-fetch
+        userIds.forEach {
+            UserEntity.fetch(it)
+        }
+
+        return Result.success(model)
     }
 
-    fun removeUser(id: Int, userId: Int): Result<Team> = transaction {
+    fun removeUser(id: Int, userId: Int): Result<Team> {
         val team = TeamEntity.getById(id)?.first ?: throw NotFoundException("Team not found.")
 
-        team.users = SizedCollection(
-            team.users.filterNot {
-                it.id.value == userId
-            }
-        )
-        team.updatedAt = LocalDateTime.now()
+        val model = transaction {
+            team.users = SizedCollection(
+                team.users.filterNot {
+                    it.id.value == userId
+                }
+            )
+            team.updatedAt = LocalDateTime.now()
 
-        //  re-fetch
-        UserEntity.fetch(userId)
-        team.users.forEach {
-            UserEntity.fetch(it.id.value)
+            team.serializableModel()
+        }.apply {
+            transaction {
+                fetchFunction(id)
+                //  re-fetch
+                UserEntity.fetch(userId)
+
+                team.users.forEach {
+                    UserEntity.fetch(it.id.value)
+                }
+            }
         }
 
-        Result.success(
-            team
-                .serializableModel()
-                .apply {
-                    fetchFunction(id)
-                }
-        )
+        return Result.success(model)
     }
 }

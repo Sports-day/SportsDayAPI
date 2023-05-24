@@ -20,9 +20,8 @@ object MatchesService: StandardService<MatchEntity, Match>(
     }
 ) {
 
-    fun update(id: Int, omittedMatch: OmittedMatch): Result<Match> = transaction {
+    fun update(id: Int, omittedMatch: OmittedMatch): Result<Match> {
         val match = MatchEntity.getById(id)?.first ?: throw NotFoundException("invalid match id")
-
         val location = omittedMatch.locationId?.let {
             LocationEntity.getById(it)?.first ?: throw NotFoundException("invalid location id")
         }
@@ -35,27 +34,30 @@ object MatchesService: StandardService<MatchEntity, Match>(
             TeamEntity.getById(it)?.first ?: throw NotFoundException("invalid right team id")
         }
 
-        //  update
-        match.location = location
-        match.game = game
-        match.sport = sport
-        match.startAt = LocalDateTime.parse(omittedMatch.startAt)
-        match.leftTeam = leftTeam
-        match.rightTeam = rightTeam
-        match.leftScore = omittedMatch.leftScore
-        match.rightScore = omittedMatch.rightScore
-        match.result = omittedMatch.result
-        match.status = omittedMatch.status
-        match.note = omittedMatch.note
-        match.judge = omittedMatch.judge
+        val model = transaction {
+            //  update
+            match.location = location
+            match.game = game
+            match.sport = sport
+            match.startAt = LocalDateTime.parse(omittedMatch.startAt)
+            match.leftTeam = leftTeam
+            match.rightTeam = rightTeam
+            match.leftScore = omittedMatch.leftScore
+            match.rightScore = omittedMatch.rightScore
+            match.result = omittedMatch.result
+            match.status = omittedMatch.status
+            match.note = omittedMatch.note
+            match.judge = omittedMatch.judge
 
-        match.updatedAt = LocalDateTime.now()
+            match.updatedAt = LocalDateTime.now()
 
-        Result.success(
-            match.serializableModel().apply {
-                fetchFunction(this.id)
-                GameEntity.fetch(this.gameId)
-            }
-        )
+            //  serialize
+            match.serializableModel()
+        }.apply {
+            fetchFunction(this.id)
+            GameEntity.fetch(this.gameId)
+        }
+
+        return Result.success(model)
     }
 }

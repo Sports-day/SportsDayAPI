@@ -4,11 +4,15 @@ import com.auth0.jwk.GuavaCachedJwkProvider
 import com.auth0.jwk.UrlJwkProvider
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import dev.t7e.models.Log
+import dev.t7e.models.LogEvents
 import dev.t7e.models.MicrosoftAccountEntity
 import dev.t7e.utils.Cache
 import dev.t7e.utils.Email
+import dev.t7e.utils.logger.Logger
 import io.ktor.server.auth.*
 import io.ktor.server.application.*
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
 import java.net.URL
@@ -70,23 +74,26 @@ object Authorization {
                 //  get microsoft user (or create user)
                 val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
                     //  create
-                    transaction {
-                        MicrosoftAccountEntity.new {
+                    val pair = transaction {
+                        val entity = MicrosoftAccountEntity.new {
                             this.email = email.toString()
                             this.name = jwt.claims["name"]?.asString() ?: "Unknown"
                             this.mailAccountName = email.username()
                             this.firstLogin = LocalDateTime.now()
                             this.lastLogin = LocalDateTime.now()
-                        }.apply {
-                            MicrosoftAccountEntity.fetch(this.id.value)
                         }
+
+                        entity to entity.serializableModel()
+                    }.apply {
+                        MicrosoftAccountEntity.fetch(this.second.id)
                     }
+
+                    pair.first
                 } else {
                     //  last login update
                     MicrosoftAccountEntity.getByEmail(email.toString())?.first?.let { entity ->
                         transaction {
                             entity.lastLogin = LocalDateTime.now()
-                            //  MicrosoftAccountEntity.fetch(entity.id.value)
                         }
                         return@let entity
                     }
@@ -104,6 +111,14 @@ object Authorization {
                     if (microsoftAccount.role == Role.ADMIN) setOf(Role.ADMIN, Role.USER)
                     else setOf(Role.USER)
                 )
+            } catch (e: ExposedSQLException) {
+                Logger.commit(
+                    "Authorization failed: ${e.message}",
+                    LogEvents.ERROR,
+                    null
+                )
+
+                return@memoize null
             } catch (e: Exception) {
                 return@memoize null
             }
