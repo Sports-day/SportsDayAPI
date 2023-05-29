@@ -41,6 +41,8 @@ fun Application.configureRouting() {
                 imagesRouter()
                 //  Locations
                 locationsRouter()
+                //  Information
+                informationRouter()
             }
         }
     }
