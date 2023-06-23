@@ -1,8 +1,8 @@
 # SportsDayAPI
 
-Sports-dayのバックエンド用レポジトリです。
+SportsDayAPIは、各リソースへのアクセス、認証を行うREST APIです。
 
-## Environment Variables
+## 環境変数
 
 | Name               | Description         | Default |
 |--------------------|---------------------|---------|
