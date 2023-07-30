@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "dev.t7e"
-version = "0.0.1"
+version = "1.0.0"
 
 application {
     mainClass.set("dev.t7e.ApplicationKt")
