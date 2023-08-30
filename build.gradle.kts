@@ -58,20 +58,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
 }
 
-ktor {
-    docker {
-        localImageName.set("sports-day-api-image")
-        imageTag.set(version.toString())
-        //  port
-        portMappings.set(listOf(
-            DockerPortMapping(
-                8080,
-                8080,
-                DockerPortMappingProtocol.TCP
-            )
-        ))
-    }
-}
 kotlin {
     jvmToolchain(11)
 }
