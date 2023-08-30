@@ -32,9 +32,18 @@ SportsDayAPIは、各リソースへのアクセス、認証を行うREST APIで
 
 ### Git branch
 
-``main``: プロダクション用ブランチ
+``main``ブランチから作業用のブランチを切って作業を行います。
 
-開発時は、``main``ブランチからブランチを切ってください。
+#### Style
+
+```
+<type>/#<issue-number>-<alias>
+```
+
+#### Type
+
+``main``: プロダクション用ブランチ  
+``feature``: 開発用ブランチ
 
 ### Git commit
 
