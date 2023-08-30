@@ -1,13 +1,13 @@
 package dev.t7e
 
 import dev.t7e.models.initializeTables
-import io.ktor.server.application.*
-import io.ktor.server.netty.*
 import dev.t7e.plugins.*
 import dev.t7e.utils.DatabaseManager
 import dev.t7e.utils.RedisManager
 import dev.t7e.utils.configuration.KeyValueStore
 import dev.t7e.utils.logger.Logger
+import io.ktor.server.application.*
+import io.ktor.server.netty.*
 
 fun main(args: Array<String>): Unit = EngineMain.main(args)
 

@@ -26,7 +26,6 @@ import io.ktor.server.routing.*
 fun Route.locationsRouter() {
     route("/locations") {
         withRole(Role.USER) {
-
             /**
              * Get all locations
              */
@@ -67,7 +66,6 @@ fun Route.locationsRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get location by id
                  */

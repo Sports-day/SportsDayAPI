@@ -65,7 +65,7 @@ object Logger {
                         DiscordEmbed(
                             title = "Error",
                             description = log.message,
-                            color = Color.RED.getColorValue(),
+                            color = Color.RED.getColorValue()
                         )
                     )
                 }
@@ -84,5 +84,4 @@ object Logger {
             logs.clear()
         }
     }
-
 }

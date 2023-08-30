@@ -27,88 +27,85 @@ import io.ktor.server.routing.*
 fun Route.matchesRouter() {
     route("/matches") {
         withRole(Role.USER) {
+            /**
+             * Get all matches
+             */
+            get {
+                val matches = MatchesService.getAll()
 
+                call.respond(
+                    HttpStatusCode.OK,
+                    DataResponse(matches.getOrDefault(listOf()))
+                )
+            }
+
+            route("/{id?}") {
                 /**
-                * Get all matches
-                */
+                 * Get match by id
+                 */
                 get {
-                    val matches = MatchesService.getAll()
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(matches.getOrDefault(listOf()))
-                    )
+                    MatchesService
+                        .getById(id)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it)
+                            )
+                        }
                 }
 
-                route("/{id?}") {
-
+                withRole(Role.ADMIN) {
                     /**
-                    * Get match by id
-                    */
-                    get {
+                     * Update match by id
+                     */
+                    put {
                         val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val requestBody = call.receive<OmittedMatch>()
 
                         MatchesService
-                            .getById(id)
+                            .update(id, requestBody)
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    DataResponse(it)
+                                    DataMessageResponse(
+                                        "updated match",
+                                        it
+                                    )
+                                )
+                                //  Logger
+                                Logger.commit(
+                                    "[MatchesRouter] updated match: $id",
+                                    LogEvents.CREATE,
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
                                 )
                             }
                     }
 
-                    withRole(Role.ADMIN) {
+                    /**
+                     * Delete match by id
+                     */
+                    delete {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-                        /**
-                        * Update match by id
-                        */
-                        put {
-                            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                            val requestBody = call.receive<OmittedMatch>()
-
-                            MatchesService
-                                .update(id, requestBody)
-                                .respondOrInternalError {
-                                    call.respond(
-                                        HttpStatusCode.OK,
-                                        DataMessageResponse(
-                                            "updated match",
-                                            it
-                                        )
-                                    )
-                                    //  Logger
-                                    Logger.commit(
-                                        "[MatchesRouter] updated match: $id",
-                                        LogEvents.CREATE,
-                                        call.authentication.principal<UserPrincipal>()?.microsoftAccount
-                                    )
-                                }
-                        }
-
-                        /**
-                        * Delete match by id
-                        */
-                        delete {
-                            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-                            MatchesService
-                                .deleteById(id)
-                                .respondOrInternalError {
-                                    call.respond(
-                                        HttpStatusCode.OK,
-                                        MessageResponse("deleted match")
-                                    )
-                                    //  Logger
-                                    Logger.commit(
-                                        "[MatchesRouter] deleted match: $id",
-                                        LogEvents.DELETE,
-                                        call.authentication.principal<UserPrincipal>()?.microsoftAccount
-                                    )
-                                }
-                        }
+                        MatchesService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    MessageResponse("deleted match")
+                                )
+                                //  Logger
+                                Logger.commit(
+                                    "[MatchesRouter] deleted match: $id",
+                                    LogEvents.DELETE,
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                )
+                            }
                     }
                 }
+            }
         }
     }
 }

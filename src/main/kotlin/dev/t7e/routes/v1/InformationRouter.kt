@@ -23,7 +23,6 @@ import io.ktor.server.routing.*
 fun Route.informationRouter() {
     route("/information") {
         withRole(Role.USER) {
-
             /**
              * Get all information
              */
@@ -37,7 +36,6 @@ fun Route.informationRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new information
                  */
@@ -56,7 +54,6 @@ fun Route.informationRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get information by id
                  */
@@ -72,7 +69,6 @@ fun Route.informationRouter() {
                             )
                         }
                 }
-
 
                 /**
                  * Update information by id

@@ -1,7 +1,6 @@
 package dev.t7e.utils
 
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 /**
@@ -27,7 +26,7 @@ object DatabaseManager {
             "jdbc:mysql://$host:$port/$db",
             driver = "com.mysql.cj.jdbc.Driver",
             user = user,
-            password = password,
+            password = password
 //            databaseConfig = config
         )
 

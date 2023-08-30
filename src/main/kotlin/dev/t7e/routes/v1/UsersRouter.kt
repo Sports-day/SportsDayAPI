@@ -26,7 +26,6 @@ import io.ktor.server.routing.*
 
 fun Route.usersRouter() {
     route("/users") {
-
         /**
          * Get all users
          */
@@ -37,7 +36,6 @@ fun Route.usersRouter() {
         }
 
         withRole(Role.ADMIN) {
-
             /**
              * create user
              */
@@ -47,10 +45,12 @@ fun Route.usersRouter() {
                 UsersService
                     .create(omittedUser)
                     .respondOrInternalError {
-                        call.respond(DataMessageResponse(
-                            "created user",
-                            it
-                        ))
+                        call.respond(
+                            DataMessageResponse(
+                                "created user",
+                                it
+                            )
+                        )
                         //  Logger
                         Logger.commit(
                             "[UsersRouter] created user: ${it.name}",
@@ -62,7 +62,6 @@ fun Route.usersRouter() {
         }
 
         route("/{id?}") {
-
             /**
              * Get user
              */
@@ -77,7 +76,6 @@ fun Route.usersRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * update user
                  */
@@ -124,7 +122,6 @@ fun Route.usersRouter() {
                 }
 
                 route("/microsoft-accounts") {
-
                     /**
                      * Get user what linked by microsoft account
                      */
@@ -141,7 +138,6 @@ fun Route.usersRouter() {
             }
 
             route("/teams") {
-
                 /**
                  * Get all teams what user belong
                  */

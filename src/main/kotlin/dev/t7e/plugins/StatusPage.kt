@@ -18,7 +18,6 @@ import io.ktor.util.converters.*
 
 fun Application.configureStatusPage() {
     install(StatusPages) {
-
         exception<Throwable> { call, cause ->
             //  log
             Logger.commit(

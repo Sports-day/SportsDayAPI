@@ -14,15 +14,16 @@ import kotlin.time.Duration.Companion.minutes
  * @author testusuke
  */
 
-object Images: IntIdTable("images") {
+object Images : IntIdTable("images") {
     val name = varchar("name", 64)
+
     //  base64 encoded image
     val attachment = text("attachment")
     val createdAt = datetime("created_at")
     val createdBy = reference("created_by", MicrosoftAccounts, onDelete = ReferenceOption.SET_NULL).nullable()
 }
 
-class ImageEntity(id: EntityID<Int>): IntEntity(id) {
+class ImageEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : SmartCache<ImageEntity, Image> (
         entityName = "image",
         table = Images,

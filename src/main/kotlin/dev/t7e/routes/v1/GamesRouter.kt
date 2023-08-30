@@ -27,7 +27,6 @@ import kotlinx.serialization.Serializable
 fun Route.gamesRouter() {
     route("/games") {
         withRole(Role.USER) {
-
             /**
              * Get all games
              */
@@ -41,7 +40,6 @@ fun Route.gamesRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new game
                  */
@@ -69,7 +67,6 @@ fun Route.gamesRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get game by id
                  */
@@ -87,7 +84,6 @@ fun Route.gamesRouter() {
                 }
 
                 withRole(Role.ADMIN) {
-
                     /**
                      * Update game
                      */
@@ -140,7 +136,6 @@ fun Route.gamesRouter() {
                             }
                     }
                 }
-
 
                 route("/matches") {
                     /**
@@ -207,7 +202,6 @@ fun Route.gamesRouter() {
                     }
 
                     withRole(Role.ADMIN) {
-
                         /**
                          * enter game
                          */
@@ -392,7 +386,6 @@ fun Route.gamesRouter() {
                             }
                     }
                 }
-
             }
         }
     }

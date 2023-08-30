@@ -14,7 +14,6 @@ import kotlinx.serialization.Serializable
  * @author testusuke
  */
 
-
 fun Route.authorizationRouting() {
     authenticate {
         route("authorization") {
@@ -26,7 +25,7 @@ fun Route.authorizationRouting() {
                         "authorized",
                         Me(
                             principal?.microsoftAccountId ?: -1,
-                            if(principal?.roles?.contains(Role.ADMIN) == true) "admin" else "user"
+                            if (principal?.roles?.contains(Role.ADMIN) == true) "admin" else "user"
                         )
                     )
                 )

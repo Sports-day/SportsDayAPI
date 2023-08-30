@@ -27,7 +27,6 @@ import io.ktor.server.routing.*
 fun Route.sportsRouter() {
     route("/sports") {
         withRole(Role.USER) {
-
             /**
              * Get all sports
              */
@@ -38,7 +37,6 @@ fun Route.sportsRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new sport
                  */
@@ -63,7 +61,6 @@ fun Route.sportsRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get sport by id
                  */
@@ -81,7 +78,6 @@ fun Route.sportsRouter() {
                 }
 
                 withRole(Role.ADMIN) {
-
                     /**
                      * Update sport by id
                      */

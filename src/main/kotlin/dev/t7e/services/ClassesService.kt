@@ -96,5 +96,4 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
             users
         )
     }
-
 }

@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Created by testusuke on 2023/05/09
  * @author testusuke
  */
-object LocationsService: StandardService<LocationEntity, Location>(
+object LocationsService : StandardService<LocationEntity, Location>(
     objectName = "location",
     _getAllObjectFunction = { LocationEntity.getAll() },
     _getObjectByIdFunction = { LocationEntity.getById(it) },

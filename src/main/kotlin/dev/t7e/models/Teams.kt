@@ -20,7 +20,7 @@ object Teams : IntIdTable("teams") {
     val classEntity = reference(
         "class",
         Classes,
-        onDelete = ReferenceOption.CASCADE,
+        onDelete = ReferenceOption.CASCADE
     )
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")

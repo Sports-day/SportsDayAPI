@@ -28,7 +28,7 @@ object MicrosoftAccounts : IntIdTable("microsoft_accounts") {
 }
 
 class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object: SmartCache<MicrosoftAccountEntity, MicrosoftAccount> (
+    companion object : SmartCache<MicrosoftAccountEntity, MicrosoftAccount> (
         entityName = "microsoft account",
         table = MicrosoftAccounts,
         duration = 5.minutes,

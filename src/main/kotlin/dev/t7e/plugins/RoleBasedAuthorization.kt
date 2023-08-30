@@ -21,7 +21,7 @@ fun Route.withRole(role: Role, build: Route.() -> Unit): Route {
                 call.respond(HttpStatusCode.Unauthorized)
                 return@on
             }
-            if(principal.roles.none { it == role }) {
+            if (principal.roles.none { it == role }) {
                 call.respond(HttpStatusCode.Forbidden)
                 return@on
             }

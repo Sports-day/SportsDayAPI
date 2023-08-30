@@ -74,5 +74,4 @@ object GroupsService : StandardService<GroupEntity, Group>(
 
         return Result.success(model)
     }
-
 }

@@ -35,7 +35,6 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
         private val userTeamsMap = mutableMapOf<Int, List<Pair<TeamEntity, Team>>?>()
         private val userMicrosoftAccountsMap = mutableMapOf<Int, List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>?>()
 
-
         fun getUserTeams(id: Int): List<Pair<TeamEntity, Team>>? {
             if (!userTeamsMap.containsKey(id)) {
                 //  fetch unknown data
@@ -120,7 +119,6 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var teams by TeamEntity via TeamUsers
     val microsoftAccounts by MicrosoftAccountEntity optionalReferrersOn MicrosoftAccounts.user
 
-
     fun serializableModel(): User {
         return User(
             id.value,
@@ -139,6 +137,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
 enum class GenderType(val gender: String) {
     @SerialName("male")
     MALE("male"),
+
     @SerialName("female")
     FEMALE("female")
 }

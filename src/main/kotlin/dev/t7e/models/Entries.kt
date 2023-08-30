@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Table
  * @author testusuke
  */
 
-object Entries: Table("game_entries") {
+object Entries : Table("game_entries") {
     val game = reference("game", Games, onDelete = ReferenceOption.CASCADE)
     val team = reference("team", Teams, onDelete = ReferenceOption.CASCADE)
 

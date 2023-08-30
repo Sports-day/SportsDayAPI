@@ -4,14 +4,13 @@ import com.auth0.jwk.GuavaCachedJwkProvider
 import com.auth0.jwk.UrlJwkProvider
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import dev.t7e.models.Log
 import dev.t7e.models.LogEvents
 import dev.t7e.models.MicrosoftAccountEntity
 import dev.t7e.utils.Cache
 import dev.t7e.utils.Email
 import dev.t7e.utils.logger.Logger
-import io.ktor.server.auth.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.Exception
@@ -25,7 +24,6 @@ val azureADKeyURI =
     URL("https://login.microsoftonline.com/${System.getenv("AZURE_AD_TENANT_ID") ?: "common"}/discovery/keys")
 
 fun Application.configureSecurity() {
-
     authentication {
         bearer {
             realm = "Access to the / route"
@@ -36,7 +34,6 @@ fun Application.configureSecurity() {
         }
     }
 }
-
 
 enum class Role(val value: String) {
     ADMIN("ADMIN"),
@@ -108,8 +105,11 @@ object Authorization {
                 UserPrincipal(
                     microsoftAccount.id.value,
                     microsoftAccount,
-                    if (microsoftAccount.role == Role.ADMIN) setOf(Role.ADMIN, Role.USER)
-                    else setOf(Role.USER)
+                    if (microsoftAccount.role == Role.ADMIN) {
+                        setOf(Role.ADMIN, Role.USER)
+                    } else {
+                        setOf(Role.USER)
+                    }
                 )
             } catch (e: ExposedSQLException) {
                 Logger.commit(

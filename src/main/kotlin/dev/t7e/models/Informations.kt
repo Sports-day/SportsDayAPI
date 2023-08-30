@@ -11,13 +11,13 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/05/29
  * @author testusuke
  */
-object Information: IntIdTable("information") {
+object Information : IntIdTable("information") {
     val name = varchar("name", 64)
     val content = text("content")
 }
 
-class InformationEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: SmartCache<InformationEntity, InformationModel> (
+class InformationEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : SmartCache<InformationEntity, InformationModel> (
         entityName = "information",
         table = Information,
         duration = 5.minutes,

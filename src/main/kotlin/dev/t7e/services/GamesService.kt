@@ -21,7 +21,6 @@ object GamesService : StandardService<GameEntity, Game>(
     onDeleteFunction = {
         //  Sport -> Game
         SportEntity.fetch(it.sportId)
-
     }
 ) {
 
@@ -171,7 +170,6 @@ object GamesService : StandardService<GameEntity, Game>(
 
         return Result.success(Unit)
     }
-
 
     /**
      * Make league matches automatically
@@ -401,8 +399,8 @@ object GamesService : StandardService<GameEntity, Game>(
                         //  if score is same, rank is same
                         if (game.calculationType == CalculationType.TOTAL_SCORE) {
                             if (
-                                lastResult!!.score == leagueTeamResult.score
-                                && lastResult!!.goal == leagueTeamResult.goal
+                                lastResult!!.score == leagueTeamResult.score &&
+                                lastResult!!.goal == leagueTeamResult.goal
                             ) {
                                 leagueTeamResult.rank = lastRank
                             } else {
@@ -410,8 +408,8 @@ object GamesService : StandardService<GameEntity, Game>(
                             }
                         } else {
                             if (
-                                lastResult!!.score == leagueTeamResult.score
-                                && lastResult!!.goalDiff == leagueTeamResult.goalDiff
+                                lastResult!!.score == leagueTeamResult.score &&
+                                lastResult!!.goalDiff == leagueTeamResult.goalDiff
                             ) {
                                 leagueTeamResult.rank = lastRank
                             } else {
@@ -438,7 +436,6 @@ object GamesService : StandardService<GameEntity, Game>(
 
             Result.success(leagueResult)
         }
-
     }
 
     /**
@@ -605,7 +602,7 @@ data class LeagueResult(
     val gameId: Int,
     val finished: Boolean,
     val teams: List<LeagueTeamResult>,
-    val createdAt: String,
+    val createdAt: String
 )
 
 @Serializable
@@ -629,7 +626,7 @@ data class LeagueTeamResult(
 data class TournamentResult(
     val gameId: Int,
     val teams: List<TournamentTeamResult>,
-    val createdAt: String,
+    val createdAt: String
 )
 
 @Serializable

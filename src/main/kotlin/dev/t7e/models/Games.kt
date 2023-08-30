@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.minutes
  * @author testusuke
  */
 
-object Games: IntIdTable("games") {
+object Games : IntIdTable("games") {
     val name = varchar("name", 64)
     val description = varchar("description", 512)
     val sport = reference("sport", Sports, onDelete = ReferenceOption.CASCADE)
@@ -27,8 +27,8 @@ object Games: IntIdTable("games") {
     val updatedAt = datetime("updated_at")
 }
 
-class GameEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: SmartCache<GameEntity, Game> (
+class GameEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : SmartCache<GameEntity, Game> (
         entityName = "game",
         table = Games,
         duration = 5.minutes,
@@ -69,7 +69,7 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
 
         init {
             //  game entries
-            registerFetchFunction {  id ->
+            registerFetchFunction { id ->
                 transaction {
                     if (id == null) {
                         entriesMap.clear()
@@ -99,7 +99,7 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
             //  game matches
             registerFetchFunction { id ->
                 transaction {
-                    if(id == null) {
+                    if (id == null) {
                         matchesMap.clear()
 
                         cache.values.filterNotNull().forEach { value ->
@@ -113,7 +113,7 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
                     } else {
                         val entity = getById(id)
 
-                        if(entity == null) {
+                        if (entity == null) {
                             matchesMap.remove(id)
                         } else {
                             matchesMap[id] = entity.first.matches.map { match ->
@@ -156,6 +156,7 @@ class GameEntity(id: EntityID<Int>): IntEntity(id) {
 enum class GameType(val status: String) {
     @SerialName("tournament")
     TOURNAMENT("tournament"),
+
     @SerialName("league")
     LEAGUE("league")
 }
@@ -164,8 +165,9 @@ enum class GameType(val status: String) {
 enum class CalculationType(val type: String) {
     @SerialName("total_score")
     TOTAL_SCORE("total_score"),
+
     @SerialName("diff_score")
-    DIFF_SCORE("diff_score"),
+    DIFF_SCORE("diff_score")
 }
 
 @Serializable

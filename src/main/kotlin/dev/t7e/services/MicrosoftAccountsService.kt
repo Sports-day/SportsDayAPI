@@ -99,5 +99,4 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
 
         return Result.success(model)
     }
-
 }

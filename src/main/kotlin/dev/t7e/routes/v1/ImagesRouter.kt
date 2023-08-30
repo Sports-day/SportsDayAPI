@@ -26,7 +26,6 @@ import io.ktor.server.routing.*
 fun Route.imagesRouter() {
     route("/images") {
         withRole(Role.USER) {
-
             /**
              * Get all images
              */
@@ -40,7 +39,6 @@ fun Route.imagesRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new image
                  */
@@ -67,7 +65,6 @@ fun Route.imagesRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get image by id
                  */

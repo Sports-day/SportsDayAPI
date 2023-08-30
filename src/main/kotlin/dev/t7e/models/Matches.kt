@@ -73,7 +73,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
             status,
             note,
             judge,
-            parents.toList().map { it.id.value  },
+            parents.toList().map { it.id.value },
             children.toList().map { it.id.value },
             createdAt.toString(),
             updatedAt.toString()
@@ -85,10 +85,13 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
 enum class MatchStatus(val status: String) {
     @SerialName("standby")
     STANDBY("standby"),
+
     @SerialName("in_progress")
     IN_PROGRESS("in_progress"),
+
     @SerialName("finished")
     FINISHED("finished"),
+
     @SerialName("cancelled")
     CANCELED("cancelled")
 }
@@ -97,10 +100,12 @@ enum class MatchStatus(val status: String) {
 enum class MatchResult(val result: String) {
     @SerialName("left_win")
     LEFT_WIN("left_win"),
+
     @SerialName("right_win")
     RIGHT_WIN("right_win"),
+
     @SerialName("draw")
-    DRAW("draw"),
+    DRAW("draw")
 }
 
 @Serializable
@@ -137,5 +142,5 @@ data class OmittedMatch(
     val result: MatchResult,
     val status: MatchStatus,
     val note: String?,
-    val judge: String?,
+    val judge: String?
 )

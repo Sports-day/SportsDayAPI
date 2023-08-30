@@ -36,10 +36,8 @@ fun Route.microsoftAccountsRouter() {
 
                     call.respond(HttpStatusCode.OK, DataResponse(accounts.getOrDefault(listOf())))
                 }
-
             }
             route("/{id?}") {
-
                 /**
                  * Get specific microsoft account
                  */
@@ -152,11 +150,9 @@ fun Route.microsoftAccountsRouter() {
                             }
                     }
                 }
-
             }
         }
     }
-
 }
 
 /**

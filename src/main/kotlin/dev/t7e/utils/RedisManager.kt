@@ -58,7 +58,7 @@ object RedisManager {
             return
         }
 
-        redisPool.resource.use{ jedis ->
+        redisPool.resource.use { jedis ->
             val message = RedisMessage(
                 from = uuid,
                 data = content
@@ -72,10 +72,9 @@ object RedisManager {
     fun registerFetchFunction(type: String, function: (id: Int?) -> Unit) {
         fetchFunctionList[type] = function
     }
-
 }
 
-class FetchListener(private val uuid: String, private val isLogging: Boolean, private val callback: (RedisMessageContent) -> Unit): JedisPubSub() {
+class FetchListener(private val uuid: String, private val isLogging: Boolean, private val callback: (RedisMessageContent) -> Unit) : JedisPubSub() {
     override fun onMessage(channel: String?, message: String?) {
         if (channel != RedisManager.CHANNEL || message == null) {
             return

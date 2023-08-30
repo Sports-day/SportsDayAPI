@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.minutes
  * @author testusuke
  */
 
-object Sports: IntIdTable("sports") {
+object Sports : IntIdTable("sports") {
     val name = varchar("name", 64)
     val description = text("description")
     val iconImage = reference("icon_image", Images, onDelete = ReferenceOption.SET_NULL).nullable()
@@ -24,8 +24,8 @@ object Sports: IntIdTable("sports") {
     val updatedAt = datetime("updated_at")
 }
 
-class SportEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: SmartCache<SportEntity, Sport> (
+class SportEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : SmartCache<SportEntity, Sport> (
         entityName = "sport",
         table = Sports,
         duration = 5.minutes,
@@ -54,7 +54,7 @@ class SportEntity(id: EntityID<Int>): IntEntity(id) {
             updatedAt.toString()
         )
     }
- }
+}
 
 @Serializable
 data class Sport(
@@ -75,5 +75,5 @@ data class OmittedSport(
     val description: String,
     val iconId: Int?,
     val weight: Int,
-    val ruleId: Int,
+    val ruleId: Int
 )

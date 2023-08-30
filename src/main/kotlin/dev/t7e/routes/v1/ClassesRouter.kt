@@ -27,7 +27,6 @@ import io.ktor.server.routing.*
 fun Route.classesRouter() {
     route("/classes") {
         withRole(Role.USER) {
-
             /**
              * Get all classes
              */
@@ -38,7 +37,6 @@ fun Route.classesRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new class
                  */
@@ -65,9 +63,7 @@ fun Route.classesRouter() {
                 }
             }
 
-
             route("/{id?}") {
-
                 /**
                  * Get specific class
                  */
@@ -80,9 +76,7 @@ fun Route.classesRouter() {
                         }
                 }
 
-
                 route("/users") {
-
                     /**
                      * Get all users belonging to specific class
                      */
@@ -101,7 +95,6 @@ fun Route.classesRouter() {
                 }
 
                 withRole(Role.ADMIN) {
-
                     /**
                      * Update class
                      */
@@ -145,7 +138,6 @@ fun Route.classesRouter() {
                     }
                 }
             }
-
         }
     }
 }

@@ -28,7 +28,6 @@ import io.ktor.server.routing.*
 fun Route.teamsRouter() {
     route("/teams") {
         withRole(Role.USER) {
-
             /**
              * Get all teams
              */
@@ -42,7 +41,6 @@ fun Route.teamsRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new team
                  */
@@ -70,7 +68,6 @@ fun Route.teamsRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get specific team
                  */
@@ -88,7 +85,6 @@ fun Route.teamsRouter() {
                 }
 
                 route("/users") {
-
                     get {
                         val id =
                             call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
@@ -104,7 +100,6 @@ fun Route.teamsRouter() {
                     }
 
                     withRole(Role.ADMIN) {
-
                         post {
                             val id = call.parameters["id"]?.toIntOrNull()
                                 ?: throw BadRequestException("invalid id parameter")
@@ -145,7 +140,6 @@ fun Route.teamsRouter() {
                 }
 
                 withRole(Role.ADMIN) {
-
                     /**
                      * Update team
                      */

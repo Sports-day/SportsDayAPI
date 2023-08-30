@@ -27,7 +27,6 @@ import io.ktor.server.routing.*
 fun Route.allowedDomainsRouter() {
     route("/allowed-domains") {
         withRole(Role.ADMIN) {
-
             /**
              * Get all allowed domain
              */
@@ -63,7 +62,6 @@ fun Route.allowedDomainsRouter() {
             }
 
             route("/{id?}") {
-
                 /**
                  * Get specific allowed domain
                  */

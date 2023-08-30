@@ -12,17 +12,17 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/02/23
  * @author testusuke
  */
-object AllowedDomains: IntIdTable("allowed_domains") {
+object AllowedDomains : IntIdTable("allowed_domains") {
     //  maximum domain length is under 253...?
     val domain = varchar("domain", 256)
     val description = varchar("description", 128)
     val createdAt = datetime("created_at")
 }
 
-class AllowedDomainEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: SmartCache<AllowedDomainEntity, AllowedDomain> (
+class AllowedDomainEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : SmartCache<AllowedDomainEntity, AllowedDomain> (
         entityName = "allowed domain",
-        table =  AllowedDomains,
+        table = AllowedDomains,
         duration = 5.minutes,
         serializer = { it.serializableModel() }
     ) {
