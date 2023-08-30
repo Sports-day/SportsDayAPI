@@ -4,6 +4,7 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val exposed_version: String by project
+val koin_version: String by project
 
 plugins {
     kotlin("jvm") version "1.8.0"
@@ -51,6 +52,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 //    implementation("io.github.crackthecodeabhi:kreds:0.8.1")
     implementation("redis.clients:jedis:4.4.1")
+    //  Koin
+    implementation("io.insert-koin:koin-ktor:$koin_version")
+    implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
     implementation(kotlin("stdlib-jdk8"))
 }
 
