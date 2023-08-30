@@ -39,7 +39,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("com.auth0:jwks-rsa:0.22.0")
     implementation("com.auth0:java-jwt:4.3.0")
-//    implementation("org.mariadb.jdbc:mariadb-java-client:3.1.2")
     implementation("mysql:mysql-connector-java:8.0.30")
     implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
     implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
@@ -50,7 +49,6 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-//    implementation("io.github.crackthecodeabhi:kreds:0.8.1")
     implementation("redis.clients:jedis:4.4.1")
     //  Koin
     implementation("io.insert-koin:koin-ktor:$koin_version")
