@@ -5,7 +5,6 @@ import dev.t7e.utils.MessageResponse
 import dev.t7e.utils.logger.Logger
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.plugins.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
