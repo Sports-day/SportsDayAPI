@@ -8,7 +8,7 @@ plugins {
     kotlin("jvm") version "1.8.0"
     id("io.ktor.plugin") version "2.2.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
-    id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
+    id("org.jmailen.kotlinter") version "3.16.0"
 }
 
 group = "dev.t7e"
