@@ -50,15 +50,15 @@ fun Route.groupsRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created group",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
 
                             //  Logger
                             Logger.commit(
                                 "[GroupsRouter] created group: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -91,14 +91,14 @@ fun Route.groupsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated group",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[GroupsRouter] updated group: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -117,7 +117,7 @@ fun Route.groupsRouter() {
                                 Logger.commit(
                                     "[GroupsRouter] deleted group: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

@@ -50,14 +50,14 @@ fun Route.classesRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created class",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[ClassesRouter] created class: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -88,7 +88,7 @@ fun Route.classesRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    DataResponse(it)
+                                    DataResponse(it),
                                 )
                             }
                     }
@@ -109,14 +109,14 @@ fun Route.classesRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated class",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[ClassesRouter] updated class: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -132,7 +132,7 @@ fun Route.classesRouter() {
                                 Logger.commit(
                                     "[ClassesRouter] deleted class: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

@@ -35,7 +35,7 @@ fun Route.gamesRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(games.getOrDefault(listOf()))
+                    DataResponse(games.getOrDefault(listOf())),
                 )
             }
 
@@ -53,14 +53,14 @@ fun Route.gamesRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created game",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[GamesRouter] created game: ${it.name}",
                                 LogEvents.CREATE,
-                                call.principal<UserPrincipal>()?.microsoftAccount
+                                call.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -78,7 +78,7 @@ fun Route.gamesRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -99,14 +99,14 @@ fun Route.gamesRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated game",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[GamesRouter] updated game: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.principal<UserPrincipal>()?.microsoftAccount
+                                    call.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -124,14 +124,14 @@ fun Route.gamesRouter() {
                                 call.respond(
                                     HttpStatusCode.OK,
                                     MessageResponse(
-                                        "deleted game"
-                                    )
+                                        "deleted game",
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[GamesRouter] deleted game: $id",
                                     LogEvents.DELETE,
-                                    call.principal<UserPrincipal>()?.microsoftAccount
+                                    call.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -150,7 +150,7 @@ fun Route.gamesRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    DataResponse(it)
+                                    DataResponse(it),
                                 )
                             }
                     }
@@ -169,14 +169,14 @@ fun Route.gamesRouter() {
                                     call.respond(
                                         HttpStatusCode.OK,
                                         MessageResponse(
-                                            "deleted matches"
-                                        )
+                                            "deleted matches",
+                                        ),
                                     )
                                     //  Logger
                                     Logger.commit(
                                         "[GamesRouter] deleted all matches. game: $id",
                                         LogEvents.DELETE,
-                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                        call.principal<UserPrincipal>()?.microsoftAccount,
                                     )
                                 }
                         }
@@ -196,7 +196,7 @@ fun Route.gamesRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    DataResponse(it)
+                                    DataResponse(it),
                                 )
                             }
                     }
@@ -217,14 +217,14 @@ fun Route.gamesRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "entered game",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                     //  Logger
                                     Logger.commit(
                                         "[GamesRouter] entered game: $id",
                                         LogEvents.UPDATE,
-                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                        call.principal<UserPrincipal>()?.microsoftAccount,
                                     )
                                 }
                         }
@@ -245,14 +245,14 @@ fun Route.gamesRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "left game",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                     //  Logger
                                     Logger.commit(
                                         "[GamesRouter] left game: $id",
                                         LogEvents.UPDATE,
-                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                        call.principal<UserPrincipal>()?.microsoftAccount,
                                     )
                                 }
                         }
@@ -277,14 +277,14 @@ fun Route.gamesRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "made tournament tree",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                     //  Logger
                                     Logger.commit(
                                         "[GamesRouter] made new tournament tree. game: $id match: ${it.id}",
                                         LogEvents.CREATE,
-                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                        call.principal<UserPrincipal>()?.microsoftAccount,
                                     )
                                 }
                         }
@@ -302,13 +302,13 @@ fun Route.gamesRouter() {
                                 .respondOrInternalError {
                                     call.respond(
                                         HttpStatusCode.OK,
-                                        MessageResponse("updated tournament tree")
+                                        MessageResponse("updated tournament tree"),
                                     )
                                     //  Logger
                                     Logger.commit(
                                         "[GamesRouter] updated tournament tree. game: $id",
                                         LogEvents.UPDATE,
-                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                        call.principal<UserPrincipal>()?.microsoftAccount,
                                     )
                                 }
                         }
@@ -328,8 +328,8 @@ fun Route.gamesRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "calculated tournament result",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                             }
                     }
@@ -353,14 +353,14 @@ fun Route.gamesRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "made league matches",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                     //  Logger
                                     Logger.commit(
                                         "[GamesRouter] made new league matches. game: $id",
                                         LogEvents.CREATE,
-                                        call.principal<UserPrincipal>()?.microsoftAccount
+                                        call.principal<UserPrincipal>()?.microsoftAccount,
                                     )
                                 }
                         }
@@ -380,8 +380,8 @@ fun Route.gamesRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "calculated league results",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                             }
                     }
@@ -393,15 +393,15 @@ fun Route.gamesRouter() {
 
 @Serializable
 data class EntryRequest(
-    val teamIds: List<Int>
+    val teamIds: List<Int>,
 )
 
 @Serializable
 data class LocationRequest(
-    val locationId: Int?
+    val locationId: Int?,
 )
 
 @Serializable
 data class TournamentTreeCreateRequest(
-    val parentId: Int?
+    val parentId: Int?,
 )

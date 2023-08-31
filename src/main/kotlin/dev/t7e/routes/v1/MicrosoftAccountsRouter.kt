@@ -70,7 +70,7 @@ fun Route.microsoftAccountsRouter() {
                                 Logger.commit(
                                     "[MicrosoftAccountsRouter] deleted microsoft account: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -90,8 +90,8 @@ fun Route.microsoftAccountsRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "updated account role",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 }
                         }

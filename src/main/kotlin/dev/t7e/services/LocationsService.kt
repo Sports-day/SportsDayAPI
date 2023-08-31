@@ -23,7 +23,7 @@ object LocationsService : StandardService<LocationEntity, Location>(
                 MatchEntity.fetch(pair.second.id)
             }
         }
-    }
+    },
 ) {
 
     fun create(omittedLocation: OmittedLocation): Result<Location> {

@@ -32,7 +32,7 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "microsoft account",
         table = MicrosoftAccounts,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {
         fun getByEmail(email: String): Pair<MicrosoftAccountEntity, MicrosoftAccount>? = transaction {
             val entity = find { MicrosoftAccounts.email eq email }.firstOrNull() ?: return@transaction null
@@ -62,7 +62,7 @@ class MicrosoftAccountEntity(id: EntityID<Int>) : IntEntity(id) {
             user?.id?.value,
             linkLater,
             firstLogin.toString(),
-            lastLogin.toString()
+            lastLogin.toString(),
         )
     }
 }
@@ -77,5 +77,5 @@ data class MicrosoftAccount(
     val userId: Int?,
     val linkLater: Boolean,
     val firstLogin: String,
-    val lastLogin: String
+    val lastLogin: String,
 )

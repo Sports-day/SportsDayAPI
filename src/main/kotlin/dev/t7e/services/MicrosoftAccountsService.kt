@@ -21,7 +21,7 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
         it.userId?.let { userId ->
             UserEntity.fetch(userId)
         }
-    }
+    },
 ) {
 
     fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> {

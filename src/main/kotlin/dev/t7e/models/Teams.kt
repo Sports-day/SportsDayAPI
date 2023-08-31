@@ -20,7 +20,7 @@ object Teams : IntIdTable("teams") {
     val classEntity = reference(
         "class",
         Classes,
-        onDelete = ReferenceOption.CASCADE
+        onDelete = ReferenceOption.CASCADE,
     )
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
@@ -31,7 +31,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "team",
         table = Teams,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {
         private val teamUsersMap = mutableMapOf<Int, List<Pair<UserEntity, User>>?>()
 
@@ -93,7 +93,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
             users.map { it.id.value },
             enteredGames.map { it.id.value },
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -107,17 +107,17 @@ data class Team(
     val userIds: List<Int>,
     val enteredGameIds: List<Int>,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
 data class OmittedTeam(
     val name: String,
     val description: String?,
-    val classId: Int
+    val classId: Int,
 )
 
 @Serializable
 data class OmittedTeamUsers(
-    val users: List<Int>
+    val users: List<Int>,
 )

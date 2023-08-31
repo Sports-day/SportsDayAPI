@@ -48,14 +48,14 @@ fun Route.usersRouter() {
                         call.respond(
                             DataMessageResponse(
                                 "created user",
-                                it
-                            )
+                                it,
+                            ),
                         )
                         //  Logger
                         Logger.commit(
                             "[UsersRouter] created user: ${it.name}",
                             LogEvents.CREATE,
-                            call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                            call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                         )
                     }
             }
@@ -90,14 +90,14 @@ fun Route.usersRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "updated user",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[UsersRouter] updated user: ${it.name}",
                                 LogEvents.UPDATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -116,7 +116,7 @@ fun Route.usersRouter() {
                             Logger.commit(
                                 "[UsersRouter] deleted user: $id",
                                 LogEvents.DELETE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }

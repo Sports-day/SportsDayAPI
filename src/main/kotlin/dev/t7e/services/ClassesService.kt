@@ -28,7 +28,7 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
                 TeamEntity.fetch(pair.second.id)
             }
         }
-    }
+    },
 ) {
 
     /**
@@ -53,7 +53,7 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 
@@ -79,7 +79,7 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 
@@ -93,7 +93,7 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
         val users = ClassEntity.getClassUsers(id)?.map { it.second } ?: throw NotFoundException("invalid class id")
 
         return Result.success(
-            users
+            users,
         )
     }
 }

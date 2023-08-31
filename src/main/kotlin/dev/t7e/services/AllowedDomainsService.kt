@@ -15,7 +15,7 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
     objectName = "allowed domain",
     _getAllObjectFunction = { AllowedDomainEntity.getAll() },
     _getObjectByIdFunction = { AllowedDomainEntity.getById(it) },
-    fetchFunction = { AllowedDomainEntity.fetch(it) }
+    fetchFunction = { AllowedDomainEntity.fetch(it) },
 ) {
 
     fun create(omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> {
@@ -30,7 +30,7 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 
@@ -47,7 +47,7 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 }

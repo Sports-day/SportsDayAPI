@@ -25,9 +25,9 @@ fun Route.authorizationRouting() {
                         "authorized",
                         Me(
                             principal?.microsoftAccountId ?: -1,
-                            if (principal?.roles?.contains(Role.ADMIN) == true) "admin" else "user"
-                        )
-                    )
+                            if (principal?.roles?.contains(Role.ADMIN) == true) "admin" else "user",
+                        ),
+                    ),
                 )
             }
         }
@@ -37,5 +37,5 @@ fun Route.authorizationRouting() {
 @Serializable
 data class Me(
     val microsoftAccountId: Int,
-    val role: String
+    val role: String,
 )

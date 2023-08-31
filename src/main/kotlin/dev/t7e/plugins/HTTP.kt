@@ -19,8 +19,8 @@ fun Application.configureHTTP() {
                 System.getenv("ALLOWED_HOST"),
                 listOf(
                     "http",
-                    "https"
-                )
+                    "https",
+                ),
             )
 
             println("Allowed host: ${System.getenv("ALLOWED_HOST")}")

@@ -22,7 +22,7 @@ open class SmartCache<T : IntEntity, R>(
     private val entityName: String,
     table: IdTable<Int>,
     private val duration: Duration,
-    private val serializer: (T) -> R
+    private val serializer: (T) -> R,
 ) : IntEntityClass<T>(table) {
     /**
      * main cache
@@ -76,8 +76,8 @@ open class SmartCache<T : IntEntity, R>(
             RedisManager.publish(
                 RedisMessageContent(
                     type = entityName,
-                    id = id
-                )
+                    id = id,
+                ),
             )
         }
     }

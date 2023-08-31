@@ -29,7 +29,7 @@ class SportEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "sport",
         table = Sports,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var name by Sports.name
@@ -51,7 +51,7 @@ class SportEntity(id: EntityID<Int>) : IntEntity(id) {
             ruleId,
             games.map { it.id.value },
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -66,7 +66,7 @@ data class Sport(
     val ruleId: Int,
     val gameIds: List<Int>,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
@@ -75,5 +75,5 @@ data class OmittedSport(
     val description: String,
     val iconId: Int?,
     val weight: Int,
-    val ruleId: Int
+    val ruleId: Int,
 )

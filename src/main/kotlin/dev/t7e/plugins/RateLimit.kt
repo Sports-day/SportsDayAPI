@@ -16,7 +16,7 @@ fun Application.configureRateLimit() {
         global {
             rateLimiter(
                 limit = 1000,
-                refillPeriod = 60.minutes
+                refillPeriod = 60.minutes,
             )
             requestKey { call ->
                 call.principal<UserPrincipal>()?.microsoftAccountId

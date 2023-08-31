@@ -29,7 +29,7 @@ object UsersService : StandardService<UserEntity, User>(
 
         //  Class -> User
         ClassEntity.fetch(it.classId)
-    }
+    },
 ) {
 
     fun create(omittedUser: OmittedUser): Result<User> {

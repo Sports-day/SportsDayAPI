@@ -36,7 +36,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "match",
         table = Matches,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var location by LocationEntity optionalReferencedOn Matches.location
@@ -76,7 +76,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
             parents.toList().map { it.id.value },
             children.toList().map { it.id.value },
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -93,7 +93,7 @@ enum class MatchStatus(val status: String) {
     FINISHED("finished"),
 
     @SerialName("cancelled")
-    CANCELED("cancelled")
+    CANCELED("cancelled"),
 }
 
 @Serializable
@@ -105,7 +105,7 @@ enum class MatchResult(val result: String) {
     RIGHT_WIN("right_win"),
 
     @SerialName("draw")
-    DRAW("draw")
+    DRAW("draw"),
 }
 
 @Serializable
@@ -126,7 +126,7 @@ data class Match(
     val parents: List<Int>,
     val children: List<Int>,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
@@ -142,5 +142,5 @@ data class OmittedMatch(
     val result: MatchResult,
     val status: MatchStatus,
     val note: String?,
-    val judge: String?
+    val judge: String?,
 )

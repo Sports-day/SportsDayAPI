@@ -36,7 +36,7 @@ fun Route.teamsRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(teams.getOrDefault(listOf()))
+                    DataResponse(teams.getOrDefault(listOf())),
                 )
             }
 
@@ -54,14 +54,14 @@ fun Route.teamsRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created team",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[TeamsRouter] created team: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -79,7 +79,7 @@ fun Route.teamsRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -94,7 +94,7 @@ fun Route.teamsRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    DataResponse(it)
+                                    DataResponse(it),
                                 )
                             }
                     }
@@ -112,8 +112,8 @@ fun Route.teamsRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "added users",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 }
                         }
@@ -131,8 +131,8 @@ fun Route.teamsRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "removed user",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 }
                         }
@@ -155,14 +155,14 @@ fun Route.teamsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated team",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[TeamsRouter] updated team: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -179,13 +179,13 @@ fun Route.teamsRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    MessageResponse("deleted team")
+                                    MessageResponse("deleted team"),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[TeamsRouter] deleted team: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

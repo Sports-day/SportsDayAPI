@@ -45,7 +45,7 @@ object RedisManager {
                             if (fetchFunction != null) {
                                 fetchFunction(it.id)
                             }
-                        }
+                        },
                     )
                     jedis.subscribe(listener, CHANNEL)
                 }
@@ -61,7 +61,7 @@ object RedisManager {
         redisPool.resource.use { jedis ->
             val message = RedisMessage(
                 from = uuid,
-                data = content
+                data = content,
             )
             //  publish
             val encoded = Json.encodeToString(message)
@@ -108,11 +108,11 @@ class FetchListener(private val uuid: String, private val isLogging: Boolean, pr
 @Serializable
 data class RedisMessageContent(
     val type: String,
-    val id: Int?
+    val id: Int?,
 )
 
 @Serializable
 data class RedisMessage(
     val from: String,
-    val data: RedisMessageContent
+    val data: RedisMessageContent,
 )

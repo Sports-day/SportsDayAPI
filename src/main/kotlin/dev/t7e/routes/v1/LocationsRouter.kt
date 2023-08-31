@@ -34,7 +34,7 @@ fun Route.locationsRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(locations.getOrDefault(listOf()))
+                    DataResponse(locations.getOrDefault(listOf())),
                 )
             }
 
@@ -52,14 +52,14 @@ fun Route.locationsRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created location",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[LocationsRouter] created location: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -77,7 +77,7 @@ fun Route.locationsRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -97,14 +97,14 @@ fun Route.locationsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated location",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[LocationsRouter] updated location: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -122,14 +122,14 @@ fun Route.locationsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "deleted location",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[LocationsRouter] deleted location: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

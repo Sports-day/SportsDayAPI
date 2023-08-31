@@ -21,7 +21,7 @@ class InformationEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "information",
         table = Information,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var name by Information.name
@@ -31,7 +31,7 @@ class InformationEntity(id: EntityID<Int>) : IntEntity(id) {
         return InformationModel(
             id.value,
             name,
-            content
+            content,
         )
     }
 }
@@ -40,11 +40,11 @@ class InformationEntity(id: EntityID<Int>) : IntEntity(id) {
 data class InformationModel(
     val id: Int,
     val name: String,
-    val content: String
+    val content: String,
 )
 
 @Serializable
 data class OmittedInformationModel(
     val name: String,
-    val content: String
+    val content: String,
 )

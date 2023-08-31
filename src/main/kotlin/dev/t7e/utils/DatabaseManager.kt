@@ -26,7 +26,7 @@ object DatabaseManager {
             "jdbc:mysql://$host:$port/$db",
             driver = "com.mysql.cj.jdbc.Driver",
             user = user,
-            password = password
+            password = password,
 //            databaseConfig = config
         )
 

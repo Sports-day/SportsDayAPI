@@ -34,7 +34,7 @@ fun Route.imagesRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(images.getOrDefault(listOf()))
+                    DataResponse(images.getOrDefault(listOf())),
                 )
             }
 
@@ -52,13 +52,13 @@ fun Route.imagesRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                             //  Logger
                             Logger.commit(
                                 "[ImagesRouter] created image: ${it.name}",
                                 LogEvents.CREATE,
-                                user.microsoftAccount
+                                user.microsoftAccount,
                             )
                         }
                 }
@@ -76,7 +76,7 @@ fun Route.imagesRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -92,13 +92,13 @@ fun Route.imagesRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                MessageResponse("deleted image")
+                                MessageResponse("deleted image"),
                             )
                             //  Logger
                             Logger.commit(
                                 "[ImagesRouter] deleted image: $id",
                                 LogEvents.DELETE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }

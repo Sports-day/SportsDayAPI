@@ -35,7 +35,7 @@ fun Route.matchesRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(matches.getOrDefault(listOf()))
+                    DataResponse(matches.getOrDefault(listOf())),
                 )
             }
 
@@ -51,7 +51,7 @@ fun Route.matchesRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -71,14 +71,14 @@ fun Route.matchesRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated match",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[MatchesRouter] updated match: $id",
                                     LogEvents.CREATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -94,13 +94,13 @@ fun Route.matchesRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    MessageResponse("deleted match")
+                                    MessageResponse("deleted match"),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[MatchesRouter] deleted match: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

@@ -21,7 +21,7 @@ object GamesService : StandardService<GameEntity, Game>(
     onDeleteFunction = {
         //  Sport -> Game
         SportEntity.fetch(it.sportId)
-    }
+    },
 ) {
 
     fun create(omittedGame: OmittedGame): Result<Game> {
@@ -215,7 +215,7 @@ object GamesService : StandardService<GameEntity, Game>(
                             this.status = MatchStatus.STANDBY
                             this.createdAt = LocalDateTime.now()
                             this.updatedAt = LocalDateTime.now()
-                        }
+                        },
                     )
                 }
             }
@@ -331,7 +331,7 @@ object GamesService : StandardService<GameEntity, Game>(
                     score = 0,
                     goal = 0,
                     loseGoal = 0,
-                    goalDiff = 0
+                    goalDiff = 0,
                 )
             }
 
@@ -390,7 +390,7 @@ object GamesService : StandardService<GameEntity, Game>(
                             } else if (game.calculationType == CalculationType.TOTAL_SCORE) {
                                 thenByDescending { it.goal }
                             }
-                        }
+                        },
                 )
                 .map { leagueTeamResult ->
                     if (lastResult == null) {
@@ -431,7 +431,7 @@ object GamesService : StandardService<GameEntity, Game>(
                 //  is finished
                 finished = unfilteredMatches.size == matches.size,
                 teams = sortedLeagueTeamResults,
-                createdAt = LocalDateTime.now().toString()
+                createdAt = LocalDateTime.now().toString(),
             )
 
             Result.success(leagueResult)
@@ -577,7 +577,7 @@ object GamesService : StandardService<GameEntity, Game>(
                             topNode.rightTeam?.id?.value
                                 ?: throw Exception("something went wrong. right team id is null")
                         },
-                        rank = 1
+                        rank = 1,
                     ),
                     TournamentTeamResult(
                         teamId = if (topNode.result == MatchResult.LEFT_WIN) {
@@ -586,10 +586,10 @@ object GamesService : StandardService<GameEntity, Game>(
                         } else {
                             topNode.leftTeam?.id?.value ?: throw Exception("something went wrong. left team id is null")
                         },
-                        rank = 2
-                    )
+                        rank = 2,
+                    ),
                 ),
-                createdAt = LocalDateTime.now().toString()
+                createdAt = LocalDateTime.now().toString(),
             )
 
             Result.success(tournamentResult)
@@ -602,7 +602,7 @@ data class LeagueResult(
     val gameId: Int,
     val finished: Boolean,
     val teams: List<LeagueTeamResult>,
-    val createdAt: String
+    val createdAt: String,
 )
 
 @Serializable
@@ -619,18 +619,18 @@ data class LeagueTeamResult(
     var score: Int,
     var goal: Int,
     var loseGoal: Int,
-    var goalDiff: Int
+    var goalDiff: Int,
 )
 
 @Serializable
 data class TournamentResult(
     val gameId: Int,
     val teams: List<TournamentTeamResult>,
-    val createdAt: String
+    val createdAt: String,
 )
 
 @Serializable
 data class TournamentTeamResult(
     val teamId: Int,
-    val rank: Int
+    val rank: Int,
 )

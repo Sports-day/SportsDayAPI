@@ -23,7 +23,7 @@ fun postDiscordMessage(message: DiscordMessage) {
             url = webhookUrl,
             method = "POST",
             headers = mapOf("Content-Type" to "application/json"),
-            body = Json.encodeToString(message)
+            body = Json.encodeToString(message),
         )
     } catch (e: Exception) {
         println("failed to send discord message.")
@@ -39,13 +39,13 @@ data class DiscordEmbed(
     val title: String,
     val description: String,
     val color: Int,
-    val timestamp: String = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+    val timestamp: String = OffsetDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
 )
 
 @Serializable
 data class DiscordMessage(
     val username: String,
-    val embeds: List<DiscordEmbed>
+    val embeds: List<DiscordEmbed>,
 )
 
 fun sendRequest(url: String, method: String = "GET", headers: Map<String, String>? = null, body: String? = null): Response {

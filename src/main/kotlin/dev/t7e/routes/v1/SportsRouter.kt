@@ -48,13 +48,13 @@ fun Route.sportsRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                             //  Logger
                             Logger.commit(
                                 "[SportsRouter] created sport: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -72,7 +72,7 @@ fun Route.sportsRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -92,14 +92,14 @@ fun Route.sportsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated sport",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[SportsRouter] updated sport: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -115,13 +115,13 @@ fun Route.sportsRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    MessageResponse("deleted sport")
+                                    MessageResponse("deleted sport"),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[SportsRouter] deleted sport: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

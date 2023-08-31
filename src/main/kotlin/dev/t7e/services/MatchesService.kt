@@ -17,7 +17,7 @@ object MatchesService : StandardService<MatchEntity, Match>(
     onDeleteFunction = {
         //  Game
         GameEntity.fetch(it.gameId)
-    }
+    },
 ) {
 
     fun update(id: Int, omittedMatch: OmittedMatch): Result<Match> {

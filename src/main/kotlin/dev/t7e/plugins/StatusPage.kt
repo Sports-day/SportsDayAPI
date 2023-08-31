@@ -22,7 +22,7 @@ fun Application.configureStatusPage() {
             Logger.commit(
                 "Internal Server Error: ${cause.message}",
                 LogEvents.ERROR,
-                null
+                null,
             )
             cause.printStackTrace()
             call.respond(HttpStatusCode.InternalServerError, MessageResponse(cause.message))

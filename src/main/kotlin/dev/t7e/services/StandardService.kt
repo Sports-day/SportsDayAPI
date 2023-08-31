@@ -23,7 +23,7 @@ open class StandardService<T : IntEntity, R>(
     private val _getAllObjectFunction: () -> List<Pair<T, R>>,
     private val _getObjectByIdFunction: (id: Int) -> Pair<T, R>?,
     protected val fetchFunction: (id: Int) -> Unit,
-    protected val onDeleteFunction: (model: R) -> Unit = {}
+    protected val onDeleteFunction: (model: R) -> Unit = {},
 ) {
 
     /**
@@ -33,7 +33,7 @@ open class StandardService<T : IntEntity, R>(
         return Result.success(
             _getAllObjectFunction().map {
                 it.second
-            }
+            },
         )
     }
 

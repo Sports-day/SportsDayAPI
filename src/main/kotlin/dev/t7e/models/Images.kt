@@ -28,7 +28,7 @@ class ImageEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "image",
         table = Images,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var name by Images.name
@@ -42,7 +42,7 @@ class ImageEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             attachment,
             createdAt.toString(),
-            createdBy?.id?.value ?: -1
+            createdBy?.id?.value ?: -1,
         )
     }
 }
@@ -53,11 +53,11 @@ data class Image(
     val name: String,
     val attachment: String,
     val createdAt: String,
-    val createdBy: Int
+    val createdBy: Int,
 )
 
 @Serializable
 data class OmittedImage(
     val name: String,
-    val attachment: String
+    val attachment: String,
 )

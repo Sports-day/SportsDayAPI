@@ -20,7 +20,7 @@ class LocationEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "location",
         table = Locations,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var name by Locations.name
@@ -28,7 +28,7 @@ class LocationEntity(id: EntityID<Int>) : IntEntity(id) {
     fun serializableModel(): Location {
         return Location(
             id.value,
-            name
+            name,
         )
     }
 }
@@ -36,10 +36,10 @@ class LocationEntity(id: EntityID<Int>) : IntEntity(id) {
 @Serializable
 data class Location(
     val id: Int,
-    val name: String
+    val name: String,
 )
 
 @Serializable
 data class OmittedLocation(
-    val name: String
+    val name: String,
 )

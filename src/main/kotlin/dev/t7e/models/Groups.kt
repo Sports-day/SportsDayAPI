@@ -24,7 +24,7 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "group",
         table = Groups,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {}
 
     var name by Groups.name
@@ -39,7 +39,7 @@ class GroupEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             description,
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -50,11 +50,11 @@ data class Group(
     val name: String,
     val description: String?,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
 data class OmittedGroup(
     val name: String,
-    val description: String?
+    val description: String?,
 )

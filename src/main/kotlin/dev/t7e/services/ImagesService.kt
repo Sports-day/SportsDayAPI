@@ -20,7 +20,7 @@ object ImagesService : StandardService<ImageEntity, Image>(
                 SportEntity.fetch(pair.second.id)
             }
         }
-    }
+    },
 ) {
 
     fun create(createdBy: MicrosoftAccountEntity, omittedImage: OmittedImage): Result<Image> {

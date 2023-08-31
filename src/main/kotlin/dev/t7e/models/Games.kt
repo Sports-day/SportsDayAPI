@@ -32,7 +32,7 @@ class GameEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "game",
         table = Games,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {
         private val entriesMap = mutableMapOf<Int, List<Pair<TeamEntity, Team>>?>()
         private val matchesMap = mutableMapOf<Int, List<Pair<MatchEntity, Match>>?>()
@@ -147,7 +147,7 @@ class GameEntity(id: EntityID<Int>) : IntEntity(id) {
             calculationType,
             weight,
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -158,7 +158,7 @@ enum class GameType(val status: String) {
     TOURNAMENT("tournament"),
 
     @SerialName("league")
-    LEAGUE("league")
+    LEAGUE("league"),
 }
 
 @Serializable
@@ -167,7 +167,7 @@ enum class CalculationType(val type: String) {
     TOTAL_SCORE("total_score"),
 
     @SerialName("diff_score")
-    DIFF_SCORE("diff_score")
+    DIFF_SCORE("diff_score"),
 }
 
 @Serializable
@@ -180,7 +180,7 @@ data class Game(
     val calculationType: CalculationType,
     val weight: Int,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
@@ -190,5 +190,5 @@ data class OmittedGame(
     val sportId: Int,
     val type: GameType,
     val calculationType: CalculationType?,
-    val weight: Int
+    val weight: Int,
 )

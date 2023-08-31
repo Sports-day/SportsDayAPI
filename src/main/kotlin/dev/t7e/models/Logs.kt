@@ -35,7 +35,7 @@ enum class LogEvents(val event: String) {
     ERROR("error"),
     INFO("info"),
     DEBUG("debug"),
-    WARN("warn")
+    WARN("warn"),
 }
 
 @Serializable
@@ -44,5 +44,5 @@ data class Log(
     val logEvent: LogEvents,
     val microsoftAccount: Int?,
     val message: String,
-    val createdAt: String
+    val createdAt: String,
 )

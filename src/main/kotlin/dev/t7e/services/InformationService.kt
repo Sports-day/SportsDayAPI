@@ -14,7 +14,7 @@ object InformationService : StandardService<InformationEntity, InformationModel>
     objectName = "Information",
     _getAllObjectFunction = { InformationEntity.getAll() },
     _getObjectByIdFunction = { InformationEntity.getById(it) },
-    fetchFunction = { InformationEntity.fetch(it) }
+    fetchFunction = { InformationEntity.fetch(it) },
 ) {
 
     /**
@@ -34,7 +34,7 @@ object InformationService : StandardService<InformationEntity, InformationModel>
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 
@@ -58,7 +58,7 @@ object InformationService : StandardService<InformationEntity, InformationModel>
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 }

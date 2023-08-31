@@ -24,7 +24,7 @@ class AllowedDomainEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "allowed domain",
         table = AllowedDomains,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {
         fun getByDomain(domain: String): Pair<AllowedDomainEntity, AllowedDomain>? {
             checkCacheLifetime()
@@ -44,7 +44,7 @@ class AllowedDomainEntity(id: EntityID<Int>) : IntEntity(id) {
             id.value,
             domain,
             description,
-            createdAt.toString()
+            createdAt.toString(),
         )
     }
 }
@@ -54,11 +54,11 @@ data class AllowedDomain(
     val id: Int,
     val domain: String,
     val description: String,
-    val createdAt: String
+    val createdAt: String,
 )
 
 @Serializable
 data class OmittedAllowedDomain(
     val domain: String,
-    val description: String
+    val description: String,
 )

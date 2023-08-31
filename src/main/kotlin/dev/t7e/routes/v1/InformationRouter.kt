@@ -31,7 +31,7 @@ fun Route.informationRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(information.getOrDefault(listOf()))
+                    DataResponse(information.getOrDefault(listOf())),
                 )
             }
 
@@ -47,7 +47,7 @@ fun Route.informationRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -65,7 +65,7 @@ fun Route.informationRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
@@ -84,8 +84,8 @@ fun Route.informationRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "updated information",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                         }
                 }
@@ -101,7 +101,7 @@ fun Route.informationRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                MessageResponse("delete information")
+                                MessageResponse("delete information"),
                             )
                         }
                 }

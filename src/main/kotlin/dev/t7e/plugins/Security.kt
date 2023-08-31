@@ -37,13 +37,13 @@ fun Application.configureSecurity() {
 
 enum class Role(val value: String) {
     ADMIN("ADMIN"),
-    USER("USER")
+    USER("USER"),
 }
 
 data class UserPrincipal(
     val microsoftAccountId: Int,
     val microsoftAccount: MicrosoftAccountEntity,
-    val roles: Set<Role> = emptySet()
+    val roles: Set<Role> = emptySet(),
 ) : Principal
 
 object Authorization {
@@ -109,13 +109,13 @@ object Authorization {
                         setOf(Role.ADMIN, Role.USER)
                     } else {
                         setOf(Role.USER)
-                    }
+                    },
                 )
             } catch (e: ExposedSQLException) {
                 Logger.commit(
                     "Authorization failed: ${e.message}",
                     LogEvents.ERROR,
-                    null
+                    null,
                 )
 
                 return@memoize null
