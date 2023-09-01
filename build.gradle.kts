@@ -1,3 +1,5 @@
+
+
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -63,6 +65,6 @@ ktlint {
     version.set("0.42.1")
     verbose.set(true)
     outputToConsole.set(true)
-    ignoreFailures.set(true)
+//    ignoreFailures.set(true)
     disabledRules.set(listOf("no-wildcard-imports"))
 }
