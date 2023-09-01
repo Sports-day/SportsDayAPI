@@ -30,6 +30,14 @@ SportsDayAPIは、各リソースへのアクセス、認証を行うREST APIで
 
 ## 開発
 
+### Linter
+
+コミットする前にlinter formatを実行すると幸せになります。
+
+```shell
+./gradlew ktlintFormat
+```
+
 ### Git branch
 
 ``main``ブランチから作業用のブランチを切って作業を行います。
