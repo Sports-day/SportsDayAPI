@@ -62,6 +62,8 @@ SportsDayAPIは、各リソースへのアクセス、認証を行うREST APIで
 - **style**: フォーマット等の変更
 - **refactor**: リファクタに関する変更
 - **debug**: デバック用のコード
+- **test**: テストコードの追加・更新
+- **chore**: GitHub Actions等タスクに関する変更
 
 ## LICENSE
 
