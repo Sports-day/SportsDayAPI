@@ -10,7 +10,7 @@ on:
       - closed
     paths:
       - openapi.yml
-      - .github/workflows/deploy-to-github-pages.yml
+      - .github/workflows/deploy-openapi.yml
 
 jobs:
   deploy-to-github-pages:
