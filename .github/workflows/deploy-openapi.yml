@@ -24,7 +24,7 @@ jobs:
 
       - name: Validate Swagger Files
         run: |
-          swagger-cli validate -d openapi.yaml --type yaml
+          swagger-cli validate -d ${{ github.workspace }}/openapi.yaml --type yaml
 
       - name: Generate Swagger UI
         if: github.event.pull_request.merged == true
