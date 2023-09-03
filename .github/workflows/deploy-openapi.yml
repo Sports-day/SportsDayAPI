@@ -9,7 +9,7 @@ on:
       - synchronize
       - closed
     paths:
-      - openapi.yml
+      - openapi.yaml
       - .github/workflows/deploy-openapi.yml
 
 jobs:
