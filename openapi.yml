@@ -29,7 +29,10 @@ components:
         microsoftAccount:
           $ref: '#/components/schemas/MicrosoftAccount'
         role:
-          type: boolean
+          type: string
+          enum:
+            - ADMIN
+            - USER
     MicrosoftAccount:
       type: object
       properties:
