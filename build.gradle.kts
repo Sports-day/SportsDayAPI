@@ -1,5 +1,3 @@
-
-
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
@@ -67,4 +65,10 @@ ktlint {
     outputToConsole.set(true)
 //    ignoreFailures.set(true)
     disabledRules.set(listOf("no-wildcard-imports"))
+}
+
+task("runSeeder", JavaExec::class) {
+    group = "seeder"
+    mainClass.set("dev.t7e.bin.SeederKt")
+    classpath = sourceSets["main"].runtimeClasspath
 }
