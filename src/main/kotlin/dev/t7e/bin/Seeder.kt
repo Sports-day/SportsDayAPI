@@ -8,5 +8,4 @@ fun main(args: Array<String>) {
     println("executing seeder... $args")
 
     //  create model with new architecture
-
 }
