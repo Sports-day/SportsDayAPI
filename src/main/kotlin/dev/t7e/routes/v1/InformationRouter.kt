@@ -23,7 +23,6 @@ import io.ktor.server.routing.*
 fun Route.informationRouter() {
     route("/information") {
         withRole(Role.USER) {
-
             /**
              * Get all information
              */
@@ -32,12 +31,11 @@ fun Route.informationRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(information.getOrDefault(listOf()))
+                    DataResponse(information.getOrDefault(listOf())),
                 )
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new information
                  */
@@ -49,14 +47,13 @@ fun Route.informationRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
             }
 
             route("/{id?}") {
-
                 /**
                  * Get information by id
                  */
@@ -68,11 +65,10 @@ fun Route.informationRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
-
 
                 /**
                  * Update information by id
@@ -88,8 +84,8 @@ fun Route.informationRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "updated information",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                         }
                 }
@@ -105,7 +101,7 @@ fun Route.informationRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                MessageResponse("delete information")
+                                MessageResponse("delete information"),
                             )
                         }
                 }

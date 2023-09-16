@@ -1,6 +1,5 @@
 package dev.t7e.routes.v1
 
-import dev.t7e.models.Log
 import dev.t7e.models.LogEvents
 import dev.t7e.models.OmittedGroup
 import dev.t7e.plugins.Role
@@ -28,7 +27,6 @@ import io.ktor.server.routing.*
 fun Route.groupsRouter() {
     route("/groups") {
         withRole(Role.USER) {
-
             /**
              * Get all groups
              */
@@ -39,7 +37,6 @@ fun Route.groupsRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new group
                  */
@@ -53,22 +50,21 @@ fun Route.groupsRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created group",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
 
                             //  Logger
                             Logger.commit(
                                 "[GroupsRouter] created group: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
             }
 
             route("/{id?}") {
-
                 /**
                  * Get specific group
                  */
@@ -81,7 +77,6 @@ fun Route.groupsRouter() {
                 }
 
                 withRole(Role.ADMIN) {
-
                     /**
                      * Update group
                      */
@@ -96,14 +91,14 @@ fun Route.groupsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated group",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[GroupsRouter] updated group: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -122,7 +117,7 @@ fun Route.groupsRouter() {
                                 Logger.commit(
                                     "[GroupsRouter] deleted group: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

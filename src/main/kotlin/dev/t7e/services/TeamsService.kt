@@ -22,7 +22,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
                 UserEntity.fetch(pair.second.id)
             }
         }
-    }
+    },
 ) {
 
     fun create(omittedTeam: OmittedTeam): Result<Team> {
@@ -103,7 +103,7 @@ object TeamsService : StandardService<TeamEntity, Team>(
             team.users = SizedCollection(
                 team.users.filterNot {
                     it.id.value == userId
-                }
+                },
             )
             team.updatedAt = LocalDateTime.now()
 

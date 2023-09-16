@@ -26,7 +26,6 @@ import io.ktor.server.routing.*
 
 fun Route.usersRouter() {
     route("/users") {
-
         /**
          * Get all users
          */
@@ -37,7 +36,6 @@ fun Route.usersRouter() {
         }
 
         withRole(Role.ADMIN) {
-
             /**
              * create user
              */
@@ -47,22 +45,23 @@ fun Route.usersRouter() {
                 UsersService
                     .create(omittedUser)
                     .respondOrInternalError {
-                        call.respond(DataMessageResponse(
-                            "created user",
-                            it
-                        ))
+                        call.respond(
+                            DataMessageResponse(
+                                "created user",
+                                it,
+                            ),
+                        )
                         //  Logger
                         Logger.commit(
                             "[UsersRouter] created user: ${it.name}",
                             LogEvents.CREATE,
-                            call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                            call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                         )
                     }
             }
         }
 
         route("/{id?}") {
-
             /**
              * Get user
              */
@@ -77,7 +76,6 @@ fun Route.usersRouter() {
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * update user
                  */
@@ -92,14 +90,14 @@ fun Route.usersRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "updated user",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[UsersRouter] updated user: ${it.name}",
                                 LogEvents.UPDATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -118,13 +116,12 @@ fun Route.usersRouter() {
                             Logger.commit(
                                 "[UsersRouter] deleted user: $id",
                                 LogEvents.DELETE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
 
                 route("/microsoft-accounts") {
-
                     /**
                      * Get user what linked by microsoft account
                      */
@@ -141,7 +138,6 @@ fun Route.usersRouter() {
             }
 
             route("/teams") {
-
                 /**
                  * Get all teams what user belong
                  */

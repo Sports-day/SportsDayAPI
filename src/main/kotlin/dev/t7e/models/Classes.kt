@@ -20,7 +20,7 @@ object Classes : IntIdTable("classes") {
     val group = reference(
         "group",
         Groups,
-        onDelete = ReferenceOption.CASCADE
+        onDelete = ReferenceOption.CASCADE,
     )
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
@@ -31,7 +31,7 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "class",
         table = Classes,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {
         private val classUsersMap = mutableMapOf<Int, List<Pair<UserEntity, User>>?>()
 
@@ -89,7 +89,7 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
             description,
             group.id.value,
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -101,12 +101,12 @@ data class ClassModel(
     val description: String?,
     val groupId: Int,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
 data class OmittedClassModel(
     val name: String,
     val description: String?,
-    val groupId: Int
+    val groupId: Int,
 )

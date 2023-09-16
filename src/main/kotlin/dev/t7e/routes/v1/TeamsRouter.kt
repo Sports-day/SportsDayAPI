@@ -28,7 +28,6 @@ import io.ktor.server.routing.*
 fun Route.teamsRouter() {
     route("/teams") {
         withRole(Role.USER) {
-
             /**
              * Get all teams
              */
@@ -37,12 +36,11 @@ fun Route.teamsRouter() {
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(teams.getOrDefault(listOf()))
+                    DataResponse(teams.getOrDefault(listOf())),
                 )
             }
 
             withRole(Role.ADMIN) {
-
                 /**
                  * Create new team
                  */
@@ -56,21 +54,20 @@ fun Route.teamsRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "created team",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[TeamsRouter] created team: ${it.name}",
                                 LogEvents.CREATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
             }
 
             route("/{id?}") {
-
                 /**
                  * Get specific team
                  */
@@ -82,13 +79,12 @@ fun Route.teamsRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it)
+                                DataResponse(it),
                             )
                         }
                 }
 
                 route("/users") {
-
                     get {
                         val id =
                             call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
@@ -98,13 +94,12 @@ fun Route.teamsRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    DataResponse(it)
+                                    DataResponse(it),
                                 )
                             }
                     }
 
                     withRole(Role.ADMIN) {
-
                         post {
                             val id = call.parameters["id"]?.toIntOrNull()
                                 ?: throw BadRequestException("invalid id parameter")
@@ -117,8 +112,8 @@ fun Route.teamsRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "added users",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 }
                         }
@@ -136,8 +131,8 @@ fun Route.teamsRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "removed user",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 }
                         }
@@ -145,7 +140,6 @@ fun Route.teamsRouter() {
                 }
 
                 withRole(Role.ADMIN) {
-
                     /**
                      * Update team
                      */
@@ -161,14 +155,14 @@ fun Route.teamsRouter() {
                                     HttpStatusCode.OK,
                                     DataMessageResponse(
                                         "updated team",
-                                        it
-                                    )
+                                        it,
+                                    ),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[TeamsRouter] updated team: ${it.name}",
                                     LogEvents.UPDATE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -185,13 +179,13 @@ fun Route.teamsRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    MessageResponse("deleted team")
+                                    MessageResponse("deleted team"),
                                 )
                                 //  Logger
                                 Logger.commit(
                                     "[TeamsRouter] deleted team: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }

@@ -9,7 +9,7 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/05/07
  * @author testusuke
  */
-object MatchesService: StandardService<MatchEntity, Match>(
+object MatchesService : StandardService<MatchEntity, Match>(
     objectName = "match",
     _getAllObjectFunction = { MatchEntity.getAll() },
     _getObjectByIdFunction = { MatchEntity.getById(it) },
@@ -17,7 +17,7 @@ object MatchesService: StandardService<MatchEntity, Match>(
     onDeleteFunction = {
         //  Game
         GameEntity.fetch(it.gameId)
-    }
+    },
 ) {
 
     fun update(id: Int, omittedMatch: OmittedMatch): Result<Match> {

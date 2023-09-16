@@ -29,7 +29,7 @@ object Logger {
             "LoggerPushTimer",
             true,
             1000L * 60L * 1L,
-            1000L * 60L * 10L
+            1000L * 60L * 10L,
         ) {
             push()
         }
@@ -42,8 +42,8 @@ object Logger {
                 logEvent = event,
                 microsoftAccount = causedBy?.id?.value,
                 message = message,
-                createdAt = LocalDateTime.now().toString()
-            )
+                createdAt = LocalDateTime.now().toString(),
+            ),
         )
     }
 
@@ -66,7 +66,7 @@ object Logger {
                             title = "Error",
                             description = log.message,
                             color = Color.RED.getColorValue(),
-                        )
+                        ),
                     )
                 }
             }
@@ -74,7 +74,7 @@ object Logger {
             if (embeds.isNotEmpty()) {
                 val message = DiscordMessage(
                     username = "SportsDayAPI",
-                    embeds = embeds
+                    embeds = embeds,
                 )
                 //  send
                 postDiscordMessage(message)
@@ -84,5 +84,4 @@ object Logger {
             logs.clear()
         }
     }
-
 }

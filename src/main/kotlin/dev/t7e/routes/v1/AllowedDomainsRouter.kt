@@ -27,7 +27,6 @@ import io.ktor.server.routing.*
 fun Route.allowedDomainsRouter() {
     route("/allowed-domains") {
         withRole(Role.ADMIN) {
-
             /**
              * Get all allowed domain
              */
@@ -50,20 +49,19 @@ fun Route.allowedDomainsRouter() {
                             HttpStatusCode.OK,
                             DataMessageResponse(
                                 "created allowed domain",
-                                it
-                            )
+                                it,
+                            ),
                         )
                         //  Logger
                         Logger.commit(
                             "[AllowedDomainsRouter] created allowed domain: ${omittedAllowedDomain.domain}",
                             LogEvents.CREATE,
-                            call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                            call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                         )
                     }
             }
 
             route("/{id?}") {
-
                 /**
                  * Get specific allowed domain
                  */
@@ -91,14 +89,14 @@ fun Route.allowedDomainsRouter() {
                                 HttpStatusCode.OK,
                                 DataMessageResponse(
                                     "updated allowed domain",
-                                    it
-                                )
+                                    it,
+                                ),
                             )
                             //  Logger
                             Logger.commit(
                                 "[AllowedDomainsRouter] updated allowed domain: ${omittedAllowedDomain.domain}",
                                 LogEvents.UPDATE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }
@@ -114,13 +112,13 @@ fun Route.allowedDomainsRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                MessageResponse("deleted domain")
+                                MessageResponse("deleted domain"),
                             )
                             //  Logger
                             Logger.commit(
                                 "[AllowedDomainsRouter] deleted allowed domain: $id",
                                 LogEvents.DELETE,
-                                call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                             )
                         }
                 }

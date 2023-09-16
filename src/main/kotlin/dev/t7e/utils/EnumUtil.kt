@@ -5,7 +5,6 @@ package dev.t7e.utils
  * @author testusuke
  */
 
-
 inline fun <reified T : Enum<T>> safeValueOf(type: String): T? {
     return try {
         java.lang.Enum.valueOf(T::class.java, type)

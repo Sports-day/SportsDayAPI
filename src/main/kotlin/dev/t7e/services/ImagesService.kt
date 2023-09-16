@@ -8,7 +8,7 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/16
  * @author testusuke
  */
-object ImagesService: StandardService<ImageEntity, Image>(
+object ImagesService : StandardService<ImageEntity, Image>(
     objectName = "image",
     _getAllObjectFunction = { ImageEntity.getAll() },
     _getObjectByIdFunction = { ImageEntity.getById(it) },
@@ -20,11 +20,10 @@ object ImagesService: StandardService<ImageEntity, Image>(
                 SportEntity.fetch(pair.second.id)
             }
         }
-    }
+    },
 ) {
 
     fun create(createdBy: MicrosoftAccountEntity, omittedImage: OmittedImage): Result<Image> {
-
         val model = transaction {
             ImageEntity.new {
                 this.name = omittedImage.name
@@ -38,5 +37,4 @@ object ImagesService: StandardService<ImageEntity, Image>(
 
         return Result.success(model)
     }
-
 }

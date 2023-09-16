@@ -11,16 +11,16 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/03/01
  * @author testusuke
  */
-object Locations: IntIdTable("locations") {
+object Locations : IntIdTable("locations") {
     val name = varchar("name", 64)
 }
 
-class LocationEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: SmartCache<LocationEntity, Location> (
+class LocationEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : SmartCache<LocationEntity, Location> (
         entityName = "location",
         table = Locations,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var name by Locations.name
@@ -28,7 +28,7 @@ class LocationEntity(id: EntityID<Int>): IntEntity(id) {
     fun serializableModel(): Location {
         return Location(
             id.value,
-            name
+            name,
         )
     }
 }
@@ -36,10 +36,10 @@ class LocationEntity(id: EntityID<Int>): IntEntity(id) {
 @Serializable
 data class Location(
     val id: Int,
-    val name: String
+    val name: String,
 )
 
 @Serializable
 data class OmittedLocation(
-    val name: String
+    val name: String,
 )

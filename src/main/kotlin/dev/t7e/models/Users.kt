@@ -30,11 +30,10 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
         entityName = "user",
         table = Users,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     ) {
         private val userTeamsMap = mutableMapOf<Int, List<Pair<TeamEntity, Team>>?>()
         private val userMicrosoftAccountsMap = mutableMapOf<Int, List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>?>()
-
 
         fun getUserTeams(id: Int): List<Pair<TeamEntity, Team>>? {
             if (!userTeamsMap.containsKey(id)) {
@@ -120,7 +119,6 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var teams by TeamEntity via TeamUsers
     val microsoftAccounts by MicrosoftAccountEntity optionalReferrersOn MicrosoftAccounts.user
 
-
     fun serializableModel(): User {
         return User(
             id.value,
@@ -130,7 +128,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             classEntity.id.value,
             teams.map { it.id.value },
             createdAt.toString(),
-            updatedAt.toString()
+            updatedAt.toString(),
         )
     }
 }
@@ -139,8 +137,9 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
 enum class GenderType(val gender: String) {
     @SerialName("male")
     MALE("male"),
+
     @SerialName("female")
-    FEMALE("female")
+    FEMALE("female"),
 }
 
 @Serializable
@@ -152,7 +151,7 @@ data class User(
     val classId: Int,
     val teamIds: List<Int>,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String,
 )
 
 @Serializable
@@ -160,5 +159,5 @@ data class OmittedUser(
     val name: String,
     val studentId: String,
     val gender: GenderType,
-    val classId: Int
+    val classId: Int,
 )

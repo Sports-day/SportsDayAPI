@@ -29,12 +29,11 @@ object UsersService : StandardService<UserEntity, User>(
 
         //  Class -> User
         ClassEntity.fetch(it.classId)
-    }
+    },
 ) {
 
     fun create(omittedUser: OmittedUser): Result<User> {
         val classEntity = ClassEntity.getById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
-
 
         val model = transaction {
             UserEntity.new {
@@ -86,5 +85,4 @@ object UsersService : StandardService<UserEntity, User>(
 
         return Result.success(microsoftAccounts.map { it.second })
     }
-
 }

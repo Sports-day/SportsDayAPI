@@ -12,7 +12,6 @@ import java.time.LocalDateTime
  */
 object KeyNames {
 
-
     private val initializeKey = listOf<SafeKey>()
 
     init {

@@ -9,16 +9,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DataResponse<T>(
-    val data: T
+    val data: T,
 )
 
 @Serializable
 data class DataMessageResponse<M, T>(
     val message: M,
-    val data: T
+    val data: T,
 )
 
 @Serializable
 data class MessageResponse<M>(
-    val message: M
+    val message: M,
 )

@@ -1,7 +1,6 @@
 package dev.t7e.utils
 
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
 /**

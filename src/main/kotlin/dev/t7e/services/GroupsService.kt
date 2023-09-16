@@ -25,7 +25,7 @@ object GroupsService : StandardService<GroupEntity, Group>(
                 ClassEntity.fetch(pair.second.id)
             }
         }
-    }
+    },
 ) {
 
     /**
@@ -47,7 +47,7 @@ object GroupsService : StandardService<GroupEntity, Group>(
         }
 
         return Result.success(
-            model
+            model,
         )
     }
 
@@ -74,5 +74,4 @@ object GroupsService : StandardService<GroupEntity, Group>(
 
         return Result.success(model)
     }
-
 }

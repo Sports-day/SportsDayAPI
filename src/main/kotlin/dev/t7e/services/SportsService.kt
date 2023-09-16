@@ -16,7 +16,7 @@ object SportsService : StandardService<SportEntity, Sport>(
     objectName = "sport",
     _getAllObjectFunction = { SportEntity.getAll() },
     _getObjectByIdFunction = { SportEntity.getById(it) },
-    fetchFunction = { SportEntity.fetch(it) }
+    fetchFunction = { SportEntity.fetch(it) },
 ) {
     fun create(omittedSport: OmittedSport): Result<Sport> {
         val image = omittedSport.iconId?.let { ImageEntity.getById(it) }

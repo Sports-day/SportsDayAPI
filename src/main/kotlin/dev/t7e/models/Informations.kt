@@ -11,17 +11,17 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/05/29
  * @author testusuke
  */
-object Information: IntIdTable("information") {
+object Information : IntIdTable("information") {
     val name = varchar("name", 64)
     val content = text("content")
 }
 
-class InformationEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: SmartCache<InformationEntity, InformationModel> (
+class InformationEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : SmartCache<InformationEntity, InformationModel> (
         entityName = "information",
         table = Information,
         duration = 5.minutes,
-        serializer = { it.serializableModel() }
+        serializer = { it.serializableModel() },
     )
 
     var name by Information.name
@@ -31,7 +31,7 @@ class InformationEntity(id: EntityID<Int>): IntEntity(id) {
         return InformationModel(
             id.value,
             name,
-            content
+            content,
         )
     }
 }
@@ -40,11 +40,11 @@ class InformationEntity(id: EntityID<Int>): IntEntity(id) {
 data class InformationModel(
     val id: Int,
     val name: String,
-    val content: String
+    val content: String,
 )
 
 @Serializable
 data class OmittedInformationModel(
     val name: String,
-    val content: String
+    val content: String,
 )

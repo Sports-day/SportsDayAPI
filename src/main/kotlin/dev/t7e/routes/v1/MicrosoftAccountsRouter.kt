@@ -36,10 +36,8 @@ fun Route.microsoftAccountsRouter() {
 
                     call.respond(HttpStatusCode.OK, DataResponse(accounts.getOrDefault(listOf())))
                 }
-
             }
             route("/{id?}") {
-
                 /**
                  * Get specific microsoft account
                  */
@@ -72,7 +70,7 @@ fun Route.microsoftAccountsRouter() {
                                 Logger.commit(
                                     "[MicrosoftAccountsRouter] deleted microsoft account: $id",
                                     LogEvents.DELETE,
-                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount
+                                    call.authentication.principal<UserPrincipal>()?.microsoftAccount,
                                 )
                             }
                     }
@@ -92,8 +90,8 @@ fun Route.microsoftAccountsRouter() {
                                         HttpStatusCode.OK,
                                         DataMessageResponse(
                                             "updated account role",
-                                            it
-                                        )
+                                            it,
+                                        ),
                                     )
                                 }
                         }
@@ -152,11 +150,9 @@ fun Route.microsoftAccountsRouter() {
                             }
                     }
                 }
-
             }
         }
     }
-
 }
 
 /**
