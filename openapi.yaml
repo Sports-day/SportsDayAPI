@@ -1,0 +1,74 @@
+openapi: 3.1.0
+info:
+  title: Sports-day REST API
+  description: This is a Spors-day REST API specification.
+  version: 1.0.0
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /authorization:
+    get:
+      summary: 認証状態を取得
+      description: 認証状態とユーザー情報を取得します。
+      responses:
+        '200':
+          description: authorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Authorization'
+components:
+  schemas:
+    Authorization:
+      type: object
+      required:
+        - microsoftAccount
+        - role
+      properties:
+        microsoftAccount:
+          $ref: '#/components/schemas/MicrosoftAccount'
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+    MicrosoftAccount:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        mailAccountName:
+          type: string
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            mailAccountName:
+              type: string
+            role:
+              type: string
+              enum:
+                - ADMIN
+                - USER
+            userId:
+              # replace userId with User object
+              type: integer
+            linkLater:
+              type: boolean
+            firstLogin:
+              type: string
+            lastLogin:
+              type: string
