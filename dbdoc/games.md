@@ -14,11 +14,14 @@ CREATE TABLE `games` (
   `type` varchar(32) NOT NULL,
   `calculation_type` varchar(32) NOT NULL DEFAULT 'DIFF_SCORE',
   `weight` int NOT NULL,
+  `tag` int DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_games_sport__id` (`sport`),
-  CONSTRAINT `fk_games_sport__id` FOREIGN KEY (`sport`) REFERENCES `sports` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+  KEY `fk_games_tag__id` (`tag`),
+  CONSTRAINT `fk_games_sport__id` FOREIGN KEY (`sport`) REFERENCES `sports` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_games_tag__id` FOREIGN KEY (`tag`) REFERENCES `tags` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
@@ -35,6 +38,7 @@ CREATE TABLE `games` (
 | type | varchar(32) |  | false |  |  |  |  |
 | calculation_type | varchar(32) | DIFF_SCORE | false |  |  |  |  |
 | weight | int |  | false |  |  |  |  |
+| tag | int |  | true |  |  | [tags](tags.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |
 
@@ -43,6 +47,7 @@ CREATE TABLE `games` (
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_games_sport__id | FOREIGN KEY | FOREIGN KEY (sport) REFERENCES sports (id) |
+| fk_games_tag__id | FOREIGN KEY | FOREIGN KEY (tag) REFERENCES tags (id) |
 | PRIMARY | PRIMARY KEY | PRIMARY KEY (id) |
 
 ## Indexes
@@ -50,6 +55,7 @@ CREATE TABLE `games` (
 | Name | Definition |
 | ---- | ---------- |
 | fk_games_sport__id | KEY fk_games_sport__id (sport) USING BTREE |
+| fk_games_tag__id | KEY fk_games_tag__id (tag) USING BTREE |
 | PRIMARY | PRIMARY KEY (id) USING BTREE |
 
 ## Relations

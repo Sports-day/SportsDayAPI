@@ -41,7 +41,7 @@ jobs:
           DATABASE_DB: db
       - uses: k1low/setup-tbls@v1
       - name: Run tbls for generate database document
-        run: tbls doc my://root:password@localhost:3306/db
+        run: tbls doc --rm-dist my://root:password@localhost:3306/db
       - name: Diff
         id: diff
         run: |

@@ -28,6 +28,7 @@ fun initializeTables(migrate: Boolean = false) {
             Images,
             Entries,
             Information,
+            Tags,
         ).forEach {
             if (migrate) {
                 SchemaUtils.createMissingTablesAndColumns(it)
