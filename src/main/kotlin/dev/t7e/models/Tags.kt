@@ -11,15 +11,15 @@ import org.jetbrains.exposed.sql.javatime.datetime
  * Created by testusuke on 2023/10/02
  * @author testusuke
  */
-object Tags: IntIdTable("tags") {
+object Tags : IntIdTable("tags") {
     val name = varchar("name", 64)
     val enabled = bool("enabled").default(true)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
 
-class TagEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<TagEntity>(Tags)
+class TagEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<TagEntity>(Tags)
 
     var name by Tags.name
     var enabled by Tags.enabled
