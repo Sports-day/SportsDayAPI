@@ -6,6 +6,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import dev.t7e.models.LogEvents
 import dev.t7e.models.MicrosoftAccountEntity
+import dev.t7e.models.UserEntity
 import dev.t7e.utils.Cache
 import dev.t7e.utils.Email
 import dev.t7e.utils.logger.Logger
@@ -101,11 +102,45 @@ object Authorization {
                     return@memoize null
                 }
 
+                // //////////////////////////
+                //  link user
+                // //////////////////////////
+                var isChanged = false
+                transaction {
+                    if (microsoftAccount.user == null) {
+                        //  find user
+                        val emailAccountName = microsoftAccount.mailAccountName
+
+                        if (emailAccountName != null) {
+                            val user = UserEntity.getAll().firstOrNull {
+                                emailAccountName.contains(it.second.studentId)
+                            }
+
+                            if (user != null) {
+                                transaction {
+                                    microsoftAccount.user = user.first
+                                }.apply {
+                                    MicrosoftAccountEntity.fetch(microsoftAccount.id.value)
+                                }
+
+                                isChanged = true
+                            }
+                        }
+                    }
+                }
+
+                //  re-fetch
+                val result = if (isChanged) {
+                    MicrosoftAccountEntity.getById(microsoftAccount.id.value)?.first ?: return@memoize null
+                } else {
+                    microsoftAccount
+                }
+
                 //  result
                 UserPrincipal(
-                    microsoftAccount.id.value,
-                    microsoftAccount,
-                    if (microsoftAccount.role == Role.ADMIN) {
+                    result.id.value,
+                    result,
+                    if (result.role == Role.ADMIN) {
                         setOf(Role.ADMIN, Role.USER)
                     } else {
                         setOf(Role.USER)
