@@ -1,6 +1,5 @@
 package dev.t7e.models
 
-import dev.t7e.models.Sports.nullable
 import dev.t7e.utils.SmartCache
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -134,7 +133,7 @@ class GameEntity(id: EntityID<Int>) : IntEntity(id) {
     var type by Games.type
     var calculationType by Games.calculationType
     var weight by Games.weight
-    val tag by TagEntity optionalReferencedOn Sports.tag
+    val tag by TagEntity optionalReferencedOn Games.tag
     var createdAt by Games.createdAt
     var updatedAt by Games.updatedAt
     val matches by MatchEntity referrersOn Matches.game
