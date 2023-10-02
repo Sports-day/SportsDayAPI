@@ -12,7 +12,9 @@ import java.time.LocalDateTime
  */
 object KeyNames {
 
-    private val initializeKey = listOf<SafeKey>()
+    private val initializeKey = listOf<Key>(
+        Key.RestrictGamePreview,
+    )
 
     init {
 
