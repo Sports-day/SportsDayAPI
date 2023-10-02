@@ -1,11 +1,12 @@
 package dev.t7e.models
 
+import dev.t7e.utils.SmartCache
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/10/02
@@ -19,7 +20,12 @@ object Tags : IntIdTable("tags") {
 }
 
 class TagEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<TagEntity>(Tags)
+    companion object : SmartCache<TagEntity, Tag>(
+        entityName = "tag",
+        table = Tags,
+        duration = 5.minutes,
+        serializer = { it.serializableModel() },
+    )
 
     var name by Tags.name
     var enabled by Tags.enabled
@@ -44,4 +50,10 @@ data class Tag(
     val enabled: Boolean,
     val createdAt: String,
     val updatedAt: String,
+)
+
+@Serializable
+data class OmittedTag(
+    val name: String,
+    val enabled: Boolean,
 )
