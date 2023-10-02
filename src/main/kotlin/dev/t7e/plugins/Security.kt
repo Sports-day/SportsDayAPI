@@ -102,9 +102,9 @@ object Authorization {
                     return@memoize null
                 }
 
-                ////////////////////////////
+                // //////////////////////////
                 //  link user
-                ////////////////////////////
+                // //////////////////////////
                 var isChanged = false
                 transaction {
                     if (microsoftAccount.user == null) {
@@ -131,10 +131,8 @@ object Authorization {
 
                 //  re-fetch
                 val result = if (isChanged) {
-                    println("Linked user")
                     MicrosoftAccountEntity.getById(microsoftAccount.id.value)?.first ?: return@memoize null
                 } else {
-                    println("No change")
                     microsoftAccount
                 }
 
