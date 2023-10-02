@@ -81,6 +81,22 @@ fun Route.tagRouter() {
                                 )
                             }
                     }
+
+                    /**
+                     * Delete tag
+                     */
+                    delete {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        TagService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    it,
+                                )
+                            }
+                    }
                 }
             }
         }
