@@ -1,6 +1,8 @@
 package dev.t7e.utils.configuration
 
 import dev.t7e.models.Configurations
+import dev.t7e.utils.RedisManager
+import dev.t7e.utils.RedisMessageContent
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -18,6 +20,11 @@ object KeyValueStore {
         KeyNames
         //  initial fetch
         fetch()
+
+        //  register redis
+        RedisManager.registerFetchFunction("configurations") {
+            fetch()
+        }
     }
 
     fun get(key: Key): String? {
@@ -50,6 +57,14 @@ object KeyValueStore {
                 }
             }
         }
+
+        //  redis
+        RedisManager.publish(
+            RedisMessageContent(
+                type = "configurations",
+                id = null,
+            ),
+        )
     }
 
     fun fetch() {
