@@ -36,7 +36,6 @@ fun initializeTables(migrate: Boolean = false) {
         } else {
             SchemaUtils.create(tables = tables.toTypedArray())
         }
-
     }
 }
 

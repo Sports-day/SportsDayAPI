@@ -274,7 +274,6 @@ fun main(args: Array<String>) {
                 println("Failed to generate. error: ${it.exceptionOrNull()?.message}")
             }
         }
-
     }
 
     println("Seeder successfully executed.")
