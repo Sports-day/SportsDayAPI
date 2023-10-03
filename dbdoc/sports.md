@@ -21,7 +21,7 @@ CREATE TABLE `sports` (
   KEY `fk_sports_tag__id` (`tag`),
   CONSTRAINT `fk_sports_icon_image__id` FOREIGN KEY (`icon_image`) REFERENCES `images` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
   CONSTRAINT `fk_sports_tag__id` FOREIGN KEY (`tag`) REFERENCES `tags` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
 </details>
