@@ -38,7 +38,7 @@ class SportEntity(id: EntityID<Int>) : IntEntity(id) {
     var iconImage by ImageEntity optionalReferencedOn Sports.iconImage
     var weight by Sports.weight
     var ruleId by Sports.ruleId
-    val tag by TagEntity optionalReferencedOn Sports.tag
+    var tag by TagEntity optionalReferencedOn Sports.tag
     val games by GameEntity referrersOn Games.sport
     var createdAt by Sports.createdAt
     var updatedAt by Sports.updatedAt
