@@ -133,7 +133,7 @@ class GameEntity(id: EntityID<Int>) : IntEntity(id) {
     var type by Games.type
     var calculationType by Games.calculationType
     var weight by Games.weight
-    val tag by TagEntity optionalReferencedOn Games.tag
+    var tag by TagEntity optionalReferencedOn Games.tag
     var createdAt by Games.createdAt
     var updatedAt by Games.updatedAt
     val matches by MatchEntity referrersOn Matches.game

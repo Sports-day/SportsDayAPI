@@ -16,7 +16,7 @@ CREATE TABLE `teams` (
   PRIMARY KEY (`id`),
   KEY `fk_teams_class__id` (`class`),
   CONSTRAINT `fk_teams_class__id` FOREIGN KEY (`class`) REFERENCES `classes` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
 </details>

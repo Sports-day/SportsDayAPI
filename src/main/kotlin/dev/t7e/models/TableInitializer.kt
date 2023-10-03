@@ -8,33 +8,39 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * @author testusuke
  */
 
+val tables = listOf(
+    Configurations,
+    Logs,
+    AllowedDomains,
+    Groups,
+    Classes,
+    Users,
+    MicrosoftAccounts,
+    Teams,
+    TeamUsers,
+    Sports,
+    Games,
+    Locations,
+    Matches,
+    TournamentPath,
+    Images,
+    Entries,
+    Information,
+    Tags,
+)
+
 fun initializeTables(migrate: Boolean = false) {
     transaction {
-        listOf(
-            Configurations,
-            Logs,
-            AllowedDomains,
-            Groups,
-            Classes,
-            Users,
-            MicrosoftAccounts,
-            Teams,
-            TeamUsers,
-            Sports,
-            Games,
-            Locations,
-            Matches,
-            TournamentPath,
-            Images,
-            Entries,
-            Information,
-            Tags,
-        ).forEach {
-            if (migrate) {
-                SchemaUtils.createMissingTablesAndColumns(it)
-            } else {
-                SchemaUtils.create(it)
-            }
+        if (migrate) {
+            SchemaUtils.createMissingTablesAndColumns(tables = tables.toTypedArray())
+        } else {
+            SchemaUtils.create(tables = tables.toTypedArray())
         }
+    }
+}
+
+fun dropTables() {
+    transaction {
+        SchemaUtils.drop(tables = tables.toTypedArray())
     }
 }
