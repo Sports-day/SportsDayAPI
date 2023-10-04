@@ -1,9 +1,6 @@
 package dev.t7e.services
 
-import dev.t7e.models.ImageEntity
-import dev.t7e.models.OmittedSport
-import dev.t7e.models.Sport
-import dev.t7e.models.SportEntity
+import dev.t7e.models.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -20,6 +17,9 @@ object SportsService : StandardService<SportEntity, Sport>(
 ) {
     fun create(omittedSport: OmittedSport): Result<Sport> {
         val image = omittedSport.iconId?.let { ImageEntity.getById(it) }
+        val tag = omittedSport.tagId?.let {
+            TagEntity.getById(it)
+        }
 
         val model = transaction {
             SportEntity.new {
@@ -28,6 +28,7 @@ object SportsService : StandardService<SportEntity, Sport>(
                 this.iconImage = image?.first
                 this.weight = omittedSport.weight
                 this.ruleId = omittedSport.ruleId
+                this.tag = tag?.first
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }.serializableModel()
@@ -42,6 +43,9 @@ object SportsService : StandardService<SportEntity, Sport>(
         val entity = SportEntity.getById(id)?.first ?: throw NotFoundException("invalid sport id")
 
         val image = omittedSport.iconId?.let { ImageEntity.getById(it) }
+        val tag = omittedSport.tagId?.let {
+            TagEntity.getById(it)
+        }
 
         val model = transaction {
             entity.name = omittedSport.name
@@ -49,6 +53,7 @@ object SportsService : StandardService<SportEntity, Sport>(
             entity.iconImage = image?.first
             entity.weight = omittedSport.weight
             entity.ruleId = omittedSport.ruleId
+            entity.tag = tag?.first
             entity.updatedAt = LocalDateTime.now()
 
             entity.serializableModel()

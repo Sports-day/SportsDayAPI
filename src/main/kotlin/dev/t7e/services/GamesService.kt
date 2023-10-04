@@ -26,6 +26,9 @@ object GamesService : StandardService<GameEntity, Game>(
 
     fun create(omittedGame: OmittedGame): Result<Game> {
         val sport = SportEntity.getById(omittedGame.sportId)?.first ?: throw NotFoundException("invalid sport id")
+        val tag = omittedGame.tagId?.let {
+            TagEntity.getById(it)
+        }
 
         val model = transaction {
             GameEntity.new {
@@ -35,6 +38,7 @@ object GamesService : StandardService<GameEntity, Game>(
                 this.type = omittedGame.type
                 this.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
                 this.weight = omittedGame.weight
+                this.tag = tag?.first
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }.serializableModel()
@@ -49,6 +53,9 @@ object GamesService : StandardService<GameEntity, Game>(
     fun update(id: Int, omittedGame: OmittedGame): Result<Game> {
         val entity = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
         val sport = SportEntity.getById(omittedGame.sportId)?.first ?: throw NotFoundException("invalid sport id")
+        val tag = omittedGame.tagId?.let {
+            TagEntity.getById(it)
+        }
 
         val model = transaction {
             entity.name = omittedGame.name
@@ -57,6 +64,7 @@ object GamesService : StandardService<GameEntity, Game>(
             entity.type = omittedGame.type
             entity.calculationType = omittedGame.calculationType ?: CalculationType.DIFF_SCORE
             entity.weight = omittedGame.weight
+            entity.tag = tag?.first
             entity.updatedAt = LocalDateTime.now()
             //  serialize
             entity.serializableModel()
