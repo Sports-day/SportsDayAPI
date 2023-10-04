@@ -5,6 +5,7 @@ import dev.t7e.models.Tag
 import dev.t7e.models.TagEntity
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 /**
  * Created by testusuke on 2023/10/02
@@ -22,6 +23,8 @@ object TagService : StandardService<TagEntity, Tag>(
             TagEntity.new {
                 this.name = omittedTag.name
                 this.enabled = omittedTag.enabled
+                this.createdAt = LocalDateTime.now()
+                this.updatedAt = LocalDateTime.now()
             }.serializableModel()
         }.apply {
             fetchFunction(this.id)
@@ -36,6 +39,7 @@ object TagService : StandardService<TagEntity, Tag>(
         val model = transaction {
             entity.name = omittedTag.name
             entity.enabled = omittedTag.enabled
+            entity.updatedAt = LocalDateTime.now()
 
             entity.serializableModel()
         }.apply {
