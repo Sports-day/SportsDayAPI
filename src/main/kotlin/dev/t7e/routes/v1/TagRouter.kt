@@ -4,6 +4,8 @@ import dev.t7e.models.OmittedTag
 import dev.t7e.plugins.Role
 import dev.t7e.plugins.withRole
 import dev.t7e.services.TagService
+import dev.t7e.utils.DataMessageResponse
+import dev.t7e.utils.DataResponse
 import dev.t7e.utils.respondOrInternalError
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -25,7 +27,7 @@ fun Route.tagRouter() {
             get {
                 val tags = TagService.getAll()
 
-                call.respond(HttpStatusCode.OK, tags)
+                call.respond(HttpStatusCode.OK, DataResponse(tags.getOrDefault(listOf())))
             }
 
             withRole(Role.ADMIN) {
@@ -40,7 +42,10 @@ fun Route.tagRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                it,
+                                DataMessageResponse(
+                                    "created tag",
+                                    it,
+                                ),
                             )
                         }
                 }
@@ -59,7 +64,7 @@ fun Route.tagRouter() {
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                it,
+                                DataResponse(it),
                             )
                         }
                 }
@@ -69,7 +74,8 @@ fun Route.tagRouter() {
                      * Update tag
                      */
                     put {
-                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
                         val requestBody = call.receive<OmittedTag>()
 
                         TagService
@@ -77,7 +83,10 @@ fun Route.tagRouter() {
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    it,
+                                    DataMessageResponse(
+                                        "update tag",
+                                        it,
+                                    ),
                                 )
                             }
                     }
@@ -86,14 +95,18 @@ fun Route.tagRouter() {
                      * Delete tag
                      */
                     delete {
-                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
                         TagService
                             .deleteById(id)
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
-                                    it,
+                                    DataMessageResponse(
+                                        "deleted tag",
+                                        it,
+                                    ),
                                 )
                             }
                     }
