@@ -13,16 +13,57 @@ import kotlin.time.Duration.Companion.minutes
  * Created by testusuke on 2023/05/05
  * @author testusuke
  */
-object GamesService : StandardService<GameEntity, Game>(
-    objectName = "game",
-    _getAllObjectFunction = { GameEntity.getAll() },
-    _getObjectByIdFunction = { GameEntity.getById(it) },
-    fetchFunction = { GameEntity.fetch(it) },
-    onDeleteFunction = {
-        //  Sport -> Game
-        SportEntity.fetch(it.sportId)
-    },
-) {
+object GamesService {
+
+    fun getAll(filter: Boolean = false): Result<List<Game>> {
+        val games = GameEntity.getAll().map { it.second }
+
+        val filteredGames = if (filter) {
+            //  fetch tags
+            val tags = TagEntity.getAll().map { it.second }
+
+            games.filter {
+                //  if tagId is null, contain it
+                if (it.tagId == null) {
+                    return@filter true
+                }
+
+                //  if tag is not found, return true
+                val tag = tags.find { tag ->
+                    tag.id == it.tagId
+                } ?: return@filter true
+
+                //  return tag.enabled
+                tag.enabled
+            }
+        } else {
+            games
+        }
+
+        return Result.success(
+            filteredGames
+        )
+    }
+
+    fun getById(id: Int): Result<Game> {
+        val game = GameEntity.getById(id)?.second ?: throw NotFoundException("invalid game id")
+
+        return Result.success(game)
+    }
+
+    fun deleteById(id: Int): Result<Boolean> {
+        val game = GameEntity.getById(id) ?: throw NotFoundException("invalid game id")
+
+        transaction {
+            game.first.delete()
+        }
+
+        //  fetch
+        GameEntity.fetch(id)
+        SportEntity.fetch(game.second.sportId)
+
+        return Result.success(true)
+    }
 
     fun create(omittedGame: OmittedGame): Result<Game> {
         val sport = SportEntity.getById(omittedGame.sportId)?.first ?: throw NotFoundException("invalid sport id")
@@ -43,7 +84,7 @@ object GamesService : StandardService<GameEntity, Game>(
                 this.updatedAt = LocalDateTime.now()
             }.serializableModel()
         }.apply {
-            fetchFunction(this.id)
+            GameEntity.fetch(this.id)
             SportEntity.fetch(this.sportId)
         }
 
@@ -69,7 +110,7 @@ object GamesService : StandardService<GameEntity, Game>(
             //  serialize
             entity.serializableModel()
         }.apply {
-            fetchFunction(this.id)
+            GameEntity.fetch(this.id)
         }
 
         return Result.success(model)
@@ -109,7 +150,7 @@ object GamesService : StandardService<GameEntity, Game>(
         }.apply {
             transaction {
                 //  fetch
-                fetchFunction(id)
+                GameEntity.fetch(id)
                 teams.forEach { team ->
                     TeamEntity.fetch(team.id.value)
                 }
@@ -138,7 +179,7 @@ object GamesService : StandardService<GameEntity, Game>(
         }
 
         //  fetch
-        fetchFunction(id)
+        GameEntity.fetch(id)
         TeamEntity.fetch(teamId)
 
         return Result.success(teamModels)
@@ -174,7 +215,7 @@ object GamesService : StandardService<GameEntity, Game>(
         //  delete cache
         MatchEntity.fetch()
         //  fetch
-        fetchFunction(id)
+        GameEntity.fetch(id)
 
         return Result.success(Unit)
     }
@@ -233,7 +274,7 @@ object GamesService : StandardService<GameEntity, Game>(
 
         //  fetch
         MatchEntity.fetch()
-        fetchFunction(id)
+        GameEntity.fetch(id)
 
         return Result.success(matchModels)
     }
@@ -292,7 +333,7 @@ object GamesService : StandardService<GameEntity, Game>(
         }
 
         //  fetch
-        fetchFunction(id)
+        GameEntity.fetch(id)
         MatchEntity.fetch(model.id)
 
         return Result.success(model)
@@ -469,7 +510,7 @@ object GamesService : StandardService<GameEntity, Game>(
             updateTree(topNode)
         }
 
-        fetchFunction(id)
+        GameEntity.fetch(id)
         //  fetch matches
         val matches = GameEntity.getGameMatches(id)
         matches?.forEach { match ->
