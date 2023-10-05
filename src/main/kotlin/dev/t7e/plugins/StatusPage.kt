@@ -1,6 +1,7 @@
 package dev.t7e.plugins
 
 import dev.t7e.models.LogEvents
+import dev.t7e.services.GamePreviewRestrictedException
 import dev.t7e.utils.MessageResponse
 import dev.t7e.utils.logger.Logger
 import io.ktor.http.*
@@ -42,6 +43,10 @@ fun Application.configureStatusPage() {
 
         exception<DataConversionException> { call, cause ->
             call.respond(HttpStatusCode.BadRequest, MessageResponse(cause.message))
+        }
+
+        exception<GamePreviewRestrictedException> { call, cause ->
+            call.respond(HttpStatusCode.ServiceUnavailable, MessageResponse(cause.message))
         }
     }
 }

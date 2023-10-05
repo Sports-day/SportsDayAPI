@@ -148,7 +148,10 @@ fun Route.gamesRouter() {
                             call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
                         GamesService
-                            .getMatches(id)
+                            .getMatches(
+                                id,
+                                call.request.queryParameters["restrict"] == "true",
+                            )
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,

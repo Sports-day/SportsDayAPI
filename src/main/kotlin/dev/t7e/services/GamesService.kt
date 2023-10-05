@@ -2,6 +2,8 @@ package dev.t7e.services
 
 import dev.t7e.models.*
 import dev.t7e.utils.Cache
+import dev.t7e.utils.configuration.Key
+import dev.t7e.utils.configuration.KeyValueStore
 import io.ktor.server.plugins.*
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.SizedCollection
@@ -191,8 +193,17 @@ object GamesService {
      * @param id game id
      * @return matches
      */
-    fun getMatches(id: Int): Result<List<Match>> {
+    fun getMatches(id: Int, restrict: Boolean = false): Result<List<Match>> {
         val matches = GameEntity.getGameMatches(id)?.map { it.second } ?: throw NotFoundException("invalid game id")
+
+        if (restrict && KeyValueStore.get(Key.RestrictGamePreview).toBoolean()) {
+            val finishedMatchCount = matches.count { it.status == MatchStatus.FINISHED }
+            val percentage = finishedMatchCount.toDouble() / matches.size.toDouble()
+
+            if (percentage >= (KeyValueStore.get(Key.RestrictGamePreviewPercentage)?.toDoubleOrNull() ?: 0.5)) {
+                throw GamePreviewRestrictedException("this game preview is currently restricted.")
+            }
+        }
 
         return Result.success(matches)
     }
@@ -683,3 +694,5 @@ data class TournamentTeamResult(
     val teamId: Int,
     val rank: Int,
 )
+
+class GamePreviewRestrictedException(message: String) : Exception(message)
