@@ -31,7 +31,9 @@ fun Route.gamesRouter() {
              * Get all games
              */
             get {
-                val games = GamesService.getAll()
+                val games = GamesService.getAll(
+                    call.request.queryParameters["filter"] == "true",
+                )
 
                 call.respond(
                     HttpStatusCode.OK,
