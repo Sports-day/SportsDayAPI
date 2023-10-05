@@ -187,6 +187,22 @@ fun main(args: Array<String>) {
             },
         )
 
+        //  tag
+        val tags = listOf(
+            TagEntity.new {
+                name = "晴天時"
+                enabled = true
+                createdAt = java.time.LocalDateTime.now()
+                updatedAt = java.time.LocalDateTime.now()
+            },
+            TagEntity.new {
+                name = "雨天時"
+                enabled = false
+                createdAt = java.time.LocalDateTime.now()
+                updatedAt = java.time.LocalDateTime.now()
+            },
+        )
+
         //  sports
         val sports = listOf(
             SportEntity.new {
@@ -195,7 +211,7 @@ fun main(args: Array<String>) {
                 iconImage = null
                 weight = 10
                 ruleId = 1
-                tag = null
+                tag = tags[0]
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
             },
@@ -205,7 +221,7 @@ fun main(args: Array<String>) {
                 iconImage = null
                 weight = 5
                 ruleId = 1
-                tag = null
+                tag = tags[1]
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
             },
@@ -220,7 +236,7 @@ fun main(args: Array<String>) {
                 type = GameType.LEAGUE
                 calculationType = CalculationType.TOTAL_SCORE
                 weight = 10
-                tag = null
+                tag = tags[0]
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
                 this.teams = SizedCollection(teams[0], teams[2], teams[4], teams[5])
@@ -232,7 +248,7 @@ fun main(args: Array<String>) {
                 type = GameType.LEAGUE
                 calculationType = CalculationType.TOTAL_SCORE
                 weight = 5
-                tag = null
+                tag = tags[1]
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
                 this.teams = SizedCollection(teams[1], teams[3], teams[4], teams[5])

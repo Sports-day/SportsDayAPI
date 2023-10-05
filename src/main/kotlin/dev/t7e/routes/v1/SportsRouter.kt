@@ -31,7 +31,9 @@ fun Route.sportsRouter() {
              * Get all sports
              */
             get {
-                val sports = SportsService.getAll()
+                val sports = SportsService.getAll(
+                    call.request.queryParameters["filter"] == "true",
+                )
 
                 call.respond(HttpStatusCode.OK, DataResponse(sports.getOrDefault(listOf())))
             }

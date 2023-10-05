@@ -9,12 +9,57 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/04/26
  * @author testusuke
  */
-object SportsService : StandardService<SportEntity, Sport>(
-    objectName = "sport",
-    _getAllObjectFunction = { SportEntity.getAll() },
-    _getObjectByIdFunction = { SportEntity.getById(it) },
-    fetchFunction = { SportEntity.fetch(it) },
-) {
+object SportsService {
+
+    fun getAll(filter: Boolean = false): Result<List<Sport>> {
+        val sports = SportEntity.getAll().map { it.second }
+
+        val filteredSports = if (filter) {
+            //  fetch tags
+            val tags = TagEntity.getAll().map { it.second }
+
+            sports.filter {
+                //  if tagId is null, contain it
+                if (it.tagId == null) {
+                    return@filter true
+                }
+
+                //  if tag is not found, return true
+                val tag = tags.find { tag ->
+                    tag.id == it.tagId
+                } ?: return@filter true
+
+                //  return tag.enabled
+                tag.enabled
+            }
+        } else {
+            sports
+        }
+
+        return Result.success(
+            filteredSports
+        )
+    }
+
+    fun getById(id: Int): Result<Sport> {
+        val sport = SportEntity.getById(id)?.second ?: throw NotFoundException("invalid sport id")
+
+        return Result.success(sport)
+    }
+
+    fun deleteById(id: Int): Result<Boolean> {
+        val sport = SportEntity.getById(id)?.first ?: throw NotFoundException("invalid sport id")
+
+        transaction {
+            sport.delete()
+        }
+
+        //  fetch
+        SportEntity.fetch(id)
+
+        return Result.success(true)
+    }
+
     fun create(omittedSport: OmittedSport): Result<Sport> {
         val image = omittedSport.iconId?.let { ImageEntity.getById(it) }
         val tag = omittedSport.tagId?.let {
@@ -33,7 +78,7 @@ object SportsService : StandardService<SportEntity, Sport>(
                 this.updatedAt = LocalDateTime.now()
             }.serializableModel()
         }.apply {
-            fetchFunction(this.id)
+            SportEntity.fetch(this.id)
         }
 
         return Result.success(model)
@@ -58,7 +103,7 @@ object SportsService : StandardService<SportEntity, Sport>(
 
             entity.serializableModel()
         }.apply {
-            fetchFunction(this.id)
+            SportEntity.fetch(this.id)
         }
 
         return Result.success(model)
