@@ -26,6 +26,13 @@ fun main(args: Array<String>) {
 
     //  create models
     transaction {
+        //  allowed domain
+        AllowedDomainEntity.new {
+            domain = "toyama.kosen-ac.jp"
+            description = "NIT Toyama"
+            createdAt = java.time.LocalDateTime.now()
+        }
+
         //  group
         val group = GroupEntity.new {
             name = "General"
