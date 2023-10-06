@@ -196,13 +196,8 @@ object GamesService {
     fun getMatches(id: Int, restrict: Boolean = false): Result<List<Match>> {
         val matches = GameEntity.getGameMatches(id)?.map { it.second } ?: throw NotFoundException("invalid game id")
 
-        if (restrict && KeyValueStore.get(Key.RestrictGamePreview).toBoolean()) {
-            val finishedMatchCount = matches.count { it.status == MatchStatus.FINISHED }
-            val percentage = finishedMatchCount.toDouble() / matches.size.toDouble()
-
-            if (percentage >= (KeyValueStore.get(Key.RestrictGamePreviewPercentage)?.toDoubleOrNull() ?: 0.5)) {
-                throw GamePreviewRestrictedException("this game preview is currently restricted.")
-            }
+        if (restrict) {
+            assertRestrictedGame(matches)
         }
 
         return Result.success(matches)
@@ -355,8 +350,8 @@ object GamesService {
      *
      * @param id game id
      */
-    val calculateLeagueResults: (id: Int) -> Result<LeagueResult> = Cache.memoize(1.minutes) { id ->
-        transaction {
+    fun calculateLeagueResults(id: Int, restrict: Boolean = false): Result<LeagueResult> {
+        val result = transaction {
             val game = GameEntity.getById(id)?.first ?: throw NotFoundException("invalid game id")
 
             //  check if game type is league
@@ -376,8 +371,13 @@ object GamesService {
              */
 
             val teams = game.teams.toList()
-            val unfilteredMatches = game.matches.toList()
+            val unfilteredMatches = GameEntity.getGameMatches(id)?.map { it.second } ?: throw NotFoundException("invalid game id")
             val matches = unfilteredMatches.filter { it.status == MatchStatus.FINISHED }
+
+            //  restrict preview
+            if (restrict) {
+                assertRestrictedGame(unfilteredMatches)
+            }
 
             //  create LeagueTeamResult
             val leagueTeamResults = mutableMapOf<Int, LeagueTeamResult>()
@@ -397,8 +397,8 @@ object GamesService {
 
             //  calculate win score and diffGoal from each match
             matches.forEach { match ->
-                val leftTeamResult = leagueTeamResults[match.leftTeam?.id?.value] ?: return@forEach
-                val rightTeamResult = leagueTeamResults[match.rightTeam?.id?.value] ?: return@forEach
+                val leftTeamResult = leagueTeamResults[match.leftTeamId] ?: return@forEach
+                val rightTeamResult = leagueTeamResults[match.rightTeamId] ?: return@forEach
 
                 when (match.result) {
                     //  draw
@@ -486,16 +486,16 @@ object GamesService {
                 }
 
             //  create league result
-            val leagueResult = LeagueResult(
+            LeagueResult(
                 gameId = game.id.value,
                 //  is finished
                 finished = unfilteredMatches.size == matches.size,
                 teams = sortedLeagueTeamResults,
                 createdAt = LocalDateTime.now().toString(),
             )
-
-            Result.success(leagueResult)
         }
+
+        return Result.success(result)
     }
 
     /**
@@ -653,6 +653,17 @@ object GamesService {
             )
 
             Result.success(tournamentResult)
+        }
+    }
+
+    private fun assertRestrictedGame(matches: List<Match>) {
+        if (KeyValueStore.get(Key.RestrictGamePreview).toBoolean()) {
+            val finishedMatchCount = matches.count { it.status == MatchStatus.FINISHED }
+            val percentage = finishedMatchCount.toDouble() / matches.size.toDouble()
+
+            if (percentage >= (KeyValueStore.get(Key.RestrictGamePreviewPercentage)?.toDoubleOrNull() ?: 0.5)) {
+                throw GamePreviewRestrictedException("this game preview is currently restricted.")
+            }
         }
     }
 }

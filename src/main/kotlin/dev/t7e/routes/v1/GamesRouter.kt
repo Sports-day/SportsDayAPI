@@ -379,7 +379,10 @@ fun Route.gamesRouter() {
                             call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
                         GamesService
-                            .calculateLeagueResults(id)
+                            .calculateLeagueResults(
+                                id,
+                                call.request.queryParameters["restrict"] == "true",
+                            )
                             .respondOrInternalError {
                                 call.respond(
                                     HttpStatusCode.OK,
