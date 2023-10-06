@@ -79,6 +79,22 @@ fun Route.sportsRouter() {
                         }
                 }
 
+                /**
+                 * Get sport progress
+                 */
+                get("/progress") {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                    SportsService
+                        .getProgress(id)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it),
+                            )
+                        }
+                }
+
                 withRole(Role.ADMIN) {
                     /**
                      * Update sport by id

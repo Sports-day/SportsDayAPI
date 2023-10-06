@@ -2,6 +2,7 @@ package dev.t7e.services
 
 import dev.t7e.models.*
 import io.ktor.server.plugins.*
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 
@@ -108,4 +109,24 @@ object SportsService {
 
         return Result.success(model)
     }
+
+    fun getProgress(id: Int): Result<Double> {
+        val sport = SportEntity.getById(id)?.second ?: throw NotFoundException("invalid sport id")
+
+        val matches = MatchEntity.getAll()
+            .map { it.second }
+            .filter { it.sportId == sport.id }
+
+        val finished = matches.filter { it.status == MatchStatus.FINISHED }
+        val progress = finished.size.toDouble() / matches.size.toDouble()
+
+        return Result.success(
+            progress
+        )
+    }
 }
+
+@Serializable
+data class SportProgressResponse(
+    val progress: Double,
+)
