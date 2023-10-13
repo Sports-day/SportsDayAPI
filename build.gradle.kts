@@ -11,11 +11,11 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.5.1"
 }
 
-group = "dev.t7e"
+group = "net.sportsday"
 version = "1.0.0"
 
 application {
-    mainClass.set("dev.t7e.ApplicationKt")
+    mainClass.set("net.sportsday.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -69,6 +69,6 @@ ktlint {
 
 task("runSeeder", JavaExec::class) {
     group = "seeder"
-    mainClass.set("dev.t7e.bin.SeederKt")
+    mainClass.set("net.sportsday.bin.SeederKt")
     classpath = sourceSets["main"].runtimeClasspath
 }
