@@ -1,3 +1,5 @@
+![banner_api](https://github.com/Sports-day/SportsDayAPI/assets/58895178/30f34600-454a-4450-bd5a-7e349e362042)
+
 # SportsDayAPI
 
 SportsDayAPIは、各リソースへのアクセス、認証を行うREST APIです。
