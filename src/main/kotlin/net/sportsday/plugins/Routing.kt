@@ -44,6 +44,8 @@ fun Application.configureRouting() {
                 informationRouter()
                 //  Tags
                 tagRouter()
+                //  Configurations
+                configurationRouter()
             }
         }
     }
