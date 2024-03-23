@@ -1,6 +1,8 @@
 package net.sportsday.utils
 
 import net.sportsday.models.AllowedDomainEntity
+import net.sportsday.models.AllowedDomains
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * Created by testusuke on 2023/02/21
@@ -21,8 +23,11 @@ class Email(private val email: String) {
      * @return true if it is able to
      */
     fun isAllowedDomain(): Boolean {
-        val allowedDomain = this.domain()?.let {
-            AllowedDomainEntity.getByDomain(it)
+        val domain = domain() ?: return false
+
+        //  find domain from database
+        val allowedDomain = transaction {
+            AllowedDomainEntity.find { AllowedDomains.domain eq domain }.firstOrNull()
         }
 
         return allowedDomain != null

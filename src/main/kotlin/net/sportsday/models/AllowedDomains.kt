@@ -19,13 +19,7 @@ object AllowedDomains : IntIdTable("allowed_domains") {
 }
 
 class AllowedDomainEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : IntEntityClass<AllowedDomainEntity> (AllowedDomains) {
-        fun getByDomain(domain: String): AllowedDomainEntity? {
-            return AllowedDomainEntity.find {
-                AllowedDomains.domain eq domain
-            }.firstOrNull()
-        }
-    }
+    companion object : IntEntityClass<AllowedDomainEntity> (AllowedDomains)
 
     var domain by AllowedDomains.domain
     var description by AllowedDomains.description
