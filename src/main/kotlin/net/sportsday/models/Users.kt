@@ -2,14 +2,12 @@ package net.sportsday.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.sportsday.utils.SmartCache
 import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
-import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/27
@@ -26,89 +24,7 @@ object Users : IntIdTable("users") {
 
 class UserEntity(id: EntityID<Int>) : IntEntity(id) {
 
-    companion object : SmartCache<UserEntity, User> (
-        entityName = "user",
-        table = Users,
-        duration = 5.minutes,
-        serializer = { it.serializableModel() },
-    ) {
-        private val userTeamsMap = mutableMapOf<Int, List<Pair<TeamEntity, Team>>?>()
-        private val userMicrosoftAccountsMap = mutableMapOf<Int, List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>?>()
-
-        fun getUserTeams(id: Int): List<Pair<TeamEntity, Team>>? {
-            if (!userTeamsMap.containsKey(id)) {
-                //  fetch unknown data
-                fetch(id)
-            }
-
-            return userTeamsMap[id]
-        }
-
-        fun getUserMicrosoftAccounts(id: Int): List<Pair<MicrosoftAccountEntity, MicrosoftAccount>>? {
-            if (!userMicrosoftAccountsMap.containsKey(id)) {
-                //  fetch unknown data
-                fetch(id)
-            }
-
-            return userMicrosoftAccountsMap[id]
-        }
-
-        init {
-            //  user teams
-            registerFetchFunction { id ->
-                transaction {
-                    if (id == null) {
-                        userTeamsMap.clear()
-
-                        cache.values.filterNotNull().forEach { value ->
-                            val entity = value.first
-                            val teams = entity.teams.map { teams ->
-                                teams to teams.serializableModel()
-                            }
-                            userTeamsMap[entity.id.value] = teams
-                        }
-                    } else {
-                        val entity = getById(id)
-
-                        if (entity == null) {
-                            userTeamsMap[id] = null
-                        } else {
-                            userTeamsMap[id] = entity.first.teams.map { team ->
-                                team to team.serializableModel()
-                            }
-                        }
-                    }
-                }
-            }
-
-            //  user microsoft accounts
-            registerFetchFunction { id ->
-                transaction {
-                    if (id == null) {
-                        userMicrosoftAccountsMap.clear()
-
-                        cache.values.filterNotNull().forEach { value ->
-                            val entity = value.first
-                            val microsoftAccounts = entity.microsoftAccounts.map { microsoftAccount ->
-                                microsoftAccount to microsoftAccount.serializableModel()
-                            }
-                            userMicrosoftAccountsMap[entity.id.value] = microsoftAccounts
-                        }
-                    } else {
-                        val entity = getById(id)
-
-                        if (entity == null) {
-                            userMicrosoftAccountsMap[id] = null
-                        } else {
-                            userMicrosoftAccountsMap[id] = entity.first.microsoftAccounts.map { microsoftAccount ->
-                                microsoftAccount to microsoftAccount.serializableModel()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    companion object : IntEntityClass<UserEntity>(Users)
 
     var name by Users.name
     var studentId by Users.studentId
