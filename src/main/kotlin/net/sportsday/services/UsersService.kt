@@ -9,55 +9,61 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/10
  * @author testusuke
  */
-object UsersService : StandardService<UserEntity, User>(
-    objectName = "User",
-    _getAllObjectFunction = { UserEntity.getAll() },
-    _getObjectByIdFunction = { UserEntity.getById(it) },
-    fetchFunction = { UserEntity.fetch(it) },
-    onDeleteFunction = {
-        //  Team -> User
-        it.teamIds.forEach { teamId ->
-            TeamEntity.fetch(teamId)
-        }
+object UsersService {
 
-        //  Microsoft Account -> User
-        MicrosoftAccountEntity.getAll().forEach { pair ->
-            if (pair.second.userId == it.id) {
-                MicrosoftAccountEntity.fetch(pair.second.id)
+    fun getAll(): Result<List<User>> {
+        val models = transaction {
+            UserEntity.all().map {
+                it.serializableModel()
             }
         }
 
-        //  Class -> User
-        ClassEntity.fetch(it.classId)
-    },
-) {
+        return Result.success(models)
+    }
+
+    fun getById(id: Int): Result<User> {
+        val model = transaction {
+            UserEntity.findById(id)?.serializableModel() ?: throw NotFoundException("User not found.")
+        }
+
+        return Result.success(model)
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val user = UserEntity.findById(id) ?: throw NotFoundException("User not found.")
+
+            user.delete()
+        }
+
+        return Result.success(Unit)
+    }
 
     fun create(omittedUser: OmittedUser): Result<User> {
-        val classEntity = ClassEntity.getById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
-
         val model = transaction {
-            UserEntity.new {
+            val classEntity = ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+
+            val user = UserEntity.new {
                 this.name = omittedUser.name
                 this.studentId = omittedUser.studentId
                 this.gender = omittedUser.gender
-                this.classEntity = classEntity.first
+                this.classEntity = classEntity
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
-            //  Class
-            ClassEntity.fetch(omittedUser.classId)
+            }
+
+            user.serializableModel()
         }
 
         return Result.success(model)
     }
 
     fun update(id: Int, omittedUser: OmittedUser): Result<User> {
-        val userEntity = UserEntity.getById(id)?.first ?: throw NotFoundException("invalid user id")
-        val classEntity = ClassEntity.getById(omittedUser.classId)?.first ?: throw NotFoundException("invalid class id")
-
         val model = transaction {
+            val userEntity = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
+            val classEntity =
+                ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+
             userEntity.name = omittedUser.name
             userEntity.studentId = omittedUser.studentId
             userEntity.gender = omittedUser.gender
@@ -65,24 +71,31 @@ object UsersService : StandardService<UserEntity, User>(
             userEntity.updatedAt = LocalDateTime.now()
 
             userEntity.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
-            //  Class
-            ClassEntity.fetch(omittedUser.classId)
         }
 
         return Result.success(model)
     }
 
     fun getTeams(id: Int): Result<List<Team>> {
-        val teams = UserEntity.getUserTeams(id) ?: throw NotFoundException("invalid user id")
+        val models = transaction {
+            val user = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
 
-        return Result.success(teams.map { it.second })
+            //  serialize
+            user.teams.map { it.serializableModel() }
+        }
+
+        return Result.success(models)
     }
 
     fun getLinkedMicrosoftAccount(id: Int): Result<List<MicrosoftAccount>> {
-        val microsoftAccounts = UserEntity.getUserMicrosoftAccounts(id) ?: throw NotFoundException("invalid user id")
+        val models = transaction {
+            val user = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
 
-        return Result.success(microsoftAccounts.map { it.second })
+            user.microsoftAccounts.map {
+                it.serializableModel()
+            }
+        }
+
+        return Result.success(models)
     }
 }

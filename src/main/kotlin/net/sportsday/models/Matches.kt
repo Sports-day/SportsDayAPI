@@ -2,13 +2,12 @@ package net.sportsday.models
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.sportsday.utils.SmartCache
 import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
@@ -32,12 +31,7 @@ object Matches : IntIdTable("matches") {
 }
 
 class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : SmartCache<MatchEntity, Match>(
-        entityName = "match",
-        table = Matches,
-        duration = 5.minutes,
-        serializer = { it.serializableModel() },
-    )
+    companion object : IntEntityClass<MatchEntity>(Matches)
 
     var location by LocationEntity optionalReferencedOn Matches.location
     var game by GameEntity referencedOn Matches.game

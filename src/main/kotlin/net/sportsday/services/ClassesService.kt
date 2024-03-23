@@ -9,27 +9,29 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/09
  * @author testusuke
  */
-object ClassesService : StandardService<ClassEntity, ClassModel>(
-    objectName = "Class",
-    _getAllObjectFunction = { ClassEntity.getAll() },
-    _getObjectByIdFunction = { ClassEntity.getById(it) },
-    fetchFunction = { ClassEntity.fetch(it) },
-    onDeleteFunction = {
-        //  User -> Class
-        UserEntity.getAll().forEach { pair ->
-            if (pair.second.classId == it.id) {
-                UserEntity.fetch(pair.second.id)
+object ClassesService {
+
+    fun getAll(): Result<List<ClassModel>> {
+        val models = transaction {
+            ClassEntity.all().map {
+                it.serializableModel()
             }
         }
 
-        //  Team -> Class
-        TeamEntity.getAll().forEach { pair ->
-            if (pair.second.classId == it.id) {
-                TeamEntity.fetch(pair.second.id)
-            }
-        }
-    },
-) {
+        return Result.success(
+            models,
+        )
+    }
+
+    fun getById(id: Int): Result<ClassModel> {
+        val model = transaction {
+            ClassEntity.findById(id)?.serializableModel()
+        } ?: throw NotFoundException("invalid class id")
+
+        return Result.success(
+            model,
+        )
+    }
 
     /**
      * Create new class
@@ -38,18 +40,18 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
      * @return [ClassModel]
      */
     fun create(omittedClass: OmittedClassModel): Result<ClassModel> {
-        val group = GroupEntity.getById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
-
         val model = transaction {
-            ClassEntity.new {
+            val group = GroupEntity.findById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
+
+            val entity = ClassEntity.new {
                 this.name = omittedClass.name
                 this.description = omittedClass.description
-                this.group = group.first
+                this.group = group
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
+            }
+
+            entity.serializableModel()
         }
 
         return Result.success(
@@ -64,23 +66,33 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
      * @return [ClassModel]
      */
     fun update(id: Int, omittedClass: OmittedClassModel): Result<ClassModel> {
-        val classEntity = ClassEntity.getById(id) ?: throw NotFoundException("invalid class id")
-        val group = GroupEntity.getById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
-
         val model = transaction {
-            classEntity.first.name = omittedClass.name
-            classEntity.first.description = omittedClass.description
-            classEntity.first.group = group.first
-            classEntity.first.updatedAt = LocalDateTime.now()
+            val classEntity = ClassEntity.findById(id) ?: throw NotFoundException("invalid class id")
+            val group = GroupEntity.findById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
+
+            classEntity.name = omittedClass.name
+            classEntity.description = omittedClass.description
+            classEntity.group = group
+            classEntity.updatedAt = LocalDateTime.now()
+
             //  serialize
-            classEntity.first.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
+            classEntity.serializableModel()
         }
 
         return Result.success(
             model,
         )
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val entity = ClassEntity.findById(id) ?: throw NotFoundException("invalid class id")
+
+            //  delete entity
+            entity.delete()
+        }
+
+        return Result.success(Unit)
     }
 
     /**
@@ -90,7 +102,13 @@ object ClassesService : StandardService<ClassEntity, ClassModel>(
      * @return [List<User>]
      */
     fun getAllUsersOfClass(id: Int): Result<List<User>> {
-        val users = ClassEntity.getClassUsers(id)?.map { it.second } ?: throw NotFoundException("invalid class id")
+
+        val users = transaction {
+            val classEntity = ClassEntity.findById(id) ?: throw NotFoundException("invalid class id")
+
+            //  get all users
+            classEntity.users.map { it.serializableModel() }
+        }
 
         return Result.success(
             users,

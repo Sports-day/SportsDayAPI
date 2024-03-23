@@ -1,12 +1,11 @@
 package net.sportsday.models
 
 import kotlinx.serialization.Serializable
-import net.sportsday.utils.SmartCache
 import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.javatime.datetime
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/02/23
@@ -20,20 +19,7 @@ object AllowedDomains : IntIdTable("allowed_domains") {
 }
 
 class AllowedDomainEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : SmartCache<AllowedDomainEntity, AllowedDomain> (
-        entityName = "allowed domain",
-        table = AllowedDomains,
-        duration = 5.minutes,
-        serializer = { it.serializableModel() },
-    ) {
-        fun getByDomain(domain: String): Pair<AllowedDomainEntity, AllowedDomain>? {
-            checkCacheLifetime()
-
-            return cache.values.filterNotNull().find {
-                it.second.domain == domain
-            }
-        }
-    }
+    companion object : IntEntityClass<AllowedDomainEntity> (AllowedDomains)
 
     var domain by AllowedDomains.domain
     var description by AllowedDomains.description

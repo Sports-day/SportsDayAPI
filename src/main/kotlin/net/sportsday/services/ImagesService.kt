@@ -1,5 +1,6 @@
 package net.sportsday.services
 
+import io.ktor.server.plugins.*
 import net.sportsday.models.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -8,20 +9,29 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/16
  * @author testusuke
  */
-object ImagesService : StandardService<ImageEntity, Image>(
-    objectName = "image",
-    _getAllObjectFunction = { ImageEntity.getAll() },
-    _getObjectByIdFunction = { ImageEntity.getById(it) },
-    fetchFunction = { ImageEntity.fetch(it) },
-    onDeleteFunction = {
-        //  Sport -> Image
-        SportEntity.getAll().forEach { pair ->
-            if (pair.second.iconId == it.id) {
-                SportEntity.fetch(pair.second.id)
+object ImagesService {
+
+    fun getAll(): Result<List<Image>> {
+        val models = transaction {
+            ImageEntity.all().map {
+                it.serializableModel()
             }
         }
-    },
-) {
+
+        return Result.success(
+            models
+        )
+    }
+
+    fun getById(id: Int): Result<Image> {
+        val model = transaction {
+            ImageEntity.findById(id)?.serializableModel() ?: throw NotFoundException("Image not found.")
+        }
+
+        return Result.success(
+            model
+        )
+    }
 
     fun create(createdBy: MicrosoftAccountEntity, omittedImage: OmittedImage): Result<Image> {
         val model = transaction {
@@ -31,10 +41,18 @@ object ImagesService : StandardService<ImageEntity, Image>(
                 this.createdAt = LocalDateTime.now()
                 this.createdBy = createdBy
             }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
         }
 
         return Result.success(model)
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val image = ImageEntity.findById(id) ?: throw NotFoundException("Image not found.")
+
+            image.delete()
+        }
+
+        return Result.success(Unit)
     }
 }

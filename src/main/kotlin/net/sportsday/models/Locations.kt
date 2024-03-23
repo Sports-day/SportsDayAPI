@@ -1,11 +1,10 @@
 package net.sportsday.models
 
 import kotlinx.serialization.Serializable
-import net.sportsday.utils.SmartCache
 import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2023/03/01
@@ -16,12 +15,7 @@ object Locations : IntIdTable("locations") {
 }
 
 class LocationEntity(id: EntityID<Int>) : IntEntity(id) {
-    companion object : SmartCache<LocationEntity, Location> (
-        entityName = "location",
-        table = Locations,
-        duration = 5.minutes,
-        serializer = { it.serializableModel() },
-    )
+    companion object : IntEntityClass<LocationEntity> (Locations)
 
     var name by Locations.name
 

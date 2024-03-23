@@ -11,41 +11,63 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/10/02
  * @author testusuke
  */
-object TagService : StandardService<TagEntity, Tag>(
-    objectName = "tag",
-    _getAllObjectFunction = { TagEntity.getAll() },
-    _getObjectByIdFunction = { TagEntity.getById(it) },
-    fetchFunction = { TagEntity.fetch(it) },
-) {
+object TagService {
+
+    fun getAll(): Result<List<Tag>> {
+        val models = transaction {
+            TagEntity.all().map {
+                it.serializableModel()
+            }
+        }
+
+        return Result.success(
+            models
+        )
+    }
+
+    fun getById(id: Int): Result<Tag> {
+        val model = transaction {
+            TagEntity.findById(id)?.serializableModel() ?: throw NotFoundException("Tag not found.")
+        }
+
+        return Result.success(model)
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val tag = TagEntity.findById(id) ?: throw NotFoundException("Tag not found.")
+
+            tag.delete()
+        }
+
+        return Result.success(Unit)
+    }
 
     fun create(omittedTag: OmittedTag): Result<Tag> {
         val model = transaction {
-            TagEntity.new {
+            val tag = TagEntity.new {
                 this.name = omittedTag.name
                 this.enabled = omittedTag.enabled
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
+            }
+
+            tag.serializableModel()
         }
 
         return Result.success(model)
     }
 
     fun update(id: Int, omittedTag: OmittedTag): Result<Tag> {
-        val entity = TagEntity.getById(id)?.first ?: throw NotFoundException("invalid tag id")
-
         val model = transaction {
+            val entity = TagEntity.findById(id) ?: throw NotFoundException("invalid tag id")
+
             entity.name = omittedTag.name
             entity.enabled = omittedTag.enabled
             entity.updatedAt = LocalDateTime.now()
 
             entity.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
         }
-
         return Result.success(model)
     }
 }
