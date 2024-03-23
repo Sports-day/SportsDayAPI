@@ -33,6 +33,16 @@ object TagService {
         return Result.success(model)
     }
 
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val tag = TagEntity.findById(id) ?: throw NotFoundException("Tag not found.")
+
+            tag.delete()
+        }
+
+        return Result.success(Unit)
+    }
+
     fun create(omittedTag: OmittedTag): Result<Tag> {
         val model = transaction {
             val tag = TagEntity.new {

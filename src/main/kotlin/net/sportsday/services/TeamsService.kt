@@ -29,6 +29,17 @@ object TeamsService {
         return Result.success(model)
     }
 
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val team = TeamEntity.findById(id) ?: throw NotFoundException("Team not found.")
+
+            team.delete()
+        }
+
+        return Result.success(Unit)
+    }
+
+
     fun create(omittedTeam: OmittedTeam): Result<Team> {
         val model = transaction {
             val classEntity =

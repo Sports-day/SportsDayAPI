@@ -11,6 +11,34 @@ import java.time.LocalDateTime
  */
 object UsersService {
 
+    fun getAll(): Result<List<User>> {
+        val models = transaction {
+            UserEntity.all().map {
+                it.serializableModel()
+            }
+        }
+
+        return Result.success(models)
+    }
+
+    fun getById(id: Int): Result<User> {
+        val model = transaction {
+            UserEntity.findById(id)?.serializableModel() ?: throw NotFoundException("User not found.")
+        }
+
+        return Result.success(model)
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val user = UserEntity.findById(id) ?: throw NotFoundException("User not found.")
+
+            user.delete()
+        }
+
+        return Result.success(Unit)
+    }
+
     fun create(omittedUser: OmittedUser): Result<User> {
         val model = transaction {
             val classEntity = ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
