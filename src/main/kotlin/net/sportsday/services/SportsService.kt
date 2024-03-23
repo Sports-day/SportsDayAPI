@@ -13,112 +13,117 @@ import java.time.LocalDateTime
 object SportsService {
 
     fun getAll(filter: Boolean = false): Result<List<Sport>> {
-        val sports = SportEntity.getAll().map { it.second }
+        val models = transaction {
+            val sports = SportEntity.all().map { it.serializableModel() }
 
-        val filteredSports = if (filter) {
             //  fetch tags
-            val tags = TagEntity.getAll().map { it.second }
+            val tags = TagEntity.all().map { it.serializableModel() }
 
-            sports.filter {
-                //  if tagId is null, contain it
-                if (it.tagId == null) {
-                    return@filter true
+            //  filter sports by tag status
+            if (filter) {
+                sports.filter {
+                    //  if tagId is null, contain it
+                    if (it.tagId == null) {
+                        return@filter true
+                    }
+
+                    //  if tag is not found, return true
+                    val tag = tags.find { tag ->
+                        tag.id == it.tagId
+                    } ?: return@filter true
+
+                    //  return tag.enabled
+                    tag.enabled
                 }
-
-                //  if tag is not found, return true
-                val tag = tags.find { tag ->
-                    tag.id == it.tagId
-                } ?: return@filter true
-
-                //  return tag.enabled
-                tag.enabled
+            } else {
+                sports
             }
-        } else {
-            sports
         }
 
         return Result.success(
-            filteredSports
+            models
         )
     }
 
     fun getById(id: Int): Result<Sport> {
-        val sport = SportEntity.getById(id)?.second ?: throw NotFoundException("invalid sport id")
+        val model = transaction {
+            SportEntity.findById(id)?.serializableModel() ?: throw NotFoundException("invalid sport id")
+        }
 
-        return Result.success(sport)
+        return Result.success(model)
     }
 
-    fun deleteById(id: Int): Result<Boolean> {
-        val sport = SportEntity.getById(id)?.first ?: throw NotFoundException("invalid sport id")
-
+    fun deleteById(id: Int): Result<Unit> {
         transaction {
+            val sport = SportEntity.findById(id) ?: throw NotFoundException("invalid sport id")
+
             sport.delete()
         }
 
-        //  fetch
-        SportEntity.fetch(id)
-
-        return Result.success(true)
+        return Result.success(Unit)
     }
 
     fun create(omittedSport: OmittedSport): Result<Sport> {
-        val image = omittedSport.iconId?.let { ImageEntity.getById(it) }
-        val tag = omittedSport.tagId?.let {
-            TagEntity.getById(it)
-        }
-
         val model = transaction {
-            SportEntity.new {
+            val image = omittedSport.iconId?.let { ImageEntity.findById(it) }
+            val tag = omittedSport.tagId?.let {
+                TagEntity.findById(it)
+            }
+
+            val entity = SportEntity.new {
                 this.name = omittedSport.name
                 this.description = omittedSport.description
-                this.iconImage = image?.first
+                this.iconImage = image
                 this.weight = omittedSport.weight
                 this.ruleId = omittedSport.ruleId
-                this.tag = tag?.first
+                this.tag = tag
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
-            }.serializableModel()
-        }.apply {
-            SportEntity.fetch(this.id)
+            }
+
+            //  serialize
+            entity.serializableModel()
         }
 
         return Result.success(model)
     }
 
     fun update(id: Int, omittedSport: OmittedSport): Result<Sport> {
-        val entity = SportEntity.getById(id)?.first ?: throw NotFoundException("invalid sport id")
-
-        val image = omittedSport.iconId?.let { ImageEntity.getById(it) }
-        val tag = omittedSport.tagId?.let {
-            TagEntity.getById(it)
-        }
-
         val model = transaction {
+            val entity = SportEntity.findById(id) ?: throw NotFoundException("invalid sport id")
+
+            val image = omittedSport.iconId?.let { ImageEntity.findById(it) }
+            val tag = omittedSport.tagId?.let {
+                TagEntity.findById(it)
+            }
+
             entity.name = omittedSport.name
             entity.description = omittedSport.description
-            entity.iconImage = image?.first
+            entity.iconImage = image
             entity.weight = omittedSport.weight
             entity.ruleId = omittedSport.ruleId
-            entity.tag = tag?.first
+            entity.tag = tag
             entity.updatedAt = LocalDateTime.now()
 
+            //  serialize
             entity.serializableModel()
-        }.apply {
-            SportEntity.fetch(this.id)
         }
 
         return Result.success(model)
     }
 
     fun getProgress(id: Int): Result<Double> {
-        val sport = SportEntity.getById(id)?.second ?: throw NotFoundException("invalid sport id")
+        val progress = transaction {
+            val sport = SportEntity.findById(id) ?: throw NotFoundException("invalid sport id")
 
-        val matches = MatchEntity.getAll()
-            .map { it.second }
-            .filter { it.sportId == sport.id }
+            val matches = MatchEntity.find {
+                Matches.sport eq sport.id.value
+            }
+                .map { it.serializableModel() }
 
-        val finished = matches.filter { it.status == MatchStatus.FINISHED }
-        val progress = finished.size.toDouble() / matches.size.toDouble()
+            val finished = matches.filter { it.status == MatchStatus.FINISHED }
+            finished.size.toDouble() / matches.size.toDouble()
+        }
 
         return Result.success(
             progress

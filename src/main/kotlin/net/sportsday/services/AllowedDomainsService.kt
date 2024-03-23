@@ -11,12 +11,29 @@ import java.time.LocalDateTime
  * Created by testusuke on 2023/03/13
  * @author testusuke
  */
-object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomain>(
-    objectName = "allowed domain",
-    _getAllObjectFunction = { AllowedDomainEntity.getAll() },
-    _getObjectByIdFunction = { AllowedDomainEntity.getById(it) },
-    fetchFunction = { AllowedDomainEntity.fetch(it) },
-) {
+object AllowedDomainsService {
+
+    fun getAll(): Result<List<AllowedDomain>> {
+        val models = transaction {
+            AllowedDomainEntity.all().map {
+                it.serializableModel()
+            }
+        }
+
+        return Result.success(
+            models,
+        )
+    }
+
+    fun getById(id: Int): Result<AllowedDomain> {
+        val model = transaction {
+            AllowedDomainEntity.findById(id)?.serializableModel()
+        } ?: throw NotFoundException("invalid id")
+
+        return Result.success(
+            model,
+        )
+    }
 
     fun create(omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> {
         val model = transaction {
@@ -25,8 +42,6 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
                 this.description = omittedAllowedDomain.description
                 this.createdAt = LocalDateTime.now()
             }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
         }
 
         return Result.success(
@@ -35,19 +50,28 @@ object AllowedDomainsService : StandardService<AllowedDomainEntity, AllowedDomai
     }
 
     fun update(id: Int, omittedAllowedDomain: OmittedAllowedDomain): Result<AllowedDomain> {
-        val entity = AllowedDomainEntity.getById(id) ?: throw NotFoundException("invalid id")
+        val entity = AllowedDomainEntity.findById(id) ?: throw NotFoundException("invalid id")
 
         val model = transaction {
-            entity.first.domain = omittedAllowedDomain.domain
-            entity.first.description = omittedAllowedDomain.description
+            entity.domain = omittedAllowedDomain.domain
+            entity.description = omittedAllowedDomain.description
             //  serialize
-            entity.first.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
+            entity.serializableModel()
         }
 
         return Result.success(
             model,
         )
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val entity = AllowedDomainEntity.findById(id) ?: throw NotFoundException("invalid id")
+
+            //  delete entity
+            entity.delete()
+        }
+
+        return Result.success(Unit)
     }
 }

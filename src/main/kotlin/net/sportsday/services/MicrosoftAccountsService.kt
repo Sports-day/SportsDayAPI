@@ -11,78 +11,95 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Created by testusuke on 2023/03/06
  * @author testusuke
  */
-object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, MicrosoftAccount>(
-    objectName = "Microsoft account",
-    _getAllObjectFunction = { MicrosoftAccountEntity.getAll() },
-    _getObjectByIdFunction = { MicrosoftAccountEntity.getById(it) },
-    fetchFunction = { MicrosoftAccountEntity.fetch(it) },
-    onDeleteFunction = {
-        //  User -> MicrosoftAccount
-        it.userId?.let { userId ->
-            UserEntity.fetch(userId)
+object MicrosoftAccountsService {
+
+    fun getAll(): Result<List<MicrosoftAccount>> {
+        val models = transaction {
+            MicrosoftAccountEntity.all().map {
+                it.serializableModel()
+            }
         }
-    },
-) {
+
+        return Result.success(models)
+    }
+
+    fun getById(id: Int): Result<MicrosoftAccount> {
+        val model = transaction {
+            MicrosoftAccountEntity.findById(id)?.serializableModel() ?: throw NotFoundException("Microsoft account not found.")
+        }
+
+        return Result.success(model)
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val account = MicrosoftAccountEntity.findById(id) ?: throw NotFoundException("Microsoft account not found.")
+
+            account.delete()
+        }
+
+        return Result.success(Unit)
+    }
 
     fun linkUser(accountId: Int, userId: Int): Result<MicrosoftAccount> {
-        val account = MicrosoftAccountEntity.getById(accountId) ?: throw NotFoundException("Microsoft account not found.")
-
-        val user = UserEntity.getById(userId) ?: throw NotFoundException("target User not found.")
-
         val model = transaction {
+            val account = MicrosoftAccountEntity.findById(accountId)
+                ?: throw NotFoundException("Microsoft account not found.")
+
+            val user = UserEntity.findById(userId)
+                ?: throw NotFoundException("target User not found.")
+
             //  update
-            account.first.user = user.first
+            account.user = user
 
             //  serialize
-            account.first.serializableModel()
+            account.serializableModel()
         }
-
-        //  fetch
-        fetchFunction(accountId)
-        UserEntity.fetch(userId)
 
         return Result.success(model)
     }
 
     fun unlinkUser(accountId: Int): Result<MicrosoftAccount> {
-        val account = MicrosoftAccountEntity.getById(accountId) ?: throw NotFoundException("Microsoft account not found.")
-
         val model = transaction {
+            val account =
+                MicrosoftAccountEntity.findById(accountId) ?: throw NotFoundException("Microsoft account not found.")
+
             //  update
-            account.first.user = null
+            account.user = null
             //  link later disable
-            account.first.linkLater = false
+            account.linkLater = false
 
             //  serialize
-            account.first.serializableModel()
-        }.apply {
-            //  fetch
-            fetchFunction(accountId)
-            UserEntity.fetch(account.second.userId)
+            account.serializableModel()
         }
 
         return Result.success(model)
     }
 
-    fun setAccountRole(accountId: Int, role: String): Result<MicrosoftAccount> = transaction {
-        val account = MicrosoftAccountEntity.getById(accountId)?.first ?: throw NotFoundException("Microsoft account not found")
+    fun setAccountRole(accountId: Int, role: String): Result<MicrosoftAccount> {
+        val model = transaction {
+            val account =
+                MicrosoftAccountEntity.findById(accountId) ?: throw NotFoundException("Microsoft account not found")
 
-        //  validation
-        val roleObj = Role.values().find { it.value == role } ?: throw BadRequestException("invalid role name")
+            //  validation
+            val roleObj = Role.values().find { it.value == role } ?: throw BadRequestException("invalid role name")
 
-        //  update
-        account.role = roleObj
+            //  update
+            account.role = roleObj
 
-        //  fetch
-        fetchFunction(accountId)
+            account.serializableModel()
+        }
 
-        Result.success(account.serializableModel())
+        return Result.success(model)
     }
 
     fun linkLater(accountId: Int): Result<MicrosoftAccount> {
-        val account = MicrosoftAccountEntity.getById(accountId)?.first ?: throw NotFoundException("Microsoft account not found")
-
         val model = transaction {
+            val account =
+                MicrosoftAccountEntity.findById(accountId)
+                    ?: throw NotFoundException("Microsoft account not found")
+
+
             if (account.user != null) {
                 throw BadRequestException("already linked")
             }
@@ -94,9 +111,8 @@ object MicrosoftAccountsService : StandardService<MicrosoftAccountEntity, Micros
             account.serializableModel()
         }
 
-        //  fetch
-        fetchFunction(accountId)
-
         return Result.success(model)
     }
+
+
 }

@@ -13,20 +13,40 @@ import java.time.LocalDateTime
  * @author testusuke
  */
 
-object GroupsService : StandardService<GroupEntity, Group>(
-    objectName = "Group",
-    _getAllObjectFunction = { GroupEntity.getAll() },
-    _getObjectByIdFunction = { GroupEntity.getById(it) },
-    fetchFunction = { GroupEntity.fetch(it) },
-    onDeleteFunction = {
-        //  Class -> Group
-        ClassEntity.getAll().forEach { pair ->
-            if (pair.second.groupId == it.id) {
-                ClassEntity.fetch(pair.second.id)
+object GroupsService {
+
+    /**
+     * Get all groups
+     *
+     * @return [List<Group>]
+     */
+    fun getAll(): Result<List<Group>> {
+        val models = transaction {
+            GroupEntity.all().map {
+                it.serializableModel()
             }
         }
-    },
-) {
+
+        return Result.success(
+            models
+        )
+    }
+
+    /**
+     * Get group by id
+     *
+     * @param id[Int] group id
+     * @return [List<Group>]
+     */
+    fun getById(id: Int): Result<Group> {
+        val model = transaction {
+            GroupEntity.findById(id)?.serializableModel()
+        } ?: throw NotFoundException("Group not found.")
+
+        return Result.success(
+            model
+        )
+    }
 
     /**
      * Create new group
@@ -42,8 +62,6 @@ object GroupsService : StandardService<GroupEntity, Group>(
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
         }
 
         return Result.success(
@@ -59,19 +77,33 @@ object GroupsService : StandardService<GroupEntity, Group>(
      * @return [Group]
      */
     fun update(id: Int, omittedGroup: OmittedGroup): Result<Group> {
-        val group = GroupEntity.getById(id) ?: throw NotFoundException("Group not found.")
-
         val model = transaction {
-            group.first.name = omittedGroup.name
-            group.first.description = omittedGroup.description
-            group.first.updatedAt = LocalDateTime.now()
+            val group = GroupEntity.findById(id) ?: throw NotFoundException("Group not found.")
+
+
+            group.name = omittedGroup.name
+            group.description = omittedGroup.description
+            group.updatedAt = LocalDateTime.now()
 
             //  serialize
-            group.first.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
+            group.serializableModel()
         }
 
         return Result.success(model)
+    }
+
+    /**
+     * Delete group by id
+     *
+     * @param id[Int] group id
+     */
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val group = GroupEntity.findById(id) ?: throw NotFoundException("Group not found.")
+
+            group.delete()
+        }
+
+        return Result.success(Unit)
     }
 }

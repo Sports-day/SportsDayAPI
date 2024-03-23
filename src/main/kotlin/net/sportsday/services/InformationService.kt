@@ -10,12 +10,26 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * Created by testusuke on 2023/05/29
  * @author testusuke
  */
-object InformationService : StandardService<InformationEntity, InformationModel>(
-    objectName = "Information",
-    _getAllObjectFunction = { InformationEntity.getAll() },
-    _getObjectByIdFunction = { InformationEntity.getById(it) },
-    fetchFunction = { InformationEntity.fetch(it) },
-) {
+object InformationService {
+    fun getAll(): Result<List<InformationModel>> {
+        val models = transaction {
+            InformationEntity.all().map {
+                it.serializableModel()
+            }
+        }
+
+        return Result.success(
+            models
+        )
+    }
+
+    fun getById(id: Int): Result<InformationModel> {
+        val model = transaction {
+            InformationEntity.findById(id)?.serializableModel() ?: throw NotFoundException("Information not found.")
+        }
+
+        return Result.success(model)
+    }
 
     /**
      * Create new information
@@ -29,8 +43,6 @@ object InformationService : StandardService<InformationEntity, InformationModel>
                 this.name = omittedInformation.name
                 this.content = omittedInformation.content
             }.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
         }
 
         return Result.success(
@@ -46,19 +58,28 @@ object InformationService : StandardService<InformationEntity, InformationModel>
      * @return [InformationModel]
      */
     fun update(id: Int, omittedInformation: OmittedInformationModel): Result<InformationModel> {
-        val entity = InformationEntity.getById(id)?.first ?: throw NotFoundException("invalid information id")
-
         val model = transaction {
+            val entity = InformationEntity.findById(id) ?: throw NotFoundException("invalid information id")
+
             entity.name = omittedInformation.name
             entity.content = omittedInformation.content
+
             //  serialize
             entity.serializableModel()
-        }.apply {
-            fetchFunction(this.id)
         }
 
         return Result.success(
             model,
         )
+    }
+
+    fun deleteById(id: Int): Result<Unit> {
+        transaction {
+            val entity = InformationEntity.findById(id) ?: throw NotFoundException("invalid information id")
+
+            entity.delete()
+        }
+
+        return Result.success(Unit)
     }
 }
