@@ -39,7 +39,6 @@ object TeamsService {
         return Result.success(Unit)
     }
 
-
     fun create(omittedTeam: OmittedTeam): Result<Team> {
         val model = transaction {
             val classEntity =

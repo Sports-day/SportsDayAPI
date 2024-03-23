@@ -1,7 +1,6 @@
 package net.sportsday.services
 
 import io.ktor.server.plugins.*
-import net.sportsday.models.ClassEntity
 import net.sportsday.models.Group
 import net.sportsday.models.GroupEntity
 import net.sportsday.models.OmittedGroup
@@ -79,7 +78,6 @@ object GroupsService {
     fun update(id: Int, omittedGroup: OmittedGroup): Result<Group> {
         val model = transaction {
             val group = GroupEntity.findById(id) ?: throw NotFoundException("Group not found.")
-
 
             group.name = omittedGroup.name
             group.description = omittedGroup.description

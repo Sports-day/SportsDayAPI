@@ -99,7 +99,6 @@ object MicrosoftAccountsService {
                 MicrosoftAccountEntity.findById(accountId)
                     ?: throw NotFoundException("Microsoft account not found")
 
-
             if (account.user != null) {
                 throw BadRequestException("already linked")
             }
@@ -113,6 +112,4 @@ object MicrosoftAccountsService {
 
         return Result.success(model)
     }
-
-
 }

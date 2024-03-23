@@ -10,7 +10,6 @@ import net.sportsday.models.LogEvents
 import net.sportsday.models.MicrosoftAccountEntity
 import net.sportsday.models.MicrosoftAccounts
 import net.sportsday.models.UserEntity
-import net.sportsday.services.MicrosoftAccountsService
 import net.sportsday.utils.Cache
 import net.sportsday.utils.Email
 import net.sportsday.utils.logger.Logger
@@ -83,8 +82,7 @@ object Authorization {
                             this.firstLogin = LocalDateTime.now()
                             this.lastLogin = LocalDateTime.now()
                         }
-                    }
-                    else {
+                    } else {
                         microsoftAccount.lastLogin = LocalDateTime.now()
                         microsoftAccount
                     }

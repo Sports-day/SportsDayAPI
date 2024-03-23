@@ -231,7 +231,6 @@ object GamesService {
                 LocationEntity.findById(it) ?: throw NotFoundException("invalid location id")
             }
 
-
             //  check if game type is league
             if (game.type != GameType.LEAGUE) {
                 throw BadRequestException("invalid game type")

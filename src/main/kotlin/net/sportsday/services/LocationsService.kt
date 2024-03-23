@@ -3,7 +3,6 @@ package net.sportsday.services
 import io.ktor.server.plugins.*
 import net.sportsday.models.Location
 import net.sportsday.models.LocationEntity
-import net.sportsday.models.MatchEntity
 import net.sportsday.models.OmittedLocation
 import org.jetbrains.exposed.sql.transactions.transaction
 
