@@ -8,7 +8,9 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import net.sportsday.models.LogEvents
 import net.sportsday.models.MicrosoftAccountEntity
+import net.sportsday.models.MicrosoftAccounts
 import net.sportsday.models.UserEntity
+import net.sportsday.services.MicrosoftAccountsService
 import net.sportsday.utils.Cache
 import net.sportsday.utils.Email
 import net.sportsday.utils.logger.Logger
@@ -70,36 +72,22 @@ object Authorization {
                 if (!email.isAllowedDomain()) return@memoize null
 
                 //  get microsoft user (or create user)
-                val microsoftAccount = if (!MicrosoftAccountEntity.existMicrosoftAccount(email.toString())) {
-                    //  create
-                    val pair = transaction {
-                        val entity = MicrosoftAccountEntity.new {
+                val entity = transaction {
+                    val microsoftAccount = MicrosoftAccountEntity.find { MicrosoftAccounts.email eq email.toString() }.firstOrNull()
+
+                    if (microsoftAccount == null) {
+                        MicrosoftAccountEntity.new {
                             this.email = email.toString()
                             this.name = jwt.claims["name"]?.asString() ?: "Unknown"
                             this.mailAccountName = email.username()
                             this.firstLogin = LocalDateTime.now()
                             this.lastLogin = LocalDateTime.now()
                         }
-
-                        entity to entity.serializableModel()
-                    }.apply {
-                        MicrosoftAccountEntity.fetch(this.second.id)
                     }
-
-                    pair.first
-                } else {
-                    //  last login update
-                    MicrosoftAccountEntity.getByEmail(email.toString())?.first?.let { entity ->
-                        transaction {
-                            entity.lastLogin = LocalDateTime.now()
-                        }
-                        return@let entity
+                    else {
+                        microsoftAccount.lastLogin = LocalDateTime.now()
+                        microsoftAccount
                     }
-                }
-
-                //  if not exist
-                if (microsoftAccount == null) {
-                    return@memoize null
                 }
 
                 // //////////////////////////
@@ -107,20 +95,18 @@ object Authorization {
                 // //////////////////////////
                 var isChanged = false
                 transaction {
-                    if (microsoftAccount.user == null) {
+                    if (entity.user == null) {
                         //  find user
-                        val emailAccountName = microsoftAccount.mailAccountName
+                        val emailAccountName = entity.mailAccountName
 
                         if (emailAccountName != null) {
-                            val user = UserEntity.getAll().firstOrNull {
-                                emailAccountName.contains(it.second.studentId)
+                            val user = UserEntity.all().firstOrNull {
+                                emailAccountName.contains(it.studentId)
                             }
 
                             if (user != null) {
                                 transaction {
-                                    microsoftAccount.user = user.first
-                                }.apply {
-                                    MicrosoftAccountEntity.fetch(microsoftAccount.id.value)
+                                    entity.user = user
                                 }
 
                                 isChanged = true
@@ -131,9 +117,9 @@ object Authorization {
 
                 //  re-fetch
                 val result = if (isChanged) {
-                    MicrosoftAccountEntity.getById(microsoftAccount.id.value)?.first ?: return@memoize null
+                    MicrosoftAccountEntity.findById(entity.id.value) ?: return@memoize null
                 } else {
-                    microsoftAccount
+                    entity
                 }
 
                 //  result
