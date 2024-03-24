@@ -33,13 +33,12 @@ object ImagesService {
         )
     }
 
-    fun create(createdBy: MicrosoftAccountEntity, omittedImage: OmittedImage): Result<Image> {
+    fun create(omittedImage: OmittedImage): Result<Image> {
         val model = transaction {
             ImageEntity.new {
                 this.name = omittedImage.name
                 this.attachment = omittedImage.attachment
                 this.createdAt = LocalDateTime.now()
-                this.createdBy = createdBy
             }.serializableModel()
         }
 

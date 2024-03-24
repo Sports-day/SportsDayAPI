@@ -15,7 +15,6 @@ val tables = listOf(
     Groups,
     Classes,
     Users,
-    MicrosoftAccounts,
     Teams,
     TeamUsers,
     Sports,

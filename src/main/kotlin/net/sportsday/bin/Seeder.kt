@@ -70,7 +70,7 @@ fun main() {
         val users = listOf(
             UserEntity.new {
                 name = "testusuke"
-                studentId = "2011240"
+                email = "e2011240@toyama.kosen-ac.jp"
                 gender = GenderType.MALE
                 classEntity = classes[0]
                 createdAt = java.time.LocalDateTime.now()
@@ -78,7 +78,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Olivia"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.FEMALE
                 classEntity = classes[0]
                 createdAt = java.time.LocalDateTime.now()
@@ -86,7 +86,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Emma"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.FEMALE
                 classEntity = classes[0]
                 createdAt = java.time.LocalDateTime.now()
@@ -94,7 +94,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "nayu"
-                studentId = "2011124"
+                email = "m2011124@toyama.kosen-ac.jp"
                 gender = GenderType.MALE
                 classEntity = classes[1]
                 createdAt = java.time.LocalDateTime.now()
@@ -102,7 +102,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Amelia"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.FEMALE
                 classEntity = classes[1]
                 createdAt = java.time.LocalDateTime.now()
@@ -110,7 +110,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Oliver"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.MALE
                 classEntity = classes[1]
                 createdAt = java.time.LocalDateTime.now()
@@ -118,7 +118,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Luna"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.FEMALE
                 classEntity = classes[2]
                 createdAt = java.time.LocalDateTime.now()
@@ -126,7 +126,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Ethan"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.MALE
                 classEntity = classes[2]
                 createdAt = java.time.LocalDateTime.now()
@@ -134,7 +134,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "James"
-                studentId = "xxxxxxx"
+                email = "xxxxxxx"
                 gender = GenderType.MALE
                 classEntity = classes[2]
                 createdAt = java.time.LocalDateTime.now()
