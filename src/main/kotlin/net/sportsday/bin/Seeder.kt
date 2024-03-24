@@ -66,6 +66,15 @@ fun main() {
             }
         )
 
+        val generateRandomEmail = {
+            val chars = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+            val name = (1..10)
+                .map { chars.random() }
+                .joinToString("")
+            //  add domain
+            name.plus("@example.com")
+        }
+
         //  user
         val users = listOf(
             UserEntity.new {
@@ -78,7 +87,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Olivia"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.FEMALE
                 classEntity = classes[0]
                 createdAt = java.time.LocalDateTime.now()
@@ -86,7 +95,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Emma"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.FEMALE
                 classEntity = classes[0]
                 createdAt = java.time.LocalDateTime.now()
@@ -102,7 +111,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Amelia"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.FEMALE
                 classEntity = classes[1]
                 createdAt = java.time.LocalDateTime.now()
@@ -110,7 +119,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Oliver"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.MALE
                 classEntity = classes[1]
                 createdAt = java.time.LocalDateTime.now()
@@ -118,7 +127,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Luna"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.FEMALE
                 classEntity = classes[2]
                 createdAt = java.time.LocalDateTime.now()
@@ -126,7 +135,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "Ethan"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.MALE
                 classEntity = classes[2]
                 createdAt = java.time.LocalDateTime.now()
@@ -134,7 +143,7 @@ fun main() {
             },
             UserEntity.new {
                 name = "James"
-                email = "xxxxxxx"
+                email = generateRandomEmail()
                 gender = GenderType.MALE
                 classEntity = classes[2]
                 createdAt = java.time.LocalDateTime.now()
