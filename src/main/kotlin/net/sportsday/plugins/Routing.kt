@@ -18,8 +18,6 @@ fun Application.configureRouting() {
         //  version 1.0
         route("/v1") {
             authenticate {
-                //  Microsoft Accounts
-                microsoftAccountsRouter()
                 //  Groups
                 groupsRouter()
                 //  Classes
