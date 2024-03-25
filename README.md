@@ -1,4 +1,4 @@
-![banner_api](https://github.com/Sports-day/SportsDayAPI/assets/58895178/30f34600-454a-4450-bd5a-7e349e362042)
+![api_banner](https://github.com/Sports-day/SportsDayAPI/assets/58895178/b3aa3af8-c332-4960-a31d-c707a85b910b)
 
 # SportsDayAPI
 
