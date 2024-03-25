@@ -378,7 +378,7 @@
 <text text-anchor="start" x="311.7784" y="-937.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(10)]</text>
 <polygon fill="none" stroke="#000000" points="227,-896.5 227,-926.5 423,-926.5 423,-896.5 227,-896.5"/>
 <text text-anchor="start" x="234" y="-907.9" font-family="Arial" font-size="14.00" fill="#000000">picture    </text>
-<text text-anchor="start" x="310.2104" y="-907.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(2048)]</text>
+<text text-anchor="start" x="310.2104" y="-907.9" font-family="Arial" font-size="14.00" fill="#666666">[longtext]</text>
 <polygon fill="none" stroke="#000000" points="227,-866.5 227,-896.5 423,-896.5 423,-866.5 227,-866.5"/>
 <text text-anchor="start" x="234" y="-877.9" font-family="Arial" font-size="14.00" fill="#000000">class_id    </text>
 <text text-anchor="start" x="318.7658" y="-877.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>

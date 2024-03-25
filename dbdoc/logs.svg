@@ -56,7 +56,7 @@
 <text text-anchor="start" x="127.7784" y="-173.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(10)]</text>
 <polygon fill="none" stroke="#000000" points="43,-132.5 43,-162.5 239,-162.5 239,-132.5 43,-132.5"/>
 <text text-anchor="start" x="50" y="-143.9" font-family="Arial" font-size="14.00" fill="#000000">picture    </text>
-<text text-anchor="start" x="126.2104" y="-143.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(2048)]</text>
+<text text-anchor="start" x="126.2104" y="-143.9" font-family="Arial" font-size="14.00" fill="#666666">[longtext]</text>
 <polygon fill="none" stroke="#000000" points="43,-102.5 43,-132.5 239,-132.5 239,-102.5 43,-102.5"/>
 <text text-anchor="start" x="50" y="-113.9" font-family="Arial" font-size="14.00" fill="#000000">class_id    </text>
 <text text-anchor="start" x="134.7658" y="-113.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>

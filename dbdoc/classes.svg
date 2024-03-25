@@ -124,7 +124,7 @@
 <text text-anchor="start" x="478.7784" y="-823.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(10)]</text>
 <polygon fill="none" stroke="#000000" points="394,-782.5 394,-812.5 590,-812.5 590,-782.5 394,-782.5"/>
 <text text-anchor="start" x="401" y="-793.9" font-family="Arial" font-size="14.00" fill="#000000">picture    </text>
-<text text-anchor="start" x="477.2104" y="-793.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(2048)]</text>
+<text text-anchor="start" x="477.2104" y="-793.9" font-family="Arial" font-size="14.00" fill="#666666">[longtext]</text>
 <polygon fill="none" stroke="#000000" points="394,-752.5 394,-782.5 590,-782.5 590,-752.5 394,-752.5"/>
 <text text-anchor="start" x="401" y="-763.9" font-family="Arial" font-size="14.00" fill="#000000">class_id    </text>
 <text text-anchor="start" x="485.7658" y="-763.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>

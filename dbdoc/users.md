@@ -11,7 +11,7 @@ CREATE TABLE `users` (
   `name` varchar(128) NOT NULL,
   `email` varchar(320) NOT NULL,
   `gender` varchar(10) NOT NULL DEFAULT 'MALE',
-  `picture` varchar(2048) DEFAULT NULL,
+  `picture` longtext,
   `class_id` int NOT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE `users` (
 | name | varchar(128) |  | false |  |  |  |  |
 | email | varchar(320) |  | false |  |  |  |  |
 | gender | varchar(10) | MALE | false |  |  |  |  |
-| picture | varchar(2048) |  | true |  |  |  |  |
+| picture | longtext |  | true |  |  |  |  |
 | class_id | int |  | false |  |  | [classes](classes.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |

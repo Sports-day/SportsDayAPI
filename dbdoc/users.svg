@@ -31,7 +31,7 @@
 <text text-anchor="start" x="306.4642" y="-513.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(10)]</text>
 <polygon fill="none" stroke="#000000" points="252,-472.5 252,-502.5 437,-502.5 437,-472.5 252,-472.5"/>
 <text text-anchor="start" x="259" y="-483.9" font-family="Arial" font-size="14.00" fill="#000000">picture </text>
-<text text-anchor="start" x="304.8962" y="-483.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(2048)]</text>
+<text text-anchor="start" x="304.8962" y="-483.9" font-family="Arial" font-size="14.00" fill="#666666">[longtext]</text>
 <polygon fill="none" stroke="#000000" points="252,-442.5 252,-472.5 437,-472.5 437,-442.5 252,-442.5"/>
 <text text-anchor="start" x="259" y="-453.9" font-family="Arial" font-size="14.00" fill="#000000">class_id </text>
 <text text-anchor="start" x="313.4516" y="-453.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
