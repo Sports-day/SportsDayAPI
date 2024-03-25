@@ -17,7 +17,7 @@ object Users : IntIdTable("users") {
     val name = varchar("name", 128)
     val email = varchar("email", 320).uniqueIndex()
     val gender = enumerationByName<GenderType>("gender", 10).default(GenderType.MALE)
-    val picture = text("picture").nullable()
+    val picture = largeText("picture").nullable()
     val classEntity = reference("class_id", Classes, onDelete = ReferenceOption.CASCADE)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
