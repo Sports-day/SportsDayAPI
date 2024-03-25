@@ -36,4 +36,13 @@ object JwtConfig {
      */
     private fun getExpiration() = Date(System.currentTimeMillis() + (validityInMinute * 60_000))
 
+    /**
+     * get expiration duration in seconds
+     */
+    fun getExpirationDuration(): Long = validityInMinute * 60
+
+    /**
+     * get issuer
+     */
+    fun getIssuer(): String = issuer
 }

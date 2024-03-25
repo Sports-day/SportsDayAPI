@@ -15,6 +15,9 @@ fun Application.configureRouting() {
 
         //  version 1.0
         route("/v1") {
+            //  login endpoint
+            loginRouter()
+
             authenticate {
                 //  Groups
                 groupsRouter()

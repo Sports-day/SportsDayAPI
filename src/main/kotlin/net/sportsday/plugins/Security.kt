@@ -17,8 +17,10 @@ fun Application.configureSecurity() {
             verifier(JwtConfig.verifier)
 
             authHeader { call ->
-                //  TODO change YOUR_COOKIE_NAME_FOR_TOKEN
-                val cookieValue = call.request.cookies["YOUR_COOKIE_NAME_FOR_TOKEN"] ?: return@authHeader null
+                //  cookie
+                println("call.request.cookies: ${call.request.cookies.rawCookies}")
+
+                val cookieValue = call.request.cookies["access_token"] ?: return@authHeader null
                 println("cookieValue: $cookieValue")
 
                 try {
@@ -30,10 +32,7 @@ fun Application.configureSecurity() {
             }
 
             validate { credential ->
-                credential.payload.getClaim("id").asString()?.let { id ->
-                    //  TODO find user by id
-                    JWTPrincipal(credential.payload)
-                }
+                JWTPrincipal(credential.payload)
             }
 
             challenge { _, _ ->
