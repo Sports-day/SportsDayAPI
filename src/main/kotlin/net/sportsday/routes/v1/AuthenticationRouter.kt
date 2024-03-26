@@ -2,14 +2,17 @@ package net.sportsday.routes.v1
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import net.sportsday.services.AuthenticationService
+import net.sportsday.services.UsersService
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.JwtConfig
 import net.sportsday.utils.MessageResponse
+import net.sportsday.utils.respondOrInternalError
 
 /**
  * Created by testusuke on 2024/03/25
@@ -48,6 +51,20 @@ fun Route.authenticationRouter() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 call.respond(HttpStatusCode.InternalServerError, MessageResponse("Internal Server Error"))
+            }
+        }
+    }
+
+    authenticate {
+        route("/userinfo") {
+            get {
+                val principal = call.principal<UserIdPrincipal>() ?: return@get call.respond(HttpStatusCode.Unauthorized, MessageResponse("Unauthorized"))
+
+                UsersService
+                    .getById(principal.name.toInt())
+                    .respondOrInternalError {
+                        call.respond(HttpStatusCode.OK, DataMessageResponse("user", it))
+                    }
             }
         }
     }
