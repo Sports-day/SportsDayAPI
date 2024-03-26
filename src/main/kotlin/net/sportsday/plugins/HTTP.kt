@@ -14,6 +14,8 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Post)
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)
+        allowCredentials = true
+
         if (System.getenv("ALLOWED_HOST") != null) {
             allowHost(
                 System.getenv("ALLOWED_HOST"),
@@ -25,6 +27,9 @@ fun Application.configureHTTP() {
 
             println("Allowed host: ${System.getenv("ALLOWED_HOST")}")
         } else {
+            //  warning
+            println("WARNING: ALLOWED_HOST is not set. Allow all hosts.")
+
             anyHost()
         }
     }

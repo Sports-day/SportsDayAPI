@@ -4,7 +4,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import net.sportsday.routes.authorizationRouting
 import net.sportsday.routes.v1.*
 
 fun Application.configureRouting() {
@@ -14,12 +13,12 @@ fun Application.configureRouting() {
             call.respondText("Hello")
         }
 
-        authorizationRouting()
         //  version 1.0
         route("/v1") {
+            //  login endpoint
+            authenticationRouter()
+
             authenticate {
-                //  Microsoft Accounts
-                microsoftAccountsRouter()
                 //  Groups
                 groupsRouter()
                 //  Classes

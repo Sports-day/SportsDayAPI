@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
  */
 object Logs : IntIdTable("logs") {
     val logEvent = enumerationByName<LogEvents>("log_event", 32)
-    val microsoftAccount = reference("microsoft_account", MicrosoftAccounts, onDelete = ReferenceOption.SET_NULL).nullable()
+    val user = reference("user_id", Users, onDelete = ReferenceOption.SET_NULL).nullable()
     val message = text("message")
     val createdAt = datetime("created_at")
 }
@@ -23,7 +23,7 @@ class LogEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<LogEntity>(Logs)
 
     var logEvent by Logs.logEvent
-    var microsoftAccount by MicrosoftAccountEntity optionalReferencedOn Logs.microsoftAccount
+    var user by UserEntity optionalReferencedOn Logs.user
     var message by Logs.message
     var createdAt by Logs.createdAt
 }
@@ -42,7 +42,7 @@ enum class LogEvents(val event: String) {
 data class Log(
     val id: Int,
     val logEvent: LogEvents,
-    val microsoftAccount: Int?,
+    val user: Int?,
     val message: String,
     val createdAt: String,
 )

@@ -10,18 +10,17 @@
 | [game_entries](game_entries.md) | 2 |  | BASE TABLE |
 | [games](games.md) | 10 |  | BASE TABLE |
 | [groups](groups.md) | 5 |  | BASE TABLE |
-| [images](images.md) | 5 |  | BASE TABLE |
+| [images](images.md) | 4 |  | BASE TABLE |
 | [information](information.md) | 3 |  | BASE TABLE |
 | [locations](locations.md) | 2 |  | BASE TABLE |
 | [logs](logs.md) | 5 |  | BASE TABLE |
 | [matches](matches.md) | 15 |  | BASE TABLE |
-| [microsoft_accounts](microsoft_accounts.md) | 9 |  | BASE TABLE |
 | [sports](sports.md) | 9 |  | BASE TABLE |
 | [tags](tags.md) | 5 |  | BASE TABLE |
 | [team_users](team_users.md) | 2 |  | BASE TABLE |
 | [teams](teams.md) | 6 |  | BASE TABLE |
 | [tournament_path](tournament_path.md) | 2 |  | BASE TABLE |
-| [users](users.md) | 7 |  | BASE TABLE |
+| [users](users.md) | 8 |  | BASE TABLE |
 
 ## Relations
 

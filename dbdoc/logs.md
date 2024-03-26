@@ -9,12 +9,12 @@
 CREATE TABLE `logs` (
   `id` int NOT NULL AUTO_INCREMENT,
   `log_event` varchar(32) NOT NULL,
-  `microsoft_account` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
   `message` text NOT NULL,
   `created_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_logs_microsoft_account__id` (`microsoft_account`),
-  CONSTRAINT `fk_logs_microsoft_account__id` FOREIGN KEY (`microsoft_account`) REFERENCES `microsoft_accounts` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+  KEY `fk_logs_user_id__id` (`user_id`),
+  CONSTRAINT `fk_logs_user_id__id` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
@@ -26,7 +26,7 @@ CREATE TABLE `logs` (
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
 | id | int |  | false | auto_increment |  |  |  |
 | log_event | varchar(32) |  | false |  |  |  |  |
-| microsoft_account | int |  | true |  |  | [microsoft_accounts](microsoft_accounts.md) |  |
+| user_id | int |  | true |  |  | [users](users.md) |  |
 | message | text |  | false |  |  |  |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 
@@ -34,14 +34,14 @@ CREATE TABLE `logs` (
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
-| fk_logs_microsoft_account__id | FOREIGN KEY | FOREIGN KEY (microsoft_account) REFERENCES microsoft_accounts (id) |
+| fk_logs_user_id__id | FOREIGN KEY | FOREIGN KEY (user_id) REFERENCES users (id) |
 | PRIMARY | PRIMARY KEY | PRIMARY KEY (id) |
 
 ## Indexes
 
 | Name | Definition |
 | ---- | ---------- |
-| fk_logs_microsoft_account__id | KEY fk_logs_microsoft_account__id (microsoft_account) USING BTREE |
+| fk_logs_user_id__id | KEY fk_logs_user_id__id (user_id) USING BTREE |
 | PRIMARY | PRIMARY KEY (id) USING BTREE |
 
 ## Relations

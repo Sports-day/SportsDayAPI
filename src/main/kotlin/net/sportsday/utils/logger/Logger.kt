@@ -1,9 +1,6 @@
 package net.sportsday.utils.logger
 
-import net.sportsday.models.Log
-import net.sportsday.models.LogEntity
-import net.sportsday.models.LogEvents
-import net.sportsday.models.MicrosoftAccountEntity
+import net.sportsday.models.*
 import net.sportsday.utils.DiscordEmbed
 import net.sportsday.utils.DiscordMessage
 import net.sportsday.utils.getColorValue
@@ -35,12 +32,12 @@ object Logger {
         }
     }
 
-    fun commit(message: String, event: LogEvents, causedBy: MicrosoftAccountEntity?) {
+    fun commit(message: String, event: LogEvents, causedBy: UserEntity?) {
         logs.add(
             Log(
                 id = 0,
                 logEvent = event,
-                microsoftAccount = causedBy?.id?.value,
+                user = causedBy?.id?.value,
                 message = message,
                 createdAt = LocalDateTime.now().toString(),
             ),
@@ -54,7 +51,7 @@ object Logger {
             logs.forEach { log ->
                 LogEntity.new {
                     this.logEvent = log.logEvent
-                    this.microsoftAccount = log.microsoftAccount?.let { MicrosoftAccountEntity.findById(it) }
+                    this.user = log.user?.let { UserEntity.findById(it) }
                     this.message = log.message
                     this.createdAt = LocalDateTime.parse(log.createdAt)
                 }

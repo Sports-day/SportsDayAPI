@@ -14,10 +14,11 @@ import org.jetbrains.exposed.sql.javatime.datetime
  * @author testusuke
  */
 object Users : IntIdTable("users") {
-    val name = varchar("name", 64)
-    val studentId = varchar("student_id", 32)
-    val gender = enumerationByName<GenderType>("gender", 10)
-    val classEntity = reference("class", Classes, onDelete = ReferenceOption.CASCADE)
+    val name = varchar("name", 128)
+    val email = varchar("email", 320).uniqueIndex()
+    val gender = enumerationByName<GenderType>("gender", 10).default(GenderType.MALE)
+    val picture = largeText("picture").nullable()
+    val classEntity = reference("class_id", Classes, onDelete = ReferenceOption.CASCADE)
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -27,20 +28,21 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<UserEntity>(Users)
 
     var name by Users.name
-    var studentId by Users.studentId
+    var email by Users.email
     var gender by Users.gender
+    var picture by Users.picture
     var classEntity by ClassEntity referencedOn Users.classEntity
     var createdAt by Users.createdAt
     var updatedAt by Users.updatedAt
     var teams by TeamEntity via TeamUsers
-    val microsoftAccounts by MicrosoftAccountEntity optionalReferrersOn MicrosoftAccounts.user
 
     fun serializableModel(): User {
         return User(
             id.value,
             name,
-            studentId,
+            email,
             gender,
+            picture,
             classEntity.id.value,
             teams.map { it.id.value },
             createdAt.toString(),
@@ -62,8 +64,9 @@ enum class GenderType(val gender: String) {
 data class User(
     val id: Int,
     val name: String,
-    val studentId: String,
+    val email: String,
     val gender: GenderType,
+    val picture: String?,
     val classId: Int,
     val teamIds: List<Int>,
     val createdAt: String,
@@ -73,7 +76,8 @@ data class User(
 @Serializable
 data class OmittedUser(
     val name: String,
-    val studentId: String,
+    val email: String,
     val gender: GenderType,
+    val picture: String?,
     val classId: Int,
 )

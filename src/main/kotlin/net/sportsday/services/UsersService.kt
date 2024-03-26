@@ -45,8 +45,9 @@ object UsersService {
 
             val user = UserEntity.new {
                 this.name = omittedUser.name
-                this.studentId = omittedUser.studentId
+                this.email = omittedUser.email
                 this.gender = omittedUser.gender
+                this.picture = omittedUser.picture
                 this.classEntity = classEntity
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
@@ -65,8 +66,9 @@ object UsersService {
                 ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
 
             userEntity.name = omittedUser.name
-            userEntity.studentId = omittedUser.studentId
+            userEntity.email = omittedUser.email
             userEntity.gender = omittedUser.gender
+            userEntity.picture = omittedUser.picture
             userEntity.classEntity = classEntity
             userEntity.updatedAt = LocalDateTime.now()
 
@@ -82,18 +84,6 @@ object UsersService {
 
             //  serialize
             user.teams.map { it.serializableModel() }
-        }
-
-        return Result.success(models)
-    }
-
-    fun getLinkedMicrosoftAccount(id: Int): Result<List<MicrosoftAccount>> {
-        val models = transaction {
-            val user = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
-
-            user.microsoftAccounts.map {
-                it.serializableModel()
-            }
         }
 
         return Result.success(models)
