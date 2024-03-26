@@ -27,6 +27,9 @@ fun Application.configureHTTP() {
 
             println("Allowed host: ${System.getenv("ALLOWED_HOST")}")
         } else {
+            //  warning
+            println("WARNING: ALLOWED_HOST is not set. Allow all hosts.")
+
             anyHost()
         }
     }
