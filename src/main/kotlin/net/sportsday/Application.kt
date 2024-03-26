@@ -17,7 +17,7 @@ fun Application.module() {
     configureSerialization()
     configureSecurity()
     configureRouting()
-//    configureRateLimit()
+    configureCors()
     configureStatusPage()
 
     //  DB
