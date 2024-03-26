@@ -16,7 +16,7 @@ import net.sportsday.utils.MessageResponse
  * @author testusuke
  */
 
-fun Route.loginRouter() {
+fun Route.authenticationRouter() {
     route("/login") {
         post {
             val code = call.receive<OpenIDConnectCode>()
