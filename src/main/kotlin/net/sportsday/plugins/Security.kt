@@ -18,10 +18,7 @@ fun Application.configureSecurity() {
 
             authHeader { call ->
                 //  cookie
-                println("call.request.cookies: ${call.request.cookies.rawCookies}")
-
                 val cookieValue = call.request.cookies["access_token"] ?: return@authHeader null
-                println("cookieValue: $cookieValue")
 
                 try {
                     parseAuthorizationHeader("Bearer $cookieValue")
