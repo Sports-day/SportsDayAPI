@@ -32,7 +32,9 @@ fun Application.configureSecurity() {
             }
 
             validate { credential ->
-                JWTPrincipal(credential.payload)
+                credential.payload.getClaim("id").asString().let {
+                    UserIdPrincipal(it)
+                }
             }
 
             challenge { _, _ ->
