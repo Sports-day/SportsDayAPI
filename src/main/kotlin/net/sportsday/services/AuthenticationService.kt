@@ -17,9 +17,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import net.sportsday.models.User
-import net.sportsday.models.UserEntity
-import net.sportsday.models.Users
+import net.sportsday.models.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URL
 import java.security.interfaces.RSAPublicKey
@@ -155,38 +153,55 @@ object AuthenticationService {
         val picture = fetchProfilePicture(accessToken, userinfo.picture)
 
         //  find user by email
-        return transaction {
+        val userModel = transaction {
             val user = UserEntity.find { Users.email eq userinfo.email }.firstOrNull()
 
             //  create user if not found
             if (user == null) {
+                val pictureEntity = if (picture != null) {
+                    //  create picture entity
+                    val createdPictureEntity = ImageEntity.new {
+                        this.data = picture
+                        this.createdAt = LocalDateTime.now()
+                    }
+                    createdPictureEntity
+                } else {
+                    null
+                }
+
+                //  create user
                 val createdUserEntity = UserEntity.new {
                     this.name = userinfo.name
                     this.email = userinfo.email
-                    this.picture = picture
+                    this.picture = pictureEntity
                     this.createdAt = LocalDateTime.now()
                     this.updatedAt = LocalDateTime.now()
                 }
                 createdUserEntity.serializableModel()
             } else {
-                //  if there is changes in userinfo, update it
-                var updated = false
-                if (user.name != userinfo.name) {
-                    user.name = userinfo.name
-                    updated = true
+                //  update username
+                user.name = userinfo.name
+
+                //  if there is changes in picture, update it
+                if (picture != null) {
+                    if (user.picture == null) {
+                        val createdPictureEntity = ImageEntity.new {
+                            this.data = picture
+                            this.createdAt = LocalDateTime.now()
+                        }
+                        user.picture = createdPictureEntity
+                    } else {
+                        user.picture!!.data = picture
+                    }
                 }
-                if (user.picture != picture) {
-                    user.picture = picture
-                    updated = true
-                }
+
                 //  update timestamp
-                if (updated) {
-                    user.updatedAt = LocalDateTime.now()
-                }
+                user.updatedAt = LocalDateTime.now()
 
                 user.serializableModel()
             }
         }
+        return userModel
     }
 
     @Serializable

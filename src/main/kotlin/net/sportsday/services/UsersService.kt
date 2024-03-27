@@ -42,12 +42,13 @@ object UsersService {
     fun create(omittedUser: OmittedUser): Result<User> {
         val model = transaction {
             val classEntity = ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+            val pictureEntity = omittedUser.pictureId?.let { ImageEntity.findById(it) }
 
             val user = UserEntity.new {
                 this.name = omittedUser.name
                 this.email = omittedUser.email
                 this.gender = omittedUser.gender
-                this.picture = omittedUser.picture
+                this.picture = pictureEntity
                 this.classEntity = classEntity
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
@@ -64,11 +65,12 @@ object UsersService {
             val userEntity = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
             val classEntity =
                 ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+            val pictureEntity = omittedUser.pictureId?.let { ImageEntity.findById(it) }
 
             userEntity.name = omittedUser.name
             userEntity.email = omittedUser.email
             userEntity.gender = omittedUser.gender
-            userEntity.picture = omittedUser.picture
+            userEntity.picture = pictureEntity
             userEntity.classEntity = classEntity
             userEntity.updatedAt = LocalDateTime.now()
 

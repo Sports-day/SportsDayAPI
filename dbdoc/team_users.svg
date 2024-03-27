@@ -80,8 +80,8 @@
 <text text-anchor="start" x="411" y="-173.9" font-family="Arial" font-size="14.00" fill="#000000">gender    </text>
 <text text-anchor="start" x="488.7784" y="-173.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(10)]</text>
 <polygon fill="none" stroke="#000000" points="404,-132.5 404,-162.5 600,-162.5 600,-132.5 404,-132.5"/>
-<text text-anchor="start" x="411" y="-143.9" font-family="Arial" font-size="14.00" fill="#000000">picture    </text>
-<text text-anchor="start" x="487.2104" y="-143.9" font-family="Arial" font-size="14.00" fill="#666666">[longtext]</text>
+<text text-anchor="start" x="411" y="-143.9" font-family="Arial" font-size="14.00" fill="#000000">picture_id    </text>
+<text text-anchor="start" x="505.8822" y="-143.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
 <polygon fill="none" stroke="#000000" points="404,-102.5 404,-132.5 600,-132.5 600,-102.5 404,-102.5"/>
 <text text-anchor="start" x="411" y="-113.9" font-family="Arial" font-size="14.00" fill="#000000">class_id    </text>
 <text text-anchor="start" x="495.7658" y="-113.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>

@@ -13,25 +13,21 @@ import org.jetbrains.exposed.sql.javatime.datetime
  */
 
 object Images : IntIdTable("images") {
-    val name = varchar("name", 64)
-
     //  base64 encoded image
-    val attachment = text("attachment")
+    val data = text("data")
     val createdAt = datetime("created_at")
 }
 
 class ImageEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<ImageEntity> (Images)
 
-    var name by Images.name
-    var attachment by Images.attachment
+    var data by Images.data
     var createdAt by Images.createdAt
 
     fun serializableModel(): Image {
         return Image(
             id.value,
-            name,
-            attachment,
+            data,
             createdAt.toString(),
         )
     }
@@ -40,13 +36,11 @@ class ImageEntity(id: EntityID<Int>) : IntEntity(id) {
 @Serializable
 data class Image(
     val id: Int,
-    val name: String,
-    val attachment: String,
+    val data: String,
     val createdAt: String,
 )
 
 @Serializable
 data class OmittedImage(
-    val name: String,
-    val attachment: String,
+    val data: String,
 )

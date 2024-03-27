@@ -46,39 +46,62 @@ fun Route.imagesRouter() {
                     )
                 }
         }
-    }
 
-    route("/{id?}") {
-        /**
-         * Get image by id
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+        route("/{id?}") {
+            /**
+             * Get image by id
+             */
+            get {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            ImagesService
-                .getById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
+                ImagesService
+                    .getById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataResponse(it),
+                        )
+                    }
+            }
 
-        /**
-         * delete image by id
-         */
-        delete {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            /**
+             * delete image by id
+             */
+            delete {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            ImagesService
-                .deleteById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        MessageResponse("deleted image"),
-                    )
-                }
+                ImagesService
+                    .deleteById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            MessageResponse("deleted image"),
+                        )
+                    }
+            }
+
+            /**
+             * Get image file by id
+             */
+            get("/file") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                ImagesService
+                    .getImageFile(id)
+                    .respondOrInternalError {
+                        //  header
+                        call.response.header(
+                            HttpHeaders.ContentType,
+                            ContentType.Image.JPEG.toString(),
+                        )
+
+                        //  response
+                        call.respond(
+                            HttpStatusCode.OK,
+                            it,
+                        )
+                    }
+            }
         }
     }
 }
