@@ -36,8 +36,7 @@ object ImagesService {
     fun create(omittedImage: OmittedImage): Result<Image> {
         val model = transaction {
             ImageEntity.new {
-                this.name = omittedImage.name
-                this.attachment = omittedImage.attachment
+                this.data = omittedImage.data
                 this.createdAt = LocalDateTime.now()
             }.serializableModel()
         }
