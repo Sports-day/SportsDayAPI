@@ -155,7 +155,7 @@ object AuthenticationService {
         val picture = fetchProfilePicture(accessToken, userinfo.picture)
 
         //  find user by email
-        return transaction {
+        val userModel = transaction {
             val user = UserEntity.find { Users.email eq userinfo.email }.firstOrNull()
 
             //  create user if not found
@@ -163,7 +163,7 @@ object AuthenticationService {
                 val createdUserEntity = UserEntity.new {
                     this.name = userinfo.name
                     this.email = userinfo.email
-                    this.picture = picture
+                    this.picture = null
                     this.createdAt = LocalDateTime.now()
                     this.updatedAt = LocalDateTime.now()
                 }
@@ -175,10 +175,6 @@ object AuthenticationService {
                     user.name = userinfo.name
                     updated = true
                 }
-                if (user.picture != picture) {
-                    user.picture = picture
-                    updated = true
-                }
                 //  update timestamp
                 if (updated) {
                     user.updatedAt = LocalDateTime.now()
@@ -187,6 +183,15 @@ object AuthenticationService {
                 user.serializableModel()
             }
         }
+
+        ProfileUpdateScope.launch {
+            //  todo: asynchronously update picture
+            transaction {
+
+            }
+        }
+
+        return userModel
     }
 
     @Serializable
