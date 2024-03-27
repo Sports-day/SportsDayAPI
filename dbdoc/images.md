@@ -8,8 +8,7 @@
 ```sql
 CREATE TABLE `images` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `attachment` text NOT NULL,
+  `data` text NOT NULL,
   `created_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
@@ -21,9 +20,8 @@ CREATE TABLE `images` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
-| id | int |  | false | auto_increment | [sports](sports.md) |  |  |
-| name | varchar(64) |  | false |  |  |  |  |
-| attachment | text |  | false |  |  |  |  |
+| id | int |  | false | auto_increment | [sports](sports.md) [users](users.md) |  |  |
+| data | text |  | false |  |  |  |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 
 ## Constraints
