@@ -80,5 +80,28 @@ fun Route.imagesRouter() {
                     )
                 }
         }
+
+        /**
+         * Get image file by id
+         */
+        get("/file") {
+            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+            ImagesService
+                .getImageFile(id)
+                .respondOrInternalError {
+                    //  header
+                    call.response.header(
+                        HttpHeaders.ContentType,
+                        ContentType.Image.JPEG.toString(),
+                    )
+
+                    //  response
+                    call.respond(
+                        HttpStatusCode.OK,
+                        it,
+                    )
+                }
+        }
     }
 }
