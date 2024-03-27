@@ -47,7 +47,6 @@ fun Route.imagesRouter() {
                 }
         }
 
-
         route("/{id?}") {
             /**
              * Get image by id
