@@ -41,7 +41,9 @@ object UsersService {
 
     fun create(omittedUser: OmittedUser): Result<User> {
         val model = transaction {
-            val classEntity = ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+            val classEntity = omittedUser.classId?.let {
+                ClassEntity.findById(it) ?: throw NotFoundException("invalid class id")
+            }
             val pictureEntity = omittedUser.pictureId?.let { ImageEntity.findById(it) }
 
             val user = UserEntity.new {
@@ -63,8 +65,9 @@ object UsersService {
     fun update(id: Int, omittedUser: OmittedUser): Result<User> {
         val model = transaction {
             val userEntity = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
-            val classEntity =
-                ClassEntity.findById(omittedUser.classId) ?: throw NotFoundException("invalid class id")
+            val classEntity = omittedUser.classId?.let {
+                ClassEntity.findById(it) ?: throw NotFoundException("invalid class id")
+            }
             val pictureEntity = omittedUser.pictureId?.let { ImageEntity.findById(it) }
 
             userEntity.name = omittedUser.name
