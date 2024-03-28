@@ -178,42 +178,45 @@
 <!-- teams -->
 <g id="node6" class="node">
 <title>teams</title>
-<polygon fill="#efefef" stroke="transparent" points="992,-282.5 992,-317.5 1195,-317.5 1195,-282.5 992,-282.5"/>
-<polygon fill="none" stroke="#000000" points="992,-282.5 992,-317.5 1195,-317.5 1195,-282.5 992,-282.5"/>
-<text text-anchor="start" x="1005.2126" y="-295.3" font-family="Arial Bold" font-size="18.00" fill="#000000">teams</text>
-<text text-anchor="start" x="1054.2194" y="-295.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
-<text text-anchor="start" x="1088.4242" y="-295.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="#000000" points="992,-252.5 992,-282.5 1195,-282.5 1195,-252.5 992,-252.5"/>
-<text text-anchor="start" x="999" y="-263.9" font-family="Arial" font-size="14.00" fill="#000000">id    </text>
-<text text-anchor="start" x="1044.094" y="-263.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
-<polygon fill="none" stroke="#000000" points="992,-222.5 992,-252.5 1195,-252.5 1195,-222.5 992,-222.5"/>
-<text text-anchor="start" x="999" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
-<text text-anchor="start" x="1068.2132" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(64)]</text>
-<polygon fill="none" stroke="#000000" points="992,-192.5 992,-222.5 1195,-222.5 1195,-192.5 992,-192.5"/>
-<text text-anchor="start" x="998.9993" y="-203.9" font-family="Arial" font-size="14.00" fill="#000000">description    </text>
-<text text-anchor="start" x="1100.8815" y="-203.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(128)]</text>
-<polygon fill="none" stroke="#000000" points="992,-162.5 992,-192.5 1195,-192.5 1195,-162.5 992,-162.5"/>
-<text text-anchor="start" x="999" y="-173.9" font-family="Arial" font-size="14.00" fill="#000000">class    </text>
-<text text-anchor="start" x="1065.094" y="-173.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
-<polygon fill="none" stroke="#000000" points="992,-132.5 992,-162.5 1195,-162.5 1195,-132.5 992,-132.5"/>
-<text text-anchor="start" x="999" y="-143.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
-<text text-anchor="start" x="1099.3422" y="-143.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
-<polygon fill="none" stroke="#000000" points="992,-102.5 992,-132.5 1195,-132.5 1195,-102.5 992,-102.5"/>
-<text text-anchor="start" x="999" y="-113.9" font-family="Arial" font-size="14.00" fill="#000000">updated_at    </text>
-<text text-anchor="start" x="1103.2468" y="-113.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
+<polygon fill="#efefef" stroke="transparent" points="992,-297.5 992,-332.5 1195,-332.5 1195,-297.5 992,-297.5"/>
+<polygon fill="none" stroke="#000000" points="992,-297.5 992,-332.5 1195,-332.5 1195,-297.5 992,-297.5"/>
+<text text-anchor="start" x="1005.2126" y="-310.3" font-family="Arial Bold" font-size="18.00" fill="#000000">teams</text>
+<text text-anchor="start" x="1054.2194" y="-310.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
+<text text-anchor="start" x="1088.4242" y="-310.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="#000000" points="992,-267.5 992,-297.5 1195,-297.5 1195,-267.5 992,-267.5"/>
+<text text-anchor="start" x="999" y="-278.9" font-family="Arial" font-size="14.00" fill="#000000">id    </text>
+<text text-anchor="start" x="1044.094" y="-278.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
+<polygon fill="none" stroke="#000000" points="992,-237.5 992,-267.5 1195,-267.5 1195,-237.5 992,-237.5"/>
+<text text-anchor="start" x="999" y="-248.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
+<text text-anchor="start" x="1068.2132" y="-248.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(64)]</text>
+<polygon fill="none" stroke="#000000" points="992,-207.5 992,-237.5 1195,-237.5 1195,-207.5 992,-207.5"/>
+<text text-anchor="start" x="998.9993" y="-218.9" font-family="Arial" font-size="14.00" fill="#000000">description    </text>
+<text text-anchor="start" x="1100.8815" y="-218.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(128)]</text>
+<polygon fill="none" stroke="#000000" points="992,-177.5 992,-207.5 1195,-207.5 1195,-177.5 992,-177.5"/>
+<text text-anchor="start" x="999" y="-188.9" font-family="Arial" font-size="14.00" fill="#000000">class    </text>
+<text text-anchor="start" x="1065.094" y="-188.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
+<polygon fill="none" stroke="#000000" points="992,-147.5 992,-177.5 1195,-177.5 1195,-147.5 992,-147.5"/>
+<text text-anchor="start" x="999" y="-158.9" font-family="Arial" font-size="14.00" fill="#000000">team_tag    </text>
+<text text-anchor="start" x="1091.5596" y="-158.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
+<polygon fill="none" stroke="#000000" points="992,-117.5 992,-147.5 1195,-147.5 1195,-117.5 992,-117.5"/>
+<text text-anchor="start" x="999" y="-128.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
+<text text-anchor="start" x="1099.3422" y="-128.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
+<polygon fill="none" stroke="#000000" points="992,-87.5 992,-117.5 1195,-117.5 1195,-87.5 992,-87.5"/>
+<text text-anchor="start" x="999" y="-98.9" font-family="Arial" font-size="14.00" fill="#000000">updated_at    </text>
+<text text-anchor="start" x="1103.2468" y="-98.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
 </g>
 <!-- matches&#45;&gt;teams -->
 <g id="edge6" class="edge">
 <title>matches:left_team&#45;&gt;teams:id</title>
-<path fill="none" stroke="#000000" d="M902.9993,-786.0991C1002.6136,-756.4922 877.93,-267.5 992,-267.5"/>
-<polygon fill="#000000" stroke="#000000" points="902.9033,-786.1125 892.3756,-783.0435 897.9516,-786.8063 893,-787.5 893,-787.5 893,-787.5 897.9516,-786.8063 893.6244,-791.9565 902.9033,-786.1125 902.9033,-786.1125"/>
+<path fill="none" stroke="#000000" d="M903.0209,-786.0513C999.4894,-756.4307 881.2154,-282.5 992,-282.5"/>
+<polygon fill="#000000" stroke="#000000" points="902.8971,-786.0691 892.3561,-783.0463 897.9486,-786.7846 893,-787.5 893,-787.5 893,-787.5 897.9486,-786.7846 893.6439,-791.9537 902.8971,-786.0691 902.8971,-786.0691"/>
 <text text-anchor="start" x="900.387" y="-797.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (left_team) REFERENCES teams (id)</text>
 </g>
 <!-- matches&#45;&gt;teams -->
 <g id="edge7" class="edge">
 <title>matches:right_team&#45;&gt;teams:id</title>
-<path fill="none" stroke="#000000" d="M903.0258,-756.0061C996.3932,-726.4269 884.4909,-267.5 992,-267.5"/>
-<polygon fill="#000000" stroke="#000000" points="902.8908,-756.0262 892.3368,-753.0491 897.9454,-756.7631 893,-757.5 893,-757.5 893,-757.5 897.9454,-756.7631 893.6632,-761.9509 902.8908,-756.0262 902.8908,-756.0262"/>
+<path fill="none" stroke="#000000" d="M903.0143,-755.9638C993.3252,-726.4807 887.7563,-282.5 992,-282.5"/>
+<polygon fill="#000000" stroke="#000000" points="902.8844,-755.9836 892.3176,-753.052 897.9422,-756.7418 893,-757.5 893,-757.5 893,-757.5 897.9422,-756.7418 893.6824,-761.948 902.8844,-755.9836 902.8844,-755.9836"/>
 <text text-anchor="start" x="900.3325" y="-767.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (right_team) REFERENCES teams (id)</text>
 </g>
 <!-- tournament_path -->

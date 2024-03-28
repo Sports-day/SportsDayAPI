@@ -11,11 +11,14 @@ CREATE TABLE `teams` (
   `name` varchar(64) NOT NULL,
   `description` varchar(128) DEFAULT NULL,
   `class` int NOT NULL,
+  `team_tag` int DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_teams_class__id` (`class`),
-  CONSTRAINT `fk_teams_class__id` FOREIGN KEY (`class`) REFERENCES `classes` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+  KEY `fk_teams_team_tag__id` (`team_tag`),
+  CONSTRAINT `fk_teams_class__id` FOREIGN KEY (`class`) REFERENCES `classes` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_teams_team_tag__id` FOREIGN KEY (`team_tag`) REFERENCES `team_tags` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
@@ -29,6 +32,7 @@ CREATE TABLE `teams` (
 | name | varchar(64) |  | false |  |  |  |  |
 | description | varchar(128) |  | true |  |  |  |  |
 | class | int |  | false |  |  | [classes](classes.md) |  |
+| team_tag | int |  | true |  |  | [team_tags](team_tags.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |
 
@@ -37,6 +41,7 @@ CREATE TABLE `teams` (
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_teams_class__id | FOREIGN KEY | FOREIGN KEY (class) REFERENCES classes (id) |
+| fk_teams_team_tag__id | FOREIGN KEY | FOREIGN KEY (team_tag) REFERENCES team_tags (id) |
 | PRIMARY | PRIMARY KEY | PRIMARY KEY (id) |
 
 ## Indexes
@@ -44,6 +49,7 @@ CREATE TABLE `teams` (
 | Name | Definition |
 | ---- | ---------- |
 | fk_teams_class__id | KEY fk_teams_class__id (class) USING BTREE |
+| fk_teams_team_tag__id | KEY fk_teams_team_tag__id (team_tag) USING BTREE |
 | PRIMARY | PRIMARY KEY (id) USING BTREE |
 
 ## Relations
