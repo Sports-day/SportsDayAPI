@@ -46,68 +46,68 @@ fun Route.usersRouter() {
                     )
                 }
         }
-    }
 
-    route("/{id?}") {
-        /**
-         * Get user
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+        route("/{id?}") {
+            /**
+             * Get user
+             */
+            get {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            UsersService
-                .getById(id)
-                .respondOrInternalError {
-                    call.respond(HttpStatusCode.OK, DataResponse(it))
+                UsersService
+                    .getById(id)
+                    .respondOrInternalError {
+                        call.respond(HttpStatusCode.OK, DataResponse(it))
+                    }
+            }
+
+            /**
+             * update user
+             */
+            put {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val omittedUser = call.receive<OmittedUser>()
+
+                UsersService
+                    .update(id, omittedUser)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataMessageResponse(
+                                "updated user",
+                                it,
+                            ),
+                        )
+                    }
+            }
+
+            /**
+             * delete user
+             */
+            delete {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                UsersService
+                    .deleteById(id)
+                    .respondOrInternalError {
+                        call.respond(HttpStatusCode.OK, MessageResponse("deleted user"))
+                    }
+            }
+
+            route("/teams") {
+                /**
+                 * Get all teams what user belong
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                    UsersService
+                        .getTeams(id)
+                        .respondOrInternalError {
+                            call.respond(HttpStatusCode.OK, DataResponse(it))
+                        }
                 }
-        }
-
-        /**
-         * update user
-         */
-        put {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-            val omittedUser = call.receive<OmittedUser>()
-
-            UsersService
-                .update(id, omittedUser)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "updated user",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        /**
-         * delete user
-         */
-        delete {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-            UsersService
-                .deleteById(id)
-                .respondOrInternalError {
-                    call.respond(HttpStatusCode.OK, MessageResponse("deleted user"))
-                }
-        }
-    }
-
-    route("/teams") {
-        /**
-         * Get all teams what user belong
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-            UsersService
-                .getTeams(id)
-                .respondOrInternalError {
-                    call.respond(HttpStatusCode.OK, DataResponse(it))
-                }
+            }
         }
     }
 }

@@ -45,65 +45,65 @@ fun Route.tagRouter() {
                     )
                 }
         }
-    }
 
-    route("/{id?}") {
+        route("/{id?}") {
 
-        /**
-         * Get tag by id
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            /**
+             * Get tag by id
+             */
+            get {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            TagService
-                .getById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
+                TagService
+                    .getById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataResponse(it),
+                        )
+                    }
+            }
 
-        /**
-         * Update tag
-         */
-        put {
-            val id =
-                call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-            val requestBody = call.receive<OmittedTag>()
+            /**
+             * Update tag
+             */
+            put {
+                val id =
+                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val requestBody = call.receive<OmittedTag>()
 
-            TagService
-                .update(id, requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "update tag",
-                            it,
-                        ),
-                    )
-                }
-        }
+                TagService
+                    .update(id, requestBody)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataMessageResponse(
+                                "update tag",
+                                it,
+                            ),
+                        )
+                    }
+            }
 
-        /**
-         * Delete tag
-         */
-        delete {
-            val id =
-                call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            /**
+             * Delete tag
+             */
+            delete {
+                val id =
+                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            TagService
-                .deleteById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "deleted tag",
-                            it,
-                        ),
-                    )
-                }
+                TagService
+                    .deleteById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataMessageResponse(
+                                "deleted tag",
+                                it,
+                            ),
+                        )
+                    }
+            }
         }
     }
 }

@@ -47,51 +47,51 @@ fun Route.groupsRouter() {
                     )
                 }
         }
-    }
 
-    route("/{id?}") {
-        /**
-         * Get specific group
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-            GroupsService.getById(id)
-                .respondOrInternalError {
-                    call.respond(HttpStatusCode.OK, DataResponse(it))
-                }
-        }
+        route("/{id?}") {
+            /**
+             * Get specific group
+             */
+            get {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                GroupsService.getById(id)
+                    .respondOrInternalError {
+                        call.respond(HttpStatusCode.OK, DataResponse(it))
+                    }
+            }
 
-        /**
-         * Update group
-         */
-        put {
-            val id =
-                call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-            val requestBody = call.receive<OmittedGroup>()
+            /**
+             * Update group
+             */
+            put {
+                val id =
+                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val requestBody = call.receive<OmittedGroup>()
 
-            GroupsService.update(id, requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "updated group",
-                            it,
-                        ),
-                    )
-                }
-        }
+                GroupsService.update(id, requestBody)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataMessageResponse(
+                                "updated group",
+                                it,
+                            ),
+                        )
+                    }
+            }
 
-        /**
-         * Delete group
-         */
-        delete {
-            val id =
-                call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            /**
+             * Delete group
+             */
+            delete {
+                val id =
+                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            GroupsService.deleteById(id)
-                .respondOrInternalError {
-                    call.respond(HttpStatusCode.OK, MessageResponse("deleted group"))
-                }
+                GroupsService.deleteById(id)
+                    .respondOrInternalError {
+                        call.respond(HttpStatusCode.OK, MessageResponse("deleted group"))
+                    }
+            }
         }
     }
 }

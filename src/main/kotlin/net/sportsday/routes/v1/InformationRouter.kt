@@ -47,59 +47,59 @@ fun Route.informationRouter() {
                     )
                 }
         }
-    }
 
-    route("/{id?}") {
-        /**
-         * Get information by id
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+        route("/{id?}") {
+            /**
+             * Get information by id
+             */
+            get {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
 
-            InformationService
-                .getById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
+                InformationService
+                    .getById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataResponse(it),
+                        )
+                    }
+            }
 
-        /**
-         * Update information by id
-         */
-        put {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
-            val omittedInformation = call.receive<OmittedInformationModel>()
+            /**
+             * Update information by id
+             */
+            put {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+                val omittedInformation = call.receive<OmittedInformationModel>()
 
-            InformationService
-                .update(id, omittedInformation)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "updated information",
-                            it,
-                        ),
-                    )
-                }
-        }
+                InformationService
+                    .update(id, omittedInformation)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataMessageResponse(
+                                "updated information",
+                                it,
+                            ),
+                        )
+                    }
+            }
 
-        /**
-         * Delete information by id
-         */
-        delete {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+            /**
+             * Delete information by id
+             */
+            delete {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
 
-            InformationService
-                .deleteById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        MessageResponse("delete information"),
-                    )
-                }
+                InformationService
+                    .deleteById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            MessageResponse("delete information"),
+                        )
+                    }
+            }
         }
     }
 }
