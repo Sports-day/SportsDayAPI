@@ -46,75 +46,75 @@ fun Route.sportsRouter() {
                     )
                 }
         }
-    }
 
-    route("/{id?}") {
-        /**
-         * Get sport by id
-         */
-        get {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+        route("/{id?}") {
+            /**
+             * Get sport by id
+             */
+            get {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            SportsService
-                .getById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
+                SportsService
+                    .getById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataResponse(it),
+                        )
+                    }
+            }
 
-        /**
-         * Get sport progress
-         */
-        get("/progress") {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            /**
+             * Get sport progress
+             */
+            get("/progress") {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            SportsService
-                .getProgress(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
+                SportsService
+                    .getProgress(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataResponse(it),
+                        )
+                    }
+            }
 
-        /**
-         * Update sport by id
-         */
-        put {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-            val requestBody = call.receive<OmittedSport>()
+            /**
+             * Update sport by id
+             */
+            put {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val requestBody = call.receive<OmittedSport>()
 
-            SportsService
-                .update(id, requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "updated sport",
-                            it,
-                        ),
-                    )
-                }
-        }
+                SportsService
+                    .update(id, requestBody)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            DataMessageResponse(
+                                "updated sport",
+                                it,
+                            ),
+                        )
+                    }
+            }
 
-        /**
-         * Delete sport by id
-         */
-        delete {
-            val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            /**
+             * Delete sport by id
+             */
+            delete {
+                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-            SportsService
-                .deleteById(id)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        MessageResponse("deleted sport"),
-                    )
-                }
+                SportsService
+                    .deleteById(id)
+                    .respondOrInternalError {
+                        call.respond(
+                            HttpStatusCode.OK,
+                            MessageResponse("deleted sport"),
+                        )
+                    }
+            }
         }
     }
 }
