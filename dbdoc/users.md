@@ -12,7 +12,7 @@ CREATE TABLE `users` (
   `email` varchar(320) NOT NULL,
   `gender` varchar(10) NOT NULL DEFAULT 'MALE',
   `picture_id` int DEFAULT NULL,
-  `class_id` int NOT NULL,
+  `class_id` int DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
@@ -35,7 +35,7 @@ CREATE TABLE `users` (
 | email | varchar(320) |  | false |  |  |  |  |
 | gender | varchar(10) | MALE | false |  |  |  |  |
 | picture_id | int |  | true |  |  | [images](images.md) |  |
-| class_id | int |  | false |  |  | [classes](classes.md) |  |
+| class_id | int |  | true |  |  | [classes](classes.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |
 
