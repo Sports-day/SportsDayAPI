@@ -41,12 +41,9 @@ object ClassesService {
      */
     fun create(omittedClass: OmittedClassModel): Result<ClassModel> {
         val model = transaction {
-            val group = GroupEntity.findById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
-
             val entity = ClassEntity.new {
                 this.name = omittedClass.name
                 this.description = omittedClass.description
-                this.group = group
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }
@@ -68,11 +65,9 @@ object ClassesService {
     fun update(id: Int, omittedClass: OmittedClassModel): Result<ClassModel> {
         val model = transaction {
             val classEntity = ClassEntity.findById(id) ?: throw NotFoundException("invalid class id")
-            val group = GroupEntity.findById(omittedClass.groupId) ?: throw NotFoundException("invalid group id")
 
             classEntity.name = omittedClass.name
             classEntity.description = omittedClass.description
-            classEntity.group = group
             classEntity.updatedAt = LocalDateTime.now()
 
             //  serialize

@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 
 /**
@@ -15,11 +14,6 @@ import org.jetbrains.exposed.sql.javatime.datetime
 object Classes : IntIdTable("classes") {
     val name = varchar("name", 64)
     val description = varchar("description", 128).nullable()
-    val group = reference(
-        "group",
-        Groups,
-        onDelete = ReferenceOption.CASCADE,
-    )
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -29,7 +23,6 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var name by Classes.name
     var description by Classes.description
-    var group by GroupEntity referencedOn Classes.group
     var createdAt by Classes.createdAt
     var updatedAt by Classes.updatedAt
     val users by UserEntity referrersOn Users.classEntity
@@ -39,7 +32,6 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
             id.value,
             name,
             description,
-            group.id.value,
             createdAt.toString(),
             updatedAt.toString(),
         )
@@ -51,7 +43,6 @@ data class ClassModel(
     val id: Int,
     val name: String,
     val description: String?,
-    val groupId: Int,
     val createdAt: String,
     val updatedAt: String,
 )
@@ -60,5 +51,4 @@ data class ClassModel(
 data class OmittedClassModel(
     val name: String,
     val description: String?,
-    val groupId: Int,
 )

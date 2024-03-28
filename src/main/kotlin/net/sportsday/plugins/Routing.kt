@@ -19,8 +19,6 @@ fun Application.configureRouting() {
             authenticationRouter()
 
             authenticate {
-                //  Groups
-                groupsRouter()
                 //  Classes
                 classesRouter()
                 //  Users
