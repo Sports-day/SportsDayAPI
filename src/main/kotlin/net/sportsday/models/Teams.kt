@@ -20,6 +20,11 @@ object Teams : IntIdTable("teams") {
         Classes,
         onDelete = ReferenceOption.CASCADE,
     )
+    val teamTag = reference(
+        "team_tag",
+        TeamTags,
+        onDelete = ReferenceOption.SET_NULL,
+    ).nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -30,6 +35,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by Teams.name
     var description by Teams.description
     var classEntity by ClassEntity referencedOn Teams.classEntity
+    var teamTag by TeamTagEntity optionalReferencedOn Teams.teamTag
     var users by UserEntity via TeamUsers
     var enteredGames by GameEntity via Entries
     var createdAt by Teams.createdAt
@@ -41,6 +47,7 @@ class TeamEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             description,
             classEntity.id.value,
+            teamTag?.id?.value,
             users.map { it.id.value },
             enteredGames.map { it.id.value },
             createdAt.toString(),
@@ -55,6 +62,7 @@ data class Team(
     val name: String,
     val description: String?,
     val classId: Int,
+    val teamTagId: Int?,
     val userIds: List<Int>,
     val enteredGameIds: List<Int>,
     val createdAt: String,
@@ -66,6 +74,7 @@ data class OmittedTeam(
     val name: String,
     val description: String?,
     val classId: Int,
+    val teamTagId: Int?,
 )
 
 @Serializable

@@ -44,10 +44,15 @@ object TeamsService {
             val classEntity =
                 ClassEntity.findById(omittedTeam.classId) ?: throw BadRequestException("invalid class id")
 
+            val teamTag = omittedTeam.teamTagId?.let {
+                TeamTagEntity.findById(it) ?: throw BadRequestException("invalid team tag id")
+            }
+
             val team = TeamEntity.new {
                 this.name = omittedTeam.name
                 this.description = omittedTeam.description
                 this.classEntity = classEntity
+                this.teamTag = teamTag
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }
@@ -63,10 +68,14 @@ object TeamsService {
             val team = TeamEntity.findById(id) ?: throw NotFoundException("Team not found.")
             val classEntity = ClassEntity.findById(omittedTeam.classId)
                 ?: throw BadRequestException("invalid class id")
+            val teamTag = omittedTeam.teamTagId?.let {
+                TeamTagEntity.findById(it) ?: throw BadRequestException("invalid team tag id")
+            }
 
             team.name = omittedTeam.name
             team.description = omittedTeam.description
             team.classEntity = classEntity
+            team.teamTag = teamTag
             team.updatedAt = LocalDateTime.now()
 
             team.serializableModel()
