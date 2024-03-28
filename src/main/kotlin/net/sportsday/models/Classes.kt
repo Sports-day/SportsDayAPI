@@ -25,7 +25,7 @@ class ClassEntity(id: EntityID<Int>) : IntEntity(id) {
     var description by Classes.description
     var createdAt by Classes.createdAt
     var updatedAt by Classes.updatedAt
-    val users by UserEntity referrersOn Users.classEntity
+    val users by UserEntity optionalReferrersOn Users.classEntity
 
     fun serializableModel(): ClassModel {
         return ClassModel(
