@@ -12,7 +12,6 @@ val tables = listOf(
     Configurations,
     Logs,
     AllowedDomains,
-    Groups,
     Classes,
     Users,
     Teams,

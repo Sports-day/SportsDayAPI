@@ -32,35 +32,23 @@ fun main() {
             description = "NIT Toyama"
             createdAt = java.time.LocalDateTime.now()
         }
-
-        //  group
-        val group = GroupEntity.new {
-            name = "General"
-            description = "General group"
-            createdAt = java.time.LocalDateTime.now()
-            updatedAt = java.time.LocalDateTime.now()
-        }
-
         //  class
         val classes = listOf(
             ClassEntity.new {
                 name = "Class A"
                 description = "A1 class"
-                this.group = group
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
             },
             ClassEntity.new {
                 name = "Class B"
                 description = "B1 class"
-                this.group = group
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
             },
             ClassEntity.new {
                 name = "Class C"
                 description = "C1 class"
-                this.group = group
                 createdAt = java.time.LocalDateTime.now()
                 updatedAt = java.time.LocalDateTime.now()
             }

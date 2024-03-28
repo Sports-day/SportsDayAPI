@@ -5,11 +5,10 @@
 | Name | Columns | Comment | Type |
 | ---- | ------- | ------- | ---- |
 | [allowed_domains](allowed_domains.md) | 4 |  | BASE TABLE |
-| [classes](classes.md) | 6 |  | BASE TABLE |
+| [classes](classes.md) | 5 |  | BASE TABLE |
 | [configuration](configuration.md) | 4 |  | BASE TABLE |
 | [game_entries](game_entries.md) | 2 |  | BASE TABLE |
 | [games](games.md) | 10 |  | BASE TABLE |
-| [groups](groups.md) | 5 |  | BASE TABLE |
 | [images](images.md) | 3 |  | BASE TABLE |
 | [information](information.md) | 3 |  | BASE TABLE |
 | [locations](locations.md) | 2 |  | BASE TABLE |
