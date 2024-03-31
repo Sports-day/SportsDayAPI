@@ -18,6 +18,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.sportsday.models.*
+import net.sportsday.utils.Email
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.net.URL
 import java.security.interfaces.RSAPublicKey
@@ -150,6 +151,14 @@ object AuthenticationService {
 
         //  fetch userinfo
         val userinfo = getUserInfo(accessToken)
+
+        //  validate email
+        val email = Email(userinfo.email)
+        if (!email.isAllowedDomain()) {
+            return null
+        }
+
+        //  fetch profile picture
         val picture = fetchProfilePicture(accessToken, userinfo.picture)
 
         //  find user by email
