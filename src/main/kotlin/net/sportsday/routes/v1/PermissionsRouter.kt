@@ -13,7 +13,7 @@ import net.sportsday.utils.respondOrInternalError
  * @author testusuke
  */
 
-fun Route.permissionsRoute() {
+fun Route.permissionsRouter() {
     route("/permissions") {
         get {
             PermissionsService
