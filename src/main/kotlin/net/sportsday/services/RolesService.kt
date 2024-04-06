@@ -38,12 +38,12 @@ object RolesService {
         return Result.success(Unit)
     }
 
-    fun create(role: Role): Result<Role> {
+    fun create(omittedRole: OmittedRole): Result<Role> {
         val model = transaction {
             val role = RoleEntity.new {
-                this.name = role.name
-                this.description = role.description
-                this.default = role.default
+                this.name = omittedRole.name
+                this.description = omittedRole.description
+                this.default = omittedRole.default
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }
