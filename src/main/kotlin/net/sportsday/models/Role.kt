@@ -53,3 +53,10 @@ data class Role(
     val createdAt: String,
     val updatedAt: String,
 )
+
+@Serializable
+data class OmittedRole(
+    val name: String,
+    val description: String,
+    val default: Boolean,
+)
