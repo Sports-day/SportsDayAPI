@@ -72,7 +72,7 @@ object RolesService {
     fun addPermission(roleId: Int, permissionName: String): Result<Role> {
         val model = transaction {
             val role = RoleEntity.findById(roleId) ?: throw NotFoundException("Role not found.")
-            val permission = Permission.getByName(permissionName) ?: throw NotFoundException("Permission not found.")
+            val permission = PermissionList.getByName(permissionName) ?: throw NotFoundException("Permission not found.")
 
             //  check if permission is already added
             if (role.permissions.any { it.permission == permissionName }) {
@@ -97,7 +97,7 @@ object RolesService {
             val role = RoleEntity.findById(roleId) ?: throw NotFoundException("Role not found.")
 
             //  check if permission not found
-            if (Permission.getByName(permissionName) == null) {
+            if (PermissionList.getByName(permissionName) == null) {
                 throw NotFoundException("Permission not found.")
             }
 

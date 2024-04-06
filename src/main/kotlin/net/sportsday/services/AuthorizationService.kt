@@ -5,13 +5,8 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import net.sportsday.models.Permission
-import net.sportsday.models.RoleEntity
-import net.sportsday.models.Roles
-import net.sportsday.models.UserEntity
-import net.sportsday.utils.Cache
+import net.sportsday.models.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.time.Duration.Companion.minutes
 
 /**
  * Created by testusuke on 2024/04/06
@@ -56,13 +51,13 @@ private class CustomSelector : RouteSelector() {
 }
 
 object AuthorizationService {
-    val getUserPermissions: (userId: Int) -> List<Permission>? = Cache.memoize(1.minutes) { userId ->
+    fun getUserPermissions(userId: Int): List<Permission>? {
         val user = transaction {
             UserEntity.findById(userId)
         }
         //  user is not found
         if (user == null) {
-            return@memoize null
+            return null
         }
 
         //  get role
@@ -75,12 +70,16 @@ object AuthorizationService {
 
         //  role is not found
         if (role == null) {
-            return@memoize null
+            return null
         }
 
         //  get permissions from role
-        transaction {
-            role.permissions.mapNotNull { Permission.getByName(it.permission) }
+        val permissions = transaction {
+            role.permissions.mapNotNull {
+                PermissionList.getByName(it.permission)
+            }
         }
+
+        return permissions
     }
 }

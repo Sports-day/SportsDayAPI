@@ -305,7 +305,7 @@ fun main() {
         }
 
         //  permission
-        Permission.getAll().forEach {
+        PermissionList.getAll().forEach {
             RolePermissionEntity.new {
                 this.role = role
                 this.permission = it.name

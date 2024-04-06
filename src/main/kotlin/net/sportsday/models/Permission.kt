@@ -1,6 +1,17 @@
 package net.sportsday.models
 
 import kotlinx.serialization.Serializable
+import net.sportsday.models.Permission.*
+import net.sportsday.models.Permission.Game
+import net.sportsday.models.Permission.Image
+import net.sportsday.models.Permission.Information
+import net.sportsday.models.Permission.Location
+import net.sportsday.models.Permission.Match
+import net.sportsday.models.Permission.Sport
+import net.sportsday.models.Permission.Tag
+import net.sportsday.models.Permission.Team
+import net.sportsday.models.Permission.TeamTag
+import net.sportsday.models.Permission.User
 
 /**
  * Created by testusuke on 2024/04/05
@@ -246,51 +257,54 @@ sealed class Permission(
             description = "設定の書き込み"
         )
     }
+}
 
-    companion object {
-        private val permissions = listOf(
-            AccessPolicy.Read,
-            AccessPolicy.Write,
-            Class.Read,
-            Class.Write,
-            User.Read,
-            User.Write,
-            User.Role,
-            User.Role.Read,
-            User.Role.Write,
-            Team.Read,
-            Team.Write,
-            TeamTag.Read,
-            TeamTag.Write,
-            Tag.Read,
-            Tag.Write,
-            Sport.Read,
-            Sport.Write,
-            Game.Read,
-            Game.Write,
-            Match.Read,
-            Match.Write,
-            Location.Read,
-            Location.Write,
-            Information.Read,
-            Information.Write,
-            Image.Read,
-            Image.Write,
-            PermissionManager.Read,
-            Role.Read,
-            Role.Write,
-            Configuration.Read,
-            Configuration.Write,
-        )
+object PermissionList {
 
-        /**
-         * Get all permissions
-         */
-        fun getAll(): List<Permission> = permissions
+    private val permissions = listOf(
+        AccessPolicy.Read,
+        AccessPolicy.Write,
+        Class.Read,
+        Class.Write,
+        User.Read,
+        User.Write,
+        User.Role,
+        User.Role.Read,
+        User.Role.Write,
+        Team.Read,
+        Team.Write,
+        TeamTag.Read,
+        TeamTag.Write,
+        Tag.Read,
+        Tag.Write,
+        Sport.Read,
+        Sport.Write,
+        Game.Read,
+        Game.Write,
+        Match.Read,
+        Match.Write,
+        Location.Read,
+        Location.Write,
+        Information.Read,
+        Information.Write,
+        Image.Read,
+        Image.Write,
+        PermissionManager.Read,
+        Permission.Role.Read,
+        Permission.Role.Write,
+        Configuration.Read,
+        Configuration.Write,
+    )
 
-        /**
-         * Get permission by name
-         */
-        fun getByName(name: String): Permission? = permissions.find { it.name == name }
+    /**
+     * Get all permissions
+     */
+    fun getAll(): List<Permission> = permissions
+
+    /**
+     * Get permission by name
+     */
+    fun getByName(name: String): Permission? {
+        return permissions.find { it.name == name }
     }
 }

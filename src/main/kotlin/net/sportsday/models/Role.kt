@@ -36,7 +36,7 @@ class RoleEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             description,
             default,
-            permissions.mapNotNull { Permission.getByName(it.permission) },
+            permissions.mapNotNull { PermissionList.getByName(it.permission) },
             createdAt.toString(),
             updatedAt.toString(),
         )
