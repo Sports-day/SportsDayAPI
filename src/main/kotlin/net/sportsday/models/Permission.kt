@@ -1,10 +1,13 @@
 package net.sportsday.models
 
+import kotlinx.serialization.Serializable
+
 /**
  * Created by testusuke on 2024/04/05
  * @author testusuke
  */
 
+@Serializable
 sealed class Permission(
     val name: String,
     val description: String
