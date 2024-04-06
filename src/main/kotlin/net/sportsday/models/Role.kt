@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
  * @author testusuke
  */
 
-object Roles: IntIdTable("roles") {
+object Roles : IntIdTable("roles") {
     val name = varchar("name", 64)
     val description = varchar("description", 128)
     val default = bool("default").default(false)
@@ -20,8 +20,8 @@ object Roles: IntIdTable("roles") {
     val updatedAt = datetime("updated_at")
 }
 
-class RoleEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<RoleEntity>(Roles)
+class RoleEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<RoleEntity>(Roles)
 
     var name by Roles.name
     var description by Roles.description

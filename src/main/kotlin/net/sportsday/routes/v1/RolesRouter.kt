@@ -138,7 +138,7 @@ fun Route.rolesRouter() {
                             RolesService
                                 .removePermission(roleId, permissionName)
                                 .respondOrInternalError {
-                                call.respond(
+                                    call.respond(
                                         DataMessageResponse(
                                             "removed permission",
                                             it,

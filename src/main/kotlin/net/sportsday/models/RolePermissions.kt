@@ -16,8 +16,8 @@ object RolePermissions : IntIdTable("role_permissions") {
     val permission = varchar("permission", 64)
 }
 
-class RolePermissionEntity(id: EntityID<Int>): IntEntity(id) {
-    companion object: IntEntityClass<RolePermissionEntity>(RolePermissions)
+class RolePermissionEntity(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<RolePermissionEntity>(RolePermissions)
 
     var role by RoleEntity referencedOn RolePermissions.role
     var permission by RolePermissions.permission
