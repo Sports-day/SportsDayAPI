@@ -215,11 +215,6 @@ sealed class Permission(
             name = "Permission.Read",
             description = "権限管理の読み取り"
         )
-
-        object Write: Permission(
-            name = "Permission.Write",
-            description = "権限管理の書き込み"
-        )
     }
 
     object Role: Permission(
@@ -239,49 +234,34 @@ sealed class Permission(
 
     companion object {
         private val permissions = listOf(
-            AccessPolicy,
             AccessPolicy.Read,
             AccessPolicy.Write,
-            Class,
             Class.Read,
             Class.Write,
-            User,
             User.Read,
             User.Write,
             User.Role,
             User.Role.Read,
             User.Role.Write,
-            Team,
             Team.Read,
             Team.Write,
-            TeamTag,
             TeamTag.Read,
             TeamTag.Write,
-            Tag,
             Tag.Read,
             Tag.Write,
-            Sport,
             Sport.Read,
             Sport.Write,
-            Game,
             Game.Read,
             Game.Write,
-            Match,
             Match.Read,
             Match.Write,
-            Location,
             Location.Read,
             Location.Write,
-            Information,
             Information.Read,
             Information.Write,
-            Image,
             Image.Read,
             Image.Write,
-            PermissionManager,
             PermissionManager.Read,
-            PermissionManager.Write,
-            Role,
             Role.Read,
             Role.Write,
         )
