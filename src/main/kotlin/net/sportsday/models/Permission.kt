@@ -232,6 +232,21 @@ sealed class Permission(
         )
     }
 
+    object Configuration: Permission(
+        name = "Configuration",
+        description = "設定"
+    ) {
+        object Read: Permission(
+            name = "Configuration.Read",
+            description = "設定の読み取り"
+        )
+
+        object Write: Permission(
+            name = "Configuration.Write",
+            description = "設定の書き込み"
+        )
+    }
+
     companion object {
         private val permissions = listOf(
             AccessPolicy.Read,
@@ -264,6 +279,8 @@ sealed class Permission(
             PermissionManager.Read,
             Role.Read,
             Role.Write,
+            Configuration.Read,
+            Configuration.Write,
         )
 
         /**
