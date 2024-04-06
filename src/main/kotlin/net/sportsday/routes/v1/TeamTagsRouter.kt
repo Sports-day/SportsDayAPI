@@ -7,7 +7,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedTeamTag
+import net.sportsday.models.Permission
 import net.sportsday.services.TeamTagsService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.respondOrInternalError
@@ -18,89 +20,97 @@ import net.sportsday.utils.respondOrInternalError
  */
 fun Route.teamTagsRouter() {
     route("/team_tags") {
-        /**
-         * Get all team tags
-         */
-        get {
-            val teamTags = TeamTagsService.getAll()
-
-            call.respond(
-                HttpStatusCode.OK,
-                DataResponse(teamTags.getOrDefault(listOf())),
-            )
-        }
-
-        /**
-         * Create new team tag
-         */
-        post {
-            val requestBody = call.receive<OmittedTeamTag>()
-
-            TeamTagsService
-                .create(requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "created team tag",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.TeamTag.Read) {
             /**
-             * Get specific team tag
+             * Get all team tags
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-                val teamTag = TeamTagsService.getById(id)
+                val teamTags = TeamTagsService.getAll()
 
                 call.respond(
                     HttpStatusCode.OK,
-                    DataResponse(teamTag.getOrDefault(null)),
+                    DataResponse(teamTags.getOrDefault(listOf())),
                 )
             }
 
-            /**
-             * Delete specific team tag
-             */
-            delete {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            withPermission(Permission.TeamTag.Write) {
+                /**
+                 * Create new team tag
+                 */
+                post {
+                    val requestBody = call.receive<OmittedTeamTag>()
 
-                TeamTagsService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "deleted team tag",
-                                it,
-                            ),
-                        )
-                    }
+                    TeamTagsService
+                        .create(requestBody)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataMessageResponse(
+                                    "created team tag",
+                                    it,
+                                ),
+                            )
+                        }
+                }
             }
 
-            /**
-             * Update specific team tag
-             */
-            put {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                val requestBody = call.receive<OmittedTeamTag>()
+            route("/{id?}") {
+                /**
+                 * Get specific team tag
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-                TeamTagsService
-                    .edit(id, requestBody)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "updated team tag",
-                                it,
-                            ),
-                        )
+                    val teamTag = TeamTagsService.getById(id)
+
+                    call.respond(
+                        HttpStatusCode.OK,
+                        DataResponse(teamTag.getOrDefault(null)),
+                    )
+                }
+
+                withPermission(Permission.TeamTag.Write) {
+                    /**
+                     * Delete specific team tag
+                     */
+                    delete {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        TeamTagsService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "deleted team tag",
+                                        it,
+                                    ),
+                                )
+                            }
                     }
+
+                    /**
+                     * Update specific team tag
+                     */
+                    put {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val requestBody = call.receive<OmittedTeamTag>()
+
+                        TeamTagsService
+                            .edit(id, requestBody)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "updated team tag",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
+                }
             }
         }
     }

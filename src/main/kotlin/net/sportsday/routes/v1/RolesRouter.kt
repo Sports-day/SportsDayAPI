@@ -7,7 +7,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedRole
+import net.sportsday.models.Permission
 import net.sportsday.services.RolesService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.respondOrInternalError
@@ -19,122 +21,132 @@ import net.sportsday.utils.respondOrInternalError
 
 fun Route.rolesRouter() {
     route("/roles") {
-        /**
-         * Get all roles
-         */
-        get {
-            RolesService
-                .getAll()
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it)
-                    )
-                }
-        }
-
-        /**
-         * create role
-         */
-        post {
-            val omittedRole = call.receive<OmittedRole>()
-
-            RolesService
-                .create(omittedRole)
-                .respondOrInternalError {
-                    call.respond(
-                        DataMessageResponse(
-                            "created role",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.Role.Read) {
             /**
-             * Get role
+             * Get all roles
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
                 RolesService
-                    .getById(id)
-                    .respondOrInternalError {
-                        call.respond(HttpStatusCode.OK, DataResponse(it))
-                    }
-            }
-
-            /**
-             * delete role
-             */
-            delete {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-                RolesService
-                    .deleteById(id)
+                    .getAll()
                     .respondOrInternalError {
                         call.respond(
-                            DataMessageResponse(
-                                "deleted role",
-                                it,
-                            ),
+                            HttpStatusCode.OK,
+                            DataResponse(it)
                         )
                     }
             }
 
-            /**
-             * update role
-             */
-            put {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                val omittedRole = call.receive<OmittedRole>()
-
-                RolesService
-                    .update(id, omittedRole)
-                    .respondOrInternalError {
-                        call.respond(
-                            DataMessageResponse(
-                                "updated role",
-                                it,
-                            ),
-                        )
-                    }
-            }
-
-            route("/permissions") {
+            withPermission(Permission.Role.Write) {
+                /**
+                 * create role
+                 */
                 post {
-                    val roleId =
-                        call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                    val permissionName = call.receive<String>()
+                    val omittedRole = call.receive<OmittedRole>()
 
                     RolesService
-                        .addPermission(roleId, permissionName)
+                        .create(omittedRole)
                         .respondOrInternalError {
                             call.respond(
                                 DataMessageResponse(
-                                    "added permission",
+                                    "created role",
                                     it,
                                 ),
                             )
                         }
                 }
+            }
 
-                delete {
-                    val roleId =
-                        call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                    val permissionName = call.receive<String>()
+            route("/{id?}") {
+                /**
+                 * Get role
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
                     RolesService
-                        .removePermission(roleId, permissionName)
+                        .getById(id)
                         .respondOrInternalError {
-                            call.respond(
-                                DataMessageResponse(
-                                    "removed permission",
-                                    it,
-                                ),
-                            )
+                            call.respond(HttpStatusCode.OK, DataResponse(it))
                         }
+                }
+
+                withPermission(Permission.Role.Write) {
+                    /**
+                     * delete role
+                     */
+                    delete {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        RolesService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    DataMessageResponse(
+                                        "deleted role",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
+
+                    /**
+                     * update role
+                     */
+                    put {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val omittedRole = call.receive<OmittedRole>()
+
+                        RolesService
+                            .update(id, omittedRole)
+                            .respondOrInternalError {
+                                call.respond(
+                                    DataMessageResponse(
+                                        "updated role",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
+
+                    route("/permissions") {
+                        post {
+                            val roleId =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+                            val permissionName = call.receive<String>()
+
+                            RolesService
+                                .addPermission(roleId, permissionName)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        DataMessageResponse(
+                                            "added permission",
+                                            it,
+                                        ),
+                                    )
+                                }
+                        }
+
+                        delete {
+                            val roleId =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+                            val permissionName = call.receive<String>()
+
+                            RolesService
+                                .removePermission(roleId, permissionName)
+                                .respondOrInternalError {
+                                call.respond(
+                                        DataMessageResponse(
+                                            "removed permission",
+                                            it,
+                                        ),
+                                    )
+                                }
+                        }
+                    }
                 }
             }
         }

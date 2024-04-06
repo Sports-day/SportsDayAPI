@@ -7,7 +7,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedLocation
+import net.sportsday.models.Permission
 import net.sportsday.services.LocationsService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.respondOrInternalError
@@ -19,91 +21,97 @@ import net.sportsday.utils.respondOrInternalError
 
 fun Route.locationsRouter() {
     route("/locations") {
-        /**
-         * Get all locations
-         */
-        get {
-            val locations = LocationsService.getAll()
-
-            call.respond(
-                HttpStatusCode.OK,
-                DataResponse(locations.getOrDefault(listOf())),
-            )
-        }
-
-        /**
-         * Create new location
-         */
-        post {
-            val omittedLocation = call.receive<OmittedLocation>()
-
-            LocationsService
-                .create(omittedLocation)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "created location",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.Location.Read) {
             /**
-             * Get location by id
+             * Get all locations
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+                val locations = LocationsService.getAll()
 
-                LocationsService
-                    .getById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataResponse(it),
-                        )
-                    }
+                call.respond(
+                    HttpStatusCode.OK,
+                    DataResponse(locations.getOrDefault(listOf())),
+                )
             }
 
-            /**
-             * Update location
-             */
-            put {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
-                val omittedLocation = call.receive<OmittedLocation>()
+            withPermission(Permission.Location.Write) {
+                /**
+                 * Create new location
+                 */
+                post {
+                    val omittedLocation = call.receive<OmittedLocation>()
 
-                LocationsService
-                    .update(id, omittedLocation)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "updated location",
-                                it,
-                            ),
-                        )
-                    }
+                    LocationsService
+                        .create(omittedLocation)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataMessageResponse(
+                                    "created location",
+                                    it,
+                                ),
+                            )
+                        }
+                }
             }
 
-            /**
-             * Delete location
-             */
-            delete {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+            route("/{id?}") {
+                /**
+                 * Get location by id
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
 
-                LocationsService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "deleted location",
-                                it,
-                            ),
-                        )
+                    LocationsService
+                        .getById(id)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it),
+                            )
+                        }
+                }
+
+                withPermission(Permission.Location.Write) {
+                    /**
+                     * Update location
+                     */
+                    put {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+                        val omittedLocation = call.receive<OmittedLocation>()
+
+                        LocationsService
+                            .update(id, omittedLocation)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "updated location",
+                                        it,
+                                    ),
+                                )
+                            }
                     }
+
+                    /**
+                     * Delete location
+                     */
+                    delete {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+
+                        LocationsService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "deleted location",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
+                }
             }
         }
     }

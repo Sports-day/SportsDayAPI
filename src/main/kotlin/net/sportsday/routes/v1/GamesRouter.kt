@@ -8,7 +8,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import net.sportsday.models.OmittedGame
+import net.sportsday.models.Permission
 import net.sportsday.services.GamesService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.MessageResponse
@@ -20,109 +22,53 @@ import net.sportsday.utils.respondOrInternalError
  */
 fun Route.gamesRouter() {
     route("/games") {
-        /**
-         * Get all games
-         */
-        get {
-            val games = GamesService.getAll(
-                call.request.queryParameters["filter"] == "true",
-            )
+        withPermission(Permission.Game.Read) {
 
-            call.respond(
-                HttpStatusCode.OK,
-                DataResponse(games.getOrDefault(listOf())),
-            )
-        }
-
-        /**
-         * Create new game
-         */
-        post {
-            val requestBody = call.receive<OmittedGame>()
-
-            GamesService
-                .create(requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "created game",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        route("/{id?}") {
             /**
-             * Get game by id
+             * Get all games
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val games = GamesService.getAll(
+                    call.request.queryParameters["filter"] == "true",
+                )
 
-                GamesService
-                    .getById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataResponse(it),
-                        )
-                    }
+                call.respond(
+                    HttpStatusCode.OK,
+                    DataResponse(games.getOrDefault(listOf())),
+                )
             }
 
-            /**
-             * Update game
-             */
-            put {
-                val id = call.parameters["id"]?.toIntOrNull()
-                    ?: throw BadRequestException("invalid id parameter")
-                val requestBody = call.receive<OmittedGame>()
-
-                GamesService
-                    .update(id, requestBody)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "updated game",
-                                it,
-                            ),
-                        )
-                    }
-            }
-
-            /**
-             * Delete game
-             */
-            delete {
-                val id =
-                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-                GamesService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            MessageResponse(
-                                "deleted game",
-                            ),
-                        )
-                    }
-            }
-
-            route("/matches") {
+            withPermission(Permission.Game.Write) {
                 /**
-                 * Get matches
+                 * Create new game
+                 */
+                post {
+                    val requestBody = call.receive<OmittedGame>()
+
+                    GamesService
+                        .create(requestBody)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataMessageResponse(
+                                    "created game",
+                                    it,
+                                ),
+                            )
+                        }
+                }
+            }
+
+            route("/{id?}") {
+                /**
+                 * Get game by id
                  */
                 get {
                     val id =
                         call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
                     GamesService
-                        .getMatches(
-                            id,
-                            call.request.queryParameters["restrict"] == "true",
-                        )
+                        .getById(id)
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
@@ -131,194 +77,273 @@ fun Route.gamesRouter() {
                         }
                 }
 
-                /**
-                 * Delete all matches
-                 */
-                delete {
-                    val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid id parameter")
+                withPermission(Permission.Game.Write) {
 
-                    GamesService
-                        .deleteAllMatches(id)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                MessageResponse(
-                                    "deleted matches",
-                                ),
-                            )
-                        }
-                }
-            }
-
-            route("/entries") {
-                /**
-                 * Get entries
-                 */
-                get {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-                    GamesService
-                        .getEntries(id)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataResponse(it),
-                            )
-                        }
-                }
-
-                /**
-                 * enter game
-                 */
-                post {
-                    val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid id parameter")
-                    val requestBody = call.receive<EntryRequest>()
-
-                    GamesService
-                        .enterGame(id, requestBody.teamIds)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "entered game",
-                                    it,
-                                ),
-                            )
-                        }
-                }
-
-                /**
-                 * leave game
-                 */
-                delete("/{teamId}") {
-                    val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid id parameter")
-                    val teamId = call.parameters["teamId"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid teamId parameter")
-
-                    GamesService
-                        .cancelEntry(id, teamId)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "left game",
-                                    it,
-                                ),
-                            )
-                        }
-                }
-            }
-
-            route("/tournament") {
-                /**
-                 * Make tournament tree
-                 */
-                post {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull()
+                    /**
+                     * Update game
+                     */
+                    put {
+                        val id = call.parameters["id"]?.toIntOrNull()
                             ?: throw BadRequestException("invalid id parameter")
-                    val parent = call.receive<TournamentTreeCreateRequest>()
+                        val requestBody = call.receive<OmittedGame>()
 
-                    GamesService
-                        .makeTournamentTree(id, parent.parentId)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "made tournament tree",
-                                    it,
-                                ),
-                            )
-                        }
+                        GamesService
+                            .update(id, requestBody)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "updated game",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
+
+                    /**
+                     * Delete game
+                     */
+                    delete {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        GamesService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    MessageResponse(
+                                        "deleted game",
+                                    ),
+                                )
+                            }
+                    }
                 }
 
-                /**
-                 * Update tournament tree recursively
-                 */
-                post("/update-tree") {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull()
-                            ?: throw BadRequestException("invalid id parameter")
+                route("/matches") {
+                    /**
+                     * Get matches
+                     */
+                    get {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
 
-                    GamesService
-                        .updateTournamentTree(id)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                MessageResponse("updated tournament tree"),
+                        GamesService
+                            .getMatches(
+                                id,
+                                call.request.queryParameters["restrict"] == "true",
                             )
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataResponse(it),
+                                )
+                            }
+                    }
+
+                    withPermission(Permission.Game.Write) {
+
+                        /**
+                         * Delete all matches
+                         */
+                        delete {
+                            val id = call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+
+                            GamesService
+                                .deleteAllMatches(id)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        MessageResponse(
+                                            "deleted matches",
+                                        ),
+                                    )
+                                }
                         }
+                    }
                 }
 
-                /**
-                 * Get tournament result
-                 */
-                get("/result") {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                route("/entries") {
+                    /**
+                     * Get entries
+                     */
+                    get {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
 
-                    GamesService
-                        .getTournamentResult(id)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "calculated tournament result",
-                                    it,
-                                ),
-                            )
+                        GamesService
+                            .getEntries(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataResponse(it),
+                                )
+                            }
+                    }
+
+                    withPermission(Permission.Game.Write) {
+
+                        /**
+                         * enter game
+                         */
+                        post {
+                            val id = call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+                            val requestBody = call.receive<EntryRequest>()
+
+                            GamesService
+                                .enterGame(id, requestBody.teamIds)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "entered game",
+                                            it,
+                                        ),
+                                    )
+                                }
                         }
+
+                        /**
+                         * leave game
+                         */
+                        delete("/{teamId}") {
+                            val id = call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+                            val teamId = call.parameters["teamId"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid teamId parameter")
+
+                            GamesService
+                                .cancelEntry(id, teamId)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "left game",
+                                            it,
+                                        ),
+                                    )
+                                }
+                        }
+                    }
                 }
-            }
 
-            route("/league") {
-                /**
-                 * Make league matches
-                 */
-                post {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull()
-                            ?: throw BadRequestException("invalid id parameter")
-                    val location = call.receive<LocationRequest>()
+                route("/tournament") {
+                    withPermission(Permission.Game.Write) {
+                        /**
+                         * Make tournament tree
+                         */
+                        post {
+                            val id =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+                            val parent = call.receive<TournamentTreeCreateRequest>()
 
-                    GamesService
-                        .makeLeagueMatches(id, location.locationId)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "made league matches",
-                                    it,
-                                ),
-                            )
+                            GamesService
+                                .makeTournamentTree(id, parent.parentId)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "made tournament tree",
+                                            it,
+                                        ),
+                                    )
+                                }
                         }
+
+                        /**
+                         * Update tournament tree recursively
+                         */
+                        post("/update-tree") {
+                            val id =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+
+                            GamesService
+                                .updateTournamentTree(id)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        MessageResponse("updated tournament tree"),
+                                    )
+                                }
+                        }
+                    }
+
+                    /**
+                     * Get tournament result
+                     */
+                    get("/result") {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+
+                        GamesService
+                            .getTournamentResult(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "calculated tournament result",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
                 }
 
-                /**
-                 * Get league result
-                 */
-                get("/result") {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                route("/league") {
+                    withPermission(Permission.Game.Write) {
+                        /**
+                         * Make league matches
+                         */
+                        post {
+                            val id =
+                                call.parameters["id"]?.toIntOrNull()
+                                    ?: throw BadRequestException("invalid id parameter")
+                            val location = call.receive<LocationRequest>()
 
-                    GamesService
-                        .calculateLeagueResults(
-                            id,
-                            call.request.queryParameters["restrict"] == "true",
-                        )
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "calculated league results",
-                                    it,
-                                ),
-                            )
+                            GamesService
+                                .makeLeagueMatches(id, location.locationId)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "made league matches",
+                                            it,
+                                        ),
+                                    )
+                                }
                         }
+                    }
+
+                    /**
+                     * Get league result
+                     */
+                    get("/result") {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+
+                        GamesService
+                            .calculateLeagueResults(
+                                id,
+                                call.request.queryParameters["restrict"] == "true",
+                            )
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "calculated league results",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
                 }
             }
         }
