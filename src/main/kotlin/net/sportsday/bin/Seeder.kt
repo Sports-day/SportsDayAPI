@@ -294,6 +294,23 @@ fun main() {
                 println("Failed to generate. error: ${it.exceptionOrNull()?.message}")
             }
         }
+
+        //  role
+        val role = RoleEntity.new {
+            name = "root"
+            description = "this role has all permissions. Attention: Do not use this role in production."
+            default = true
+            createdAt = java.time.LocalDateTime.now()
+            updatedAt = java.time.LocalDateTime.now()
+        }
+
+        //  permission
+        Permission.getAll().forEach {
+            RolePermissionEntity.new {
+                this.role = role
+                this.permission = it.name
+            }
+        }
     }
 
     println("Seeder successfully executed.")
