@@ -19,6 +19,7 @@ object Users : IntIdTable("users") {
     val gender = enumerationByName<GenderType>("gender", 10).default(GenderType.MALE)
     val picture = reference("picture_id", Images, onDelete = ReferenceOption.SET_NULL).nullable()
     val classEntity = reference("class_id", Classes, onDelete = ReferenceOption.CASCADE).nullable()
+    val role = reference("role_id", Roles, onDelete = ReferenceOption.SET_NULL).nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -32,6 +33,7 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var gender by Users.gender
     var picture by ImageEntity optionalReferencedOn Users.picture
     var classEntity by ClassEntity optionalReferencedOn Users.classEntity
+    var role by RoleEntity optionalReferencedOn Users.role
     var createdAt by Users.createdAt
     var updatedAt by Users.updatedAt
     var teams by TeamEntity via TeamUsers
