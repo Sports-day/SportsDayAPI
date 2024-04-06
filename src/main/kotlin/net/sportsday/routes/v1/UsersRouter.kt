@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedUser
+import net.sportsday.services.RoleId
 import net.sportsday.services.UsersService
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
@@ -103,6 +104,35 @@ fun Route.usersRouter() {
 
                     UsersService
                         .getTeams(id)
+                        .respondOrInternalError {
+                            call.respond(HttpStatusCode.OK, DataResponse(it))
+                        }
+                }
+            }
+
+            route("/role") {
+                /**
+                 * Get all roles what user have
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                    UsersService
+                        .getRole(id)
+                        .respondOrInternalError {
+                            call.respond(HttpStatusCode.OK, DataResponse(it))
+                        }
+                }
+
+                /**
+                 * Set role to user
+                 */
+                post {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                    val roleId = call.receive<RoleId>()
+
+                    UsersService
+                        .setRole(id, roleId.id)
                         .respondOrInternalError {
                             call.respond(HttpStatusCode.OK, DataResponse(it))
                         }

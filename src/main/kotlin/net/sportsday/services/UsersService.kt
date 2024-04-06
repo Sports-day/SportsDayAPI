@@ -1,6 +1,7 @@
 package net.sportsday.services
 
 import io.ktor.server.plugins.*
+import kotlinx.serialization.Serializable
 import net.sportsday.models.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
@@ -83,6 +84,28 @@ object UsersService {
         return Result.success(model)
     }
 
+    fun getRole(id: Int): Result<Role?> {
+        val model = transaction {
+            val user = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
+            user.role?.serializableModel()
+        }
+
+        return Result.success(model)
+    }
+
+    fun setRole(id: Int, roleId: Int): Result<Role> {
+        val model = transaction {
+            val user = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
+            val role = RoleEntity.findById(roleId) ?: throw NotFoundException("invalid role id")
+
+            user.role = role
+
+            role.serializableModel()
+        }
+
+        return Result.success(model)
+    }
+
     fun getTeams(id: Int): Result<List<Team>> {
         val models = transaction {
             val user = UserEntity.findById(id) ?: throw NotFoundException("invalid user id")
@@ -94,3 +117,8 @@ object UsersService {
         return Result.success(models)
     }
 }
+
+@Serializable
+data class RoleId(
+    val id: Int
+)
