@@ -45,6 +45,10 @@ fun Application.configureRouting() {
                 configurationRouter()
                 //  TeamTags
                 teamTagsRouter()
+                //  Roles
+                rolesRouter()
+                //  Permissions
+                permissionsRouter()
             }
         }
     }

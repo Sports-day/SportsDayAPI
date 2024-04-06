@@ -8,7 +8,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedTeam
 import net.sportsday.models.OmittedTeamUsers
+import net.sportsday.models.Permission
 import net.sportsday.services.TeamsService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.MessageResponse
@@ -21,61 +23,49 @@ import net.sportsday.utils.respondOrInternalError
 
 fun Route.teamsRouter() {
     route("/teams") {
-        /**
-         * Get all teams
-         */
-        get {
-            val teams = TeamsService.getAll()
-
-            call.respond(
-                HttpStatusCode.OK,
-                DataResponse(teams.getOrDefault(listOf())),
-            )
-        }
-
-        /**
-         * Create new team
-         */
-        post {
-            val requestBody = call.receive<OmittedTeam>()
-
-            TeamsService
-                .create(requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "created team",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.Team.Read) {
             /**
-             * Get specific team
+             * Get all teams
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val teams = TeamsService.getAll()
 
-                TeamsService
-                    .getById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataResponse(it),
-                        )
-                    }
+                call.respond(
+                    HttpStatusCode.OK,
+                    DataResponse(teams.getOrDefault(listOf())),
+                )
             }
 
-            route("/users") {
-                get {
-                    val id =
-                        call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            withPermission(Permission.Team.Write) {
+                /**
+                 * Create new team
+                 */
+                post {
+                    val requestBody = call.receive<OmittedTeam>()
 
                     TeamsService
-                        .getUsers(id)
+                        .create(requestBody)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataMessageResponse(
+                                    "created team",
+                                    it,
+                                ),
+                            )
+                        }
+                }
+            }
+
+            route("/{id?}") {
+                /**
+                 * Get specific team
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                    TeamsService
+                        .getById(id)
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
@@ -84,80 +74,100 @@ fun Route.teamsRouter() {
                         }
                 }
 
-                post {
-                    val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid id parameter")
-                    val omittedUsers = call.receive<OmittedTeamUsers>()
+                route("/users") {
+                    get {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-                    TeamsService
-                        .addUsers(id, omittedUsers.users)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "added users",
-                                    it,
-                                ),
-                            )
+                        TeamsService
+                            .getUsers(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataResponse(it),
+                                )
+                            }
+                    }
+
+                    withPermission(Permission.Team.Write) {
+                        post {
+                            val id = call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+                            val omittedUsers = call.receive<OmittedTeamUsers>()
+
+                            TeamsService
+                                .addUsers(id, omittedUsers.users)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "added users",
+                                            it,
+                                        ),
+                                    )
+                                }
                         }
+
+                        delete("/{userId?}") {
+                            val id = call.parameters["id"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid id parameter")
+                            val userId = call.parameters["userId"]?.toIntOrNull()
+                                ?: throw BadRequestException("invalid user id parameter")
+
+                            TeamsService
+                                .removeUser(id, userId)
+                                .respondOrInternalError {
+                                    call.respond(
+                                        HttpStatusCode.OK,
+                                        DataMessageResponse(
+                                            "removed user",
+                                            it,
+                                        ),
+                                    )
+                                }
+                        }
+                    }
                 }
 
-                delete("/{userId?}") {
-                    val id = call.parameters["id"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid id parameter")
-                    val userId = call.parameters["userId"]?.toIntOrNull()
-                        ?: throw BadRequestException("invalid user id parameter")
+                withPermission(Permission.Team.Write) {
+                    /**
+                     * Update team
+                     */
+                    put {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val requestBody = call.receive<OmittedTeam>()
 
-                    TeamsService
-                        .removeUser(id, userId)
-                        .respondOrInternalError {
-                            call.respond(
-                                HttpStatusCode.OK,
-                                DataMessageResponse(
-                                    "removed user",
-                                    it,
-                                ),
-                            )
-                        }
+                        TeamsService
+                            .update(id, requestBody)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "updated team",
+                                        it,
+                                    ),
+                                )
+                            }
+                    }
+
+                    /**
+                     * Delete team
+                     */
+                    delete {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        TeamsService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    MessageResponse("deleted team"),
+                                )
+                            }
+                    }
                 }
-            }
-
-            /**
-             * Update team
-             */
-            put {
-                val id =
-                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                val requestBody = call.receive<OmittedTeam>()
-
-                TeamsService
-                    .update(id, requestBody)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "updated team",
-                                it,
-                            ),
-                        )
-                    }
-            }
-
-            /**
-             * Delete team
-             */
-            delete {
-                val id =
-                    call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-
-                TeamsService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            MessageResponse("deleted team"),
-                        )
-                    }
             }
         }
     }

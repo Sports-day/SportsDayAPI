@@ -7,7 +7,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedClassModel
+import net.sportsday.models.Permission
 import net.sportsday.services.ClassesService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.MessageResponse
@@ -20,93 +22,104 @@ import net.sportsday.utils.respondOrInternalError
 
 fun Route.classesRouter() {
     route("/classes") {
-        /**
-         * Get all classes
-         */
-        get {
-            val classes = ClassesService.getAll()
-
-            call.respond(HttpStatusCode.OK, DataResponse(classes.getOrDefault(listOf())))
-        }
-
-        /**
-         * Create new class
-         */
-        post {
-            val omittedClass = call.receive<OmittedClassModel>()
-
-            ClassesService
-                .create(omittedClass)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataMessageResponse(
-                            "created class",
-                            it,
-                        ),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.Class.Read) {
             /**
-             * Get specific class
+             * Get all classes
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val classes = ClassesService.getAll()
 
-                ClassesService.getById(id)
-                    .respondOrInternalError {
-                        call.respond(HttpStatusCode.OK, DataResponse(it))
-                    }
+                call.respond(HttpStatusCode.OK, DataResponse(classes.getOrDefault(listOf())))
             }
 
-            route("/users") {
+            withPermission(Permission.Class.Write) {
+
                 /**
-                 * Get all users belonging to specific class
+                 * Create new class
                  */
-                get {
-                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                post {
+                    val omittedClass = call.receive<OmittedClassModel>()
 
                     ClassesService
-                        .getAllUsersOfClass(id)
+                        .create(omittedClass)
                         .respondOrInternalError {
                             call.respond(
                                 HttpStatusCode.OK,
-                                DataResponse(it),
+                                DataMessageResponse(
+                                    "created class",
+                                    it,
+                                ),
                             )
                         }
                 }
             }
 
-            /**
-             * Update class
-             */
-            put {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
-                val requestBody = call.receive<OmittedClassModel>()
+            route("/{id?}") {
+                /**
+                 * Get specific class
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-                ClassesService
-                    .update(id, requestBody)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "updated class",
-                                it,
-                            ),
-                        )
+                    ClassesService.getById(id)
+                        .respondOrInternalError {
+                            call.respond(HttpStatusCode.OK, DataResponse(it))
+                        }
+                }
+
+                route("/users") {
+                    /**
+                     * Get all users belonging to specific class
+                     */
+                    get {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        ClassesService
+                            .getAllUsersOfClass(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataResponse(it),
+                                )
+                            }
                     }
-            }
+                }
 
-            delete {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                withPermission(Permission.Class.Write) {
 
-                ClassesService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(HttpStatusCode.OK, MessageResponse("deleted class"))
+                    /**
+                     * Update class
+                     */
+                    put {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                        val requestBody = call.receive<OmittedClassModel>()
+
+                        ClassesService
+                            .update(id, requestBody)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "updated class",
+                                        it,
+                                    ),
+                                )
+                            }
                     }
+
+                    delete {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        ClassesService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(HttpStatusCode.OK, MessageResponse("deleted class"))
+                            }
+                    }
+                }
             }
         }
     }

@@ -7,7 +7,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedInformationModel
+import net.sportsday.models.Permission
 import net.sportsday.services.InformationService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataMessageResponse
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.MessageResponse
@@ -20,85 +22,92 @@ import net.sportsday.utils.respondOrInternalError
 
 fun Route.informationRouter() {
     route("/information") {
-        /**
-         * Get all information
-         */
-        get {
-            val information = InformationService.getAll()
-
-            call.respond(
-                HttpStatusCode.OK,
-                DataResponse(information.getOrDefault(listOf())),
-            )
-        }
-
-        /**
-         * Create new information
-         */
-        post {
-            val omittedInformation = call.receive<OmittedInformationModel>()
-
-            InformationService
-                .create(omittedInformation)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.Information.Read) {
             /**
-             * Get information by id
+             * Get all information
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+                val information = InformationService.getAll()
 
-                InformationService
-                    .getById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataResponse(it),
-                        )
-                    }
+                call.respond(
+                    HttpStatusCode.OK,
+                    DataResponse(information.getOrDefault(listOf())),
+                )
             }
 
-            /**
-             * Update information by id
-             */
-            put {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
-                val omittedInformation = call.receive<OmittedInformationModel>()
+            withPermission(Permission.Information.Write) {
+                /**
+                 * Create new information
+                 */
+                post {
+                    val omittedInformation = call.receive<OmittedInformationModel>()
 
-                InformationService
-                    .update(id, omittedInformation)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataMessageResponse(
-                                "updated information",
-                                it,
-                            ),
-                        )
-                    }
+                    InformationService
+                        .create(omittedInformation)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it),
+                            )
+                        }
+                }
             }
 
-            /**
-             * Delete information by id
-             */
-            delete {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+            route("/{id?}") {
+                /**
+                 * Get information by id
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
 
-                InformationService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            MessageResponse("delete information"),
-                        )
+                    InformationService
+                        .getById(id)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it),
+                            )
+                        }
+                }
+
+                withPermission(Permission.Information.Write) {
+
+                    /**
+                     * Update information by id
+                     */
+                    put {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+                        val omittedInformation = call.receive<OmittedInformationModel>()
+
+                        InformationService
+                            .update(id, omittedInformation)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    DataMessageResponse(
+                                        "updated information",
+                                        it,
+                                    ),
+                                )
+                            }
                     }
+
+                    /**
+                     * Delete information by id
+                     */
+                    delete {
+                        val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id")
+
+                        InformationService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    MessageResponse("delete information"),
+                                )
+                            }
+                    }
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package net.sportsday
 
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
+import net.sportsday.models.PermissionList
 import net.sportsday.models.initializeTables
 import net.sportsday.plugins.*
 import net.sportsday.utils.DatabaseManager
@@ -30,4 +31,6 @@ fun Application.module() {
     Logger
     //  Redis Manager
     RedisManager
+    //  Permission List
+    PermissionList
 }

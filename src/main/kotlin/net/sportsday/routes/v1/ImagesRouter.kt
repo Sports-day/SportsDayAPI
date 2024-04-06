@@ -7,7 +7,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import net.sportsday.models.OmittedImage
+import net.sportsday.models.Permission
 import net.sportsday.services.ImagesService
+import net.sportsday.services.withPermission
 import net.sportsday.utils.DataResponse
 import net.sportsday.utils.MessageResponse
 import net.sportsday.utils.respondOrInternalError
@@ -19,88 +21,95 @@ import net.sportsday.utils.respondOrInternalError
 
 fun Route.imagesRouter() {
     route("/images") {
-        /**
-         * Get all images
-         */
-        get {
-            val images = ImagesService.getAll()
-
-            call.respond(
-                HttpStatusCode.OK,
-                DataResponse(images.getOrDefault(listOf())),
-            )
-        }
-
-        /**
-         * Create new image
-         */
-        post {
-            val requestBody = call.receive<OmittedImage>()
-
-            ImagesService
-                .create(requestBody)
-                .respondOrInternalError {
-                    call.respond(
-                        HttpStatusCode.OK,
-                        DataResponse(it),
-                    )
-                }
-        }
-
-        route("/{id?}") {
+        withPermission(Permission.Image.Read) {
             /**
-             * Get image by id
+             * Get all images
              */
             get {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+                val images = ImagesService.getAll()
 
-                ImagesService
-                    .getById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            DataResponse(it),
-                        )
-                    }
+                call.respond(
+                    HttpStatusCode.OK,
+                    DataResponse(images.getOrDefault(listOf())),
+                )
             }
 
-            /**
-             * delete image by id
-             */
-            delete {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            withPermission(Permission.Image.Write) {
+                /**
+                 * Create new image
+                 */
+                post {
+                    val requestBody = call.receive<OmittedImage>()
 
-                ImagesService
-                    .deleteById(id)
-                    .respondOrInternalError {
-                        call.respond(
-                            HttpStatusCode.OK,
-                            MessageResponse("deleted image"),
-                        )
-                    }
+                    ImagesService
+                        .create(requestBody)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it),
+                            )
+                        }
+                }
             }
 
-            /**
-             * Get image file by id
-             */
-            get("/file") {
-                val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+            route("/{id?}") {
+                /**
+                 * Get image by id
+                 */
+                get {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
 
-                ImagesService
-                    .getImageFile(id)
-                    .respondOrInternalError {
-                        //  header
-                        call.response.header(
-                            HttpHeaders.ContentType,
-                            ContentType.Image.JPEG.toString(),
-                        )
+                    ImagesService
+                        .getById(id)
+                        .respondOrInternalError {
+                            call.respond(
+                                HttpStatusCode.OK,
+                                DataResponse(it),
+                            )
+                        }
+                }
 
-                        //  response
-                        call.respond(
-                            HttpStatusCode.OK,
-                            it,
-                        )
+                withPermission(Permission.Image.Write) {
+                    /**
+                     * delete image by id
+                     */
+                    delete {
+                        val id =
+                            call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                        ImagesService
+                            .deleteById(id)
+                            .respondOrInternalError {
+                                call.respond(
+                                    HttpStatusCode.OK,
+                                    MessageResponse("deleted image"),
+                                )
+                            }
                     }
+                }
+
+                /**
+                 * Get image file by id
+                 */
+                get("/file") {
+                    val id = call.parameters["id"]?.toIntOrNull() ?: throw BadRequestException("invalid id parameter")
+
+                    ImagesService
+                        .getImageFile(id)
+                        .respondOrInternalError {
+                            //  header
+                            call.response.header(
+                                HttpHeaders.ContentType,
+                                ContentType.Image.JPEG.toString(),
+                            )
+
+                            //  response
+                            call.respond(
+                                HttpStatusCode.OK,
+                                it,
+                            )
+                        }
+                }
             }
         }
     }

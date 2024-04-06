@@ -13,14 +13,17 @@ CREATE TABLE `users` (
   `gender` varchar(10) NOT NULL DEFAULT 'MALE',
   `picture_id` int DEFAULT NULL,
   `class_id` int DEFAULT NULL,
+  `role_id` int DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `fk_users_picture_id__id` (`picture_id`),
   KEY `fk_users_class_id__id` (`class_id`),
+  KEY `fk_users_role_id__id` (`role_id`),
   CONSTRAINT `fk_users_class_id__id` FOREIGN KEY (`class_id`) REFERENCES `classes` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  CONSTRAINT `fk_users_picture_id__id` FOREIGN KEY (`picture_id`) REFERENCES `images` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
+  CONSTRAINT `fk_users_picture_id__id` FOREIGN KEY (`picture_id`) REFERENCES `images` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
+  CONSTRAINT `fk_users_role_id__id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
@@ -36,6 +39,7 @@ CREATE TABLE `users` (
 | gender | varchar(10) | MALE | false |  |  |  |  |
 | picture_id | int |  | true |  |  | [images](images.md) |  |
 | class_id | int |  | true |  |  | [classes](classes.md) |  |
+| role_id | int |  | true |  |  | [roles](roles.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |
 
@@ -45,6 +49,7 @@ CREATE TABLE `users` (
 | ---- | ---- | ---------- |
 | fk_users_class_id__id | FOREIGN KEY | FOREIGN KEY (class_id) REFERENCES classes (id) |
 | fk_users_picture_id__id | FOREIGN KEY | FOREIGN KEY (picture_id) REFERENCES images (id) |
+| fk_users_role_id__id | FOREIGN KEY | FOREIGN KEY (role_id) REFERENCES roles (id) |
 | PRIMARY | PRIMARY KEY | PRIMARY KEY (id) |
 | users_email_unique | UNIQUE | UNIQUE KEY users_email_unique (email) |
 
@@ -54,6 +59,7 @@ CREATE TABLE `users` (
 | ---- | ---------- |
 | fk_users_class_id__id | KEY fk_users_class_id__id (class_id) USING BTREE |
 | fk_users_picture_id__id | KEY fk_users_picture_id__id (picture_id) USING BTREE |
+| fk_users_role_id__id | KEY fk_users_role_id__id (role_id) USING BTREE |
 | PRIMARY | PRIMARY KEY (id) USING BTREE |
 | users_email_unique | UNIQUE KEY users_email_unique (email) USING BTREE |
 
