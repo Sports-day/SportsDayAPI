@@ -5,6 +5,7 @@ import net.sportsday.services.GamesService
 import net.sportsday.utils.DatabaseManager
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
 
 /**
  * Created by testusuke on 2023/09/07
@@ -310,6 +311,28 @@ fun main() {
                 this.role = role
                 this.permission = it.name
             }
+        }
+
+        //  TeamTag
+        TeamTagEntity.new {
+            name = "バスケットボール晴天時"
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
+        }
+        TeamTagEntity.new {
+            name = "バスケットボール雨天時"
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
+        }
+        TeamTagEntity.new {
+            name = "バレーボール晴天時"
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
+        }
+        TeamTagEntity.new {
+            name = "バレーボール雨天時"
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
         }
     }
 
