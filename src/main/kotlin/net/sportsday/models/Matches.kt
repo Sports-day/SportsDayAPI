@@ -25,7 +25,7 @@ object Matches : IntIdTable("matches") {
     val result = enumerationByName<MatchResult>("result", 32).default(MatchResult.DRAW)
     val status = enumerationByName<MatchStatus>("status", 32)
     val note = text("note").nullable()
-    val judge = varchar("judge", 64).nullable()
+    val judgeTeam = reference("judge_team_id", Teams, onDelete = null).nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -44,7 +44,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
     var result by Matches.result
     var status by Matches.status
     var note by Matches.note
-    var judge by Matches.judge
+    var judgeTeam by TeamEntity optionalReferencedOn Matches.judgeTeam
     var createdAt by Matches.createdAt
     var updatedAt by Matches.updatedAt
 
@@ -66,7 +66,7 @@ class MatchEntity(id: EntityID<Int>) : IntEntity(id) {
             result,
             status,
             note,
-            judge,
+            judgeTeam?.id?.value,
             parents.toList().map { it.id.value },
             children.toList().map { it.id.value },
             createdAt.toString(),
@@ -116,7 +116,7 @@ data class Match(
     val result: MatchResult,
     val status: MatchStatus,
     val note: String?,
-    val judge: String?,
+    val judgeTeamId: Int?,
     val parents: List<Int>,
     val children: List<Int>,
     val createdAt: String,
@@ -136,5 +136,5 @@ data class OmittedMatch(
     val result: MatchResult,
     val status: MatchStatus,
     val note: String?,
-    val judge: String?,
+    val judgeTeamId: Int?,
 )

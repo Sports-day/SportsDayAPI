@@ -45,6 +45,9 @@ object MatchesService {
             val rightTeam = omittedMatch.rightTeamId?.let {
                 TeamEntity.findById(it) ?: throw NotFoundException("invalid right team id")
             }
+            val judgeTeam = omittedMatch.judgeTeamId?.let {
+                TeamEntity.findById(it) ?: throw NotFoundException("invalid judge team id")
+            }
 
             //  update
             match.location = location
@@ -58,7 +61,7 @@ object MatchesService {
             match.result = omittedMatch.result
             match.status = omittedMatch.status
             match.note = omittedMatch.note
-            match.judge = omittedMatch.judge
+            match.judgeTeam = judgeTeam
 
             match.updatedAt = LocalDateTime.now()
 
