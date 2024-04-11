@@ -190,8 +190,8 @@
 <text text-anchor="start" x="405" y="-1033.9" font-family="Arial" font-size="14.00" fill="#000000">note    </text>
 <text text-anchor="start" x="466.4432" y="-1033.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="398,-992.5 398,-1022.5 607,-1022.5 607,-992.5 398,-992.5"/>
-<text text-anchor="start" x="405" y="-1003.9" font-family="Arial" font-size="14.00" fill="#000000">judge    </text>
-<text text-anchor="start" x="473.4418" y="-1003.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(64)]</text>
+<text text-anchor="start" x="405" y="-1003.9" font-family="Arial" font-size="14.00" fill="#000000">judge_team_id    </text>
+<text text-anchor="start" x="531.0126" y="-1003.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
 <polygon fill="none" stroke="#000000" points="398,-962.5 398,-992.5 607,-992.5 607,-962.5 398,-962.5"/>
 <text text-anchor="start" x="405" y="-973.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
 <text text-anchor="start" x="505.3422" y="-973.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
