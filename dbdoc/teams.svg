@@ -65,7 +65,7 @@
 <text text-anchor="start" x="353.2468" y="-53.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
 </g>
 <!-- teams&#45;&gt;classes -->
-<g id="edge5" class="edge">
+<g id="edge6" class="edge">
 <title>teams:class&#45;&gt;classes:id</title>
 <path fill="none" stroke="#000000" d="M397.9728,-456.7216C345.5367,-447.8603 383.4031,-365.2506 408,-307 416.9252,-285.8633 436.0748,-292.1367 445,-271 461.1652,-232.7175 486.5556,-177.5 445,-177.5"/>
 <polygon fill="#000000" stroke="#000000" points="398.03,-456.7259 407.6517,-461.9865 403.015,-457.113 408,-457.5 408,-457.5 408,-457.5 403.015,-457.113 408.3483,-453.0135 398.03,-456.7259 398.03,-456.7259"/>
@@ -93,7 +93,7 @@
 <text text-anchor="start" x="660.2468" y="-68.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
 </g>
 <!-- teams&#45;&gt;team_tags -->
-<g id="edge6" class="edge">
+<g id="edge7" class="edge">
 <title>teams:team_tag&#45;&gt;team_tags:id</title>
 <path fill="none" stroke="#000000" d="M608.0152,-427.3132C768.022,-421.101 551.4193,-262.0099 549,-256 533.482,-217.4506 507.4444,-162.5 549,-162.5"/>
 <polygon fill="#000000" stroke="#000000" points="607.9983,-427.3134 597.916,-423.0008 602.9991,-427.4067 598,-427.5 598,-427.5 598,-427.5 602.9991,-427.4067 598.084,-431.9992 607.9983,-427.3134 607.9983,-427.3134"/>
@@ -166,8 +166,8 @@
 <text text-anchor="start" x="405" y="-823.9" font-family="Arial" font-size="14.00" fill="#000000">note    </text>
 <text text-anchor="start" x="466.4432" y="-823.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="398,-782.5 398,-812.5 607,-812.5 607,-782.5 398,-782.5"/>
-<text text-anchor="start" x="405" y="-793.9" font-family="Arial" font-size="14.00" fill="#000000">judge    </text>
-<text text-anchor="start" x="473.4418" y="-793.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(64)]</text>
+<text text-anchor="start" x="405" y="-793.9" font-family="Arial" font-size="14.00" fill="#000000">judge_team_id    </text>
+<text text-anchor="start" x="531.0126" y="-793.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
 <polygon fill="none" stroke="#000000" points="398,-752.5 398,-782.5 607,-782.5 607,-752.5 398,-752.5"/>
 <text text-anchor="start" x="405" y="-763.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
 <text text-anchor="start" x="505.3422" y="-763.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
@@ -177,13 +177,20 @@
 </g>
 <!-- matches&#45;&gt;teams -->
 <g id="edge2" class="edge">
+<title>matches:judge_team_id&#45;&gt;teams:id</title>
+<path fill="none" stroke="#000000" d="M616.9826,-796.3916C656.5136,-786.7973 638.125,-717.2609 607,-680 549.3791,-611.0199 465.6209,-712.9801 408,-644 380.5045,-611.0841 365.1111,-547.5 408,-547.5"/>
+<polygon fill="#000000" stroke="#000000" points="616.9389,-796.3964 606.5034,-793.0275 611.9695,-796.9482 607,-797.5 607,-797.5 607,-797.5 611.9695,-796.9482 607.4966,-801.9725 616.9389,-796.3964 616.9389,-796.3964"/>
+<text text-anchor="start" x="614.159" y="-807.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (judge_team_id) REFERENCES teams (id)</text>
+</g>
+<!-- matches&#45;&gt;teams -->
+<g id="edge3" class="edge">
 <title>matches:left_team&#45;&gt;teams:id</title>
 <path fill="none" stroke="#000000" d="M616.9626,-1005.6138C677.1779,-981.4866 651.3787,-733.1274 607,-680 549.3791,-611.0199 465.6209,-712.9801 408,-644 380.5045,-611.0841 365.1111,-547.5 408,-547.5"/>
 <polygon fill="#000000" stroke="#000000" points="616.8255,-1005.6397 606.1628,-1003.0785 611.9127,-1006.5698 607,-1007.5 607,-1007.5 607,-1007.5 611.9127,-1006.5698 607.8372,-1011.9215 616.8255,-1005.6397 616.8255,-1005.6397"/>
 <text text-anchor="start" x="614.387" y="-1017.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (left_team) REFERENCES teams (id)</text>
 </g>
 <!-- matches&#45;&gt;teams -->
-<g id="edge3" class="edge">
+<g id="edge4" class="edge">
 <title>matches:right_team&#45;&gt;teams:id</title>
 <path fill="none" stroke="#000000" d="M617.0519,-975.3584C670.4601,-951.0967 647.0652,-727.9634 607,-680 549.3791,-611.0199 465.6209,-712.9801 408,-644 380.5045,-611.0841 365.1111,-547.5 408,-547.5"/>
 <polygon fill="#000000" stroke="#000000" points="616.7805,-975.4162 606.0623,-973.0988 611.8902,-976.4581 607,-977.5 607,-977.5 607,-977.5 611.8902,-976.4581 607.9377,-981.9012 616.7805,-975.4162 616.7805,-975.4162"/>
@@ -205,7 +212,7 @@
 <text text-anchor="start" x="779.4306" y="-928.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
 </g>
 <!-- team_users&#45;&gt;teams -->
-<g id="edge4" class="edge">
+<g id="edge5" class="edge">
 <title>team_users:team&#45;&gt;teams:id</title>
 <path fill="none" stroke="#000000" d="M701.0408,-960.4363C650.5298,-937.9074 677.1827,-737.4062 659,-680 639.4244,-618.1962 662.8299,-547.5 598,-547.5"/>
 <polygon fill="#000000" stroke="#000000" points="701.208,-960.4708 710.0869,-966.9064 706.104,-961.4854 711,-962.5 711,-962.5 711,-962.5 706.104,-961.4854 711.9131,-958.0936 701.208,-960.4708 701.208,-960.4708"/>

@@ -19,7 +19,7 @@ CREATE TABLE `matches` (
   `result` varchar(32) NOT NULL DEFAULT 'DRAW',
   `status` varchar(32) NOT NULL,
   `note` text,
-  `judge` varchar(64) DEFAULT NULL,
+  `judge_team_id` int DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
   PRIMARY KEY (`id`),
@@ -28,7 +28,9 @@ CREATE TABLE `matches` (
   KEY `fk_matches_sport__id` (`sport`),
   KEY `fk_matches_left_team__id` (`left_team`),
   KEY `fk_matches_right_team__id` (`right_team`),
+  KEY `fk_matches_judge_team_id__id` (`judge_team_id`),
   CONSTRAINT `fk_matches_game__id` FOREIGN KEY (`game`) REFERENCES `games` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  CONSTRAINT `fk_matches_judge_team_id__id` FOREIGN KEY (`judge_team_id`) REFERENCES `teams` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_left_team__id` FOREIGN KEY (`left_team`) REFERENCES `teams` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_location__id` FOREIGN KEY (`location`) REFERENCES `locations` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
   CONSTRAINT `fk_matches_right_team__id` FOREIGN KEY (`right_team`) REFERENCES `teams` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT,
@@ -54,7 +56,7 @@ CREATE TABLE `matches` (
 | result | varchar(32) | DRAW | false |  |  |  |  |
 | status | varchar(32) |  | false |  |  |  |  |
 | note | text |  | true |  |  |  |  |
-| judge | varchar(64) |  | true |  |  |  |  |
+| judge_team_id | int |  | true |  |  | [teams](teams.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |
 
@@ -63,6 +65,7 @@ CREATE TABLE `matches` (
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_matches_game__id | FOREIGN KEY | FOREIGN KEY (game) REFERENCES games (id) |
+| fk_matches_judge_team_id__id | FOREIGN KEY | FOREIGN KEY (judge_team_id) REFERENCES teams (id) |
 | fk_matches_left_team__id | FOREIGN KEY | FOREIGN KEY (left_team) REFERENCES teams (id) |
 | fk_matches_location__id | FOREIGN KEY | FOREIGN KEY (location) REFERENCES locations (id) |
 | fk_matches_right_team__id | FOREIGN KEY | FOREIGN KEY (right_team) REFERENCES teams (id) |
@@ -74,6 +77,7 @@ CREATE TABLE `matches` (
 | Name | Definition |
 | ---- | ---------- |
 | fk_matches_game__id | KEY fk_matches_game__id (game) USING BTREE |
+| fk_matches_judge_team_id__id | KEY fk_matches_judge_team_id__id (judge_team_id) USING BTREE |
 | fk_matches_left_team__id | KEY fk_matches_left_team__id (left_team) USING BTREE |
 | fk_matches_location__id | KEY fk_matches_location__id (location) USING BTREE |
 | fk_matches_right_team__id | KEY fk_matches_right_team__id (right_team) USING BTREE |

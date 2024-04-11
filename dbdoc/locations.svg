@@ -70,8 +70,8 @@
 <text text-anchor="start" x="54" y="-366.9" font-family="Arial" font-size="14.00" fill="#000000">note    </text>
 <text text-anchor="start" x="115.4432" y="-366.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="47,-325.5 47,-355.5 256,-355.5 256,-325.5 47,-325.5"/>
-<text text-anchor="start" x="54" y="-336.9" font-family="Arial" font-size="14.00" fill="#000000">judge    </text>
-<text text-anchor="start" x="122.4418" y="-336.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(64)]</text>
+<text text-anchor="start" x="54" y="-336.9" font-family="Arial" font-size="14.00" fill="#000000">judge_team_id    </text>
+<text text-anchor="start" x="180.0126" y="-336.9" font-family="Arial" font-size="14.00" fill="#666666">[int]</text>
 <polygon fill="none" stroke="#000000" points="47,-295.5 47,-325.5 256,-325.5 256,-295.5 47,-295.5"/>
 <text text-anchor="start" x="54" y="-306.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
 <text text-anchor="start" x="154.3422" y="-306.9" font-family="Arial" font-size="14.00" fill="#666666">[datetime(6)]</text>
