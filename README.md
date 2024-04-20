@@ -16,19 +16,31 @@ SportsDayAPIは、各リソースへのアクセス、認証を行うREST APIで
 
 ## 環境変数
 
-| Name               | Description         |
-|--------------------|---------------------|
-| AZURE_AD_TENANT_ID | Azure AD テナントID     |
-| DATABASE_HOST      | データベースホスト           |
-| DATABASE_PORT      | データベースポート           |
-| DATABASE_USER      | データベースユーザー名         |
-| DATABASE_PASSWORD  | データベースパスワード         |
-| DATABASE_DB        | データベース名             |
-| DISCORD_WEBHOOK    | Discord Webhook URL |
-| REDIS_HOST         | Redis ホスト           |
-| ALLOWED_HOSTS      | 許可するホスト(CORS)       |
-| OUTPUT_REQUEST_LOG | リクエストログを出力するかどうか    |
-| OUTPUT_REDIS_LOG   | Redisログを出力するかどうか    |
+| Name                   | Description             |
+|------------------------|-------------------------|
+| JWT_SECRET             | JWTシークレット(32文字のランダム文字列) |
+| JWT_ISSUER             | JWT発行者名                 |
+| JWT_EXPIRE_MINUTE      | JWT有効期限(分)              |
+| JWT_REALMS             | JWTリアルム                 |
+| COOKIE_SECURE          | クッキーセキュアフラグ             |
+| OIDC_CLIENT_ID         | OIDCクライアントID            |
+| OIDC_CLIENT_SECRET     | OIDCクライアントシークレット        |
+| OIDC_TOKEN_ENDPOINT    | OIDCトークンエンドポイント         |
+| OIDC_JWKS_ENDPOINT     | OIDC JWKSエンドポイント        |
+| OIDC_USERINFO_ENDPOINT | OIDCユーザー情報エンドポイント       |
+| OIDC_ISSUER            | OIDC発行者名                |
+| OIDC_REDIRECT_URI      | OIDCリダイレクトURI           |
+| OIDC_SCOPE             | OIDCスコープ                |
+| DATABASE_HOST          | データベースホスト               |
+| DATABASE_PORT          | データベースポート               |
+| DATABASE_USER          | データベースユーザー名             |
+| DATABASE_PASSWORD      | データベースパスワード             |
+| DATABASE_DB            | データベース名                 |
+| DISCORD_WEBHOOK        | Discord Webhook URL     |
+| REDIS_HOST             | Redis ホスト               |
+| ALLOWED_HOSTS          | 許可するホスト(CORS)           |
+| OUTPUT_REQUEST_LOG     | リクエストログを出力するかどうか        |
+| OUTPUT_REDIS_LOG       | Redisログを出力するかどうか        |
 
 ## 開発
 
