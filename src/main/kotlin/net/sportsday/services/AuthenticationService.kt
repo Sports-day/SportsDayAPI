@@ -58,14 +58,20 @@ object AuthenticationService {
     fun getIsSecure(): Boolean = isSecure
 
     @OptIn(InternalAPI::class)
-    private suspend fun exchangeCodeForToken(code: String): TokenResponse {
+    private suspend fun exchangeCodeForToken(code: String, redirectURI: String): TokenResponse? {
+        //  split redirect url by space
+        val redirectUrlList = redirectUrl.split(" ")
+        //  get redirect url that matches with parameter
+        val matchedRedirectURI = redirectUrlList.firstOrNull { it == redirectURI }
+            ?: return null
+
         //  create client
         val client = HttpClient(CIO)
         //  get token from code
         val params = Parameters.build {
             append("grant_type", "authorization_code")
             append("code", code)
-            append("redirect_uri", redirectUrl)
+            append("redirect_uri", matchedRedirectURI)
             append("client_id", clientId)
             append("client_secret", clientSecret)
         }
@@ -138,9 +144,9 @@ object AuthenticationService {
         }
     }
 
-    suspend fun login(code: String): User? {
+    suspend fun login(code: String, redirectURI: String): User? {
         //  exchange code for token
-        val tokenResponse = exchangeCodeForToken(code)
+        val tokenResponse = exchangeCodeForToken(code, redirectURI) ?: return null
         val idToken = tokenResponse.idToken
         val accessToken = tokenResponse.accessToken
 
