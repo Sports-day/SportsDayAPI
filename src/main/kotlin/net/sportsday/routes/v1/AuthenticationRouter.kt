@@ -6,6 +6,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import net.sportsday.services.AuthenticationService
 import net.sportsday.services.UsersService
@@ -26,7 +27,7 @@ fun Route.authenticationRouter() {
 
             try {
                 //  login
-                val user = AuthenticationService.login(code.code)
+                val user = AuthenticationService.login(code.code, code.redirectUri)
 
                 if (user == null) {
                     call.respond(HttpStatusCode.Unauthorized, MessageResponse("Unauthorized"))
@@ -73,4 +74,6 @@ fun Route.authenticationRouter() {
 @Serializable
 data class OpenIDConnectCode(
     val code: String,
+    @SerialName("redirect_uri")
+    val redirectUri: String,
 )
