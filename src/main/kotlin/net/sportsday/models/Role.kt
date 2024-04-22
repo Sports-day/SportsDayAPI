@@ -1,6 +1,7 @@
 package net.sportsday.models
 
 import kotlinx.serialization.Serializable
+import net.sportsday.models.Permission.Companion.serialize
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -36,7 +37,7 @@ class RoleEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             description,
             default,
-            permissions.mapNotNull { PermissionList.getByName(it.permission) },
+            permissions.mapNotNull { PermissionList.getByName(it.permission)?.serialize() },
             createdAt.toString(),
             updatedAt.toString(),
         )
@@ -49,7 +50,7 @@ data class Role(
     val name: String,
     val description: String,
     val default: Boolean,
-    val permissions: List<Permission>,
+    val permissions: List<SerializablePermission>,
     val createdAt: String,
     val updatedAt: String,
 )
