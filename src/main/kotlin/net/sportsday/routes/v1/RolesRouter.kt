@@ -6,6 +6,7 @@ import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 import net.sportsday.models.OmittedRole
 import net.sportsday.models.Permission
 import net.sportsday.services.RolesService
@@ -115,10 +116,10 @@ fun Route.rolesRouter() {
                             val roleId =
                                 call.parameters["id"]?.toIntOrNull()
                                     ?: throw BadRequestException("invalid id parameter")
-                            val permissionName = call.receive<String>()
+                            val permissionRequest = call.receive<RolePermissionRequest>()
 
                             RolesService
-                                .addPermission(roleId, permissionName)
+                                .addPermission(roleId, permissionRequest.permission)
                                 .respondOrInternalError {
                                     call.respond(
                                         DataMessageResponse(
@@ -129,14 +130,15 @@ fun Route.rolesRouter() {
                                 }
                         }
 
-                        delete {
+                        delete("/{permission?}") {
                             val roleId =
                                 call.parameters["id"]?.toIntOrNull()
                                     ?: throw BadRequestException("invalid id parameter")
-                            val permissionName = call.receive<String>()
+                            val permission = call.parameters["permission"]
+                                ?: throw BadRequestException("invalid permission parameter")
 
                             RolesService
-                                .removePermission(roleId, permissionName)
+                                .removePermission(roleId, permission)
                                 .respondOrInternalError {
                                     call.respond(
                                         DataMessageResponse(
@@ -152,3 +154,8 @@ fun Route.rolesRouter() {
         }
     }
 }
+
+@Serializable
+data class RolePermissionRequest(
+    val permission: String,
+)
