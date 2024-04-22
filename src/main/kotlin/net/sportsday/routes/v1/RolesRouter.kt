@@ -130,14 +130,15 @@ fun Route.rolesRouter() {
                                 }
                         }
 
-                        delete {
+                        delete("/{permission?}") {
                             val roleId =
                                 call.parameters["id"]?.toIntOrNull()
                                     ?: throw BadRequestException("invalid id parameter")
-                            val permissionRequest = call.receive<RolePermissionRequest>()
+                            val permission = call.parameters["permission"]
+                                ?: throw BadRequestException("invalid permission parameter")
 
                             RolesService
-                                .removePermission(roleId, permissionRequest.permission)
+                                .removePermission(roleId, permission)
                                 .respondOrInternalError {
                                     call.respond(
                                         DataMessageResponse(
