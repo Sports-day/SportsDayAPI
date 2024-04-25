@@ -20,10 +20,17 @@ import kotlinx.serialization.json.Json
 import net.sportsday.models.*
 import net.sportsday.utils.Email
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.geom.AffineTransform
+import java.awt.image.AffineTransformOp
+import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.net.URL
 import java.security.interfaces.RSAPublicKey
 import java.time.LocalDateTime
 import java.util.*
+import javax.imageio.ImageIO
+import kotlin.math.roundToInt
 
 /**
  * Created by testusuke on 2024/03/25
@@ -139,7 +146,34 @@ object AuthenticationService {
                 return null
             }
 
-            val bytes = response.readBytes()
+            val originalImage = response.readBytes()
+            //  resize image
+            val width = 64
+
+            //  read image
+            val original = ImageIO.read(ByteArrayInputStream(originalImage)) ?: throw Exception("File is invalid")
+            val originalWidth = original.width.toDouble()
+            val originalHeight = original.height.toDouble()
+
+            //  resize
+            val resizedWidth = width.toDouble()
+            val resizedHeight = width * originalHeight / originalWidth
+            val resized = BufferedImage(resizedWidth.roundToInt(), resizedHeight.roundToInt(), original.type)
+
+            //  image transformer
+            val transformer = AffineTransformOp(
+                AffineTransform.getScaleInstance(resizedWidth / originalWidth, resizedHeight / originalHeight),
+                AffineTransformOp.TYPE_BILINEAR
+            )
+
+            // transform
+            transformer.filter(original, resized)
+
+            val result = ByteArrayOutputStream()
+            ImageIO.write(resized, "jpg", result)
+
+            //  convert to base64
+            val bytes = result.toByteArray()
             Base64.getEncoder().encodeToString(bytes)
         }
     }
@@ -173,17 +207,16 @@ object AuthenticationService {
 
             //  create user if not found
             if (user == null) {
-                val pictureEntity = null
-//                    if (picture != null) {
-//                    //  create picture entity
-//                    val createdPictureEntity = ImageEntity.new {
-//                        this.data = picture
-//                        this.createdAt = LocalDateTime.now()
-//                    }
-//                    createdPictureEntity
-//                } else {
-//                    null
-//                }
+                val pictureEntity = if (picture != null) {
+                    //  create picture entity
+                    val createdPictureEntity = ImageEntity.new {
+                        this.data = picture
+                        this.createdAt = LocalDateTime.now()
+                    }
+                    createdPictureEntity
+                } else {
+                    null
+                }
 
                 //  create user
                 val createdUserEntity = UserEntity.new {
@@ -199,17 +232,17 @@ object AuthenticationService {
                 user.name = userinfo.name
 
                 //  if there is changes in picture, update it
-//                if (picture != null) {
-//                    if (user.picture == null) {
-//                        val createdPictureEntity = ImageEntity.new {
-//                            this.data = picture
-//                            this.createdAt = LocalDateTime.now()
-//                        }
-//                        user.picture = createdPictureEntity
-//                    } else {
-//                        user.picture!!.data = picture
-//                    }
-//                }
+                if (picture != null) {
+                    if (user.picture == null) {
+                        val createdPictureEntity = ImageEntity.new {
+                            this.data = picture
+                            this.createdAt = LocalDateTime.now()
+                        }
+                        user.picture = createdPictureEntity
+                    } else {
+                        user.picture!!.data = picture
+                    }
+                }
 
                 //  update timestamp
                 user.updatedAt = LocalDateTime.now()
