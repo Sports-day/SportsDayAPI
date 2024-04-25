@@ -173,16 +173,17 @@ object AuthenticationService {
 
             //  create user if not found
             if (user == null) {
-                val pictureEntity = if (picture != null) {
-                    //  create picture entity
-                    val createdPictureEntity = ImageEntity.new {
-                        this.data = picture
-                        this.createdAt = LocalDateTime.now()
-                    }
-                    createdPictureEntity
-                } else {
-                    null
-                }
+                val pictureEntity = null
+//                    if (picture != null) {
+//                    //  create picture entity
+//                    val createdPictureEntity = ImageEntity.new {
+//                        this.data = picture
+//                        this.createdAt = LocalDateTime.now()
+//                    }
+//                    createdPictureEntity
+//                } else {
+//                    null
+//                }
 
                 //  create user
                 val createdUserEntity = UserEntity.new {
