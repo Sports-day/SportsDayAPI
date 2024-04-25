@@ -198,17 +198,17 @@ object AuthenticationService {
                 user.name = userinfo.name
 
                 //  if there is changes in picture, update it
-                if (picture != null) {
-                    if (user.picture == null) {
-                        val createdPictureEntity = ImageEntity.new {
-                            this.data = picture
-                            this.createdAt = LocalDateTime.now()
-                        }
-                        user.picture = createdPictureEntity
-                    } else {
-                        user.picture!!.data = picture
-                    }
-                }
+//                if (picture != null) {
+//                    if (user.picture == null) {
+//                        val createdPictureEntity = ImageEntity.new {
+//                            this.data = picture
+//                            this.createdAt = LocalDateTime.now()
+//                        }
+//                        user.picture = createdPictureEntity
+//                    } else {
+//                        user.picture!!.data = picture
+//                    }
+//                }
 
                 //  update timestamp
                 user.updatedAt = LocalDateTime.now()
