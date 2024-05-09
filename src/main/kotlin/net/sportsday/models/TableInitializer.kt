@@ -27,6 +27,7 @@ val tables = listOf(
     Tags,
     Roles,
     RolePermissions,
+    TeamTags,
 )
 
 fun initializeTables(migrate: Boolean = false) {
