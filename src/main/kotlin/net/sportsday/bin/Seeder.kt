@@ -148,15 +148,57 @@ fun main() {
             },
         )
 
+        //  tag
+        val tags = listOf(
+            TagEntity.new {
+                name = "晴天時"
+                enabled = true
+                createdAt = LocalDateTime.now()
+                updatedAt = LocalDateTime.now()
+            },
+            TagEntity.new {
+                name = "雨天時"
+                enabled = true
+                createdAt = LocalDateTime.now()
+                updatedAt = LocalDateTime.now()
+            },
+        )
+
+        //  sports
+        val sports = listOf(
+            SportEntity.new {
+                name = "バスケットボール晴天時"
+                description = "バスケットボール晴天時"
+                iconImage = null
+                weight = 10
+                ruleId = 1
+                tag = tags[0]
+                createdAt = LocalDateTime.now()
+                updatedAt = LocalDateTime.now()
+            },
+            SportEntity.new {
+                name = "バスケットボール雨天時"
+                description = "バスケットボール雨天時"
+                iconImage = null
+                weight = 5
+                ruleId = 1
+                tag = tags[1]
+                createdAt = LocalDateTime.now()
+                updatedAt = LocalDateTime.now()
+            },
+        )
+
         //  TeamTag
         val teamTags = listOf(
             TeamTagEntity.new {
                 name = "バスケットボール晴天時"
+                sport = sports[0]
                 createdAt = LocalDateTime.now()
                 updatedAt = LocalDateTime.now()
             },
             TeamTagEntity.new {
                 name = "バスケットボール雨天時"
+                sport = sports[1]
                 createdAt = LocalDateTime.now()
                 updatedAt = LocalDateTime.now()
             }
@@ -260,46 +302,6 @@ fun main() {
                 classEntity = classes[2]
                 this.users = SizedCollection(users[8])
                 teamTag = teamTags[1]
-                createdAt = LocalDateTime.now()
-                updatedAt = LocalDateTime.now()
-            },
-        )
-
-        //  tag
-        val tags = listOf(
-            TagEntity.new {
-                name = "晴天時"
-                enabled = true
-                createdAt = LocalDateTime.now()
-                updatedAt = LocalDateTime.now()
-            },
-            TagEntity.new {
-                name = "雨天時"
-                enabled = true
-                createdAt = LocalDateTime.now()
-                updatedAt = LocalDateTime.now()
-            },
-        )
-
-        //  sports
-        val sports = listOf(
-            SportEntity.new {
-                name = "バスケットボール晴天時"
-                description = "バスケットボール晴天時"
-                iconImage = null
-                weight = 10
-                ruleId = 1
-                tag = tags[0]
-                createdAt = LocalDateTime.now()
-                updatedAt = LocalDateTime.now()
-            },
-            SportEntity.new {
-                name = "バスケットボール雨天時"
-                description = "バスケットボール雨天時"
-                iconImage = null
-                weight = 5
-                ruleId = 1
-                tag = tags[1]
                 createdAt = LocalDateTime.now()
                 updatedAt = LocalDateTime.now()
             },
