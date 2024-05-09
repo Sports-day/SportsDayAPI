@@ -5,6 +5,7 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.javatime.datetime
 
 /**
@@ -14,6 +15,7 @@ import org.jetbrains.exposed.sql.javatime.datetime
 
 object TeamTags : IntIdTable("team_tags") {
     val name = varchar("name", 64)
+    val sport = reference("sport", Sports, onDelete = ReferenceOption.SET_NULL).nullable()
     val createdAt = datetime("created_at")
     val updatedAt = datetime("updated_at")
 }
@@ -22,6 +24,7 @@ class TeamTagEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<TeamTagEntity>(TeamTags)
 
     var name by TeamTags.name
+    var sport by SportEntity optionalReferencedOn TeamTags.sport
     var createdAt by TeamTags.createdAt
     var updatedAt by TeamTags.updatedAt
     val teams by TeamEntity optionalReferrersOn Teams.teamTag
@@ -30,6 +33,7 @@ class TeamTagEntity(id: EntityID<Int>) : IntEntity(id) {
         return TeamTag(
             id.value,
             name,
+            sport?.id?.value,
             createdAt.toString(),
             updatedAt.toString(),
         )
@@ -40,6 +44,7 @@ class TeamTagEntity(id: EntityID<Int>) : IntEntity(id) {
 data class TeamTag(
     val id: Int,
     val name: String,
+    val sportId: Int?,
     val createdAt: String,
     val updatedAt: String,
 )
@@ -47,4 +52,5 @@ data class TeamTag(
 @Serializable
 data class OmittedTeamTag(
     val name: String,
+    val sportId: Int?,
 )

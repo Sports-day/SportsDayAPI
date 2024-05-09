@@ -2,6 +2,7 @@ package net.sportsday.services
 
 import io.ktor.server.plugins.*
 import net.sportsday.models.OmittedTeamTag
+import net.sportsday.models.SportEntity
 import net.sportsday.models.TeamTag
 import net.sportsday.models.TeamTagEntity
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -42,8 +43,13 @@ object TeamTagsService {
 
     fun create(omittedTeamTag: OmittedTeamTag): Result<TeamTag> {
         val model = transaction {
+            val sport = omittedTeamTag.sportId?.let {
+                SportEntity.findById(it) ?: throw NotFoundException("invalid sport id")
+            }
+
             val teamTag = TeamTagEntity.new {
                 this.name = omittedTeamTag.name
+                this.sport = sport
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
             }
@@ -57,8 +63,12 @@ object TeamTagsService {
     fun edit(id: Int, omittedTeamTag: OmittedTeamTag): Result<TeamTag> {
         val model = transaction {
             val teamTag = TeamTagEntity.findById(id) ?: throw NotFoundException("TeamTag not found.")
+            val sport = omittedTeamTag.sportId?.let {
+                SportEntity.findById(it) ?: throw NotFoundException("invalid sport id")
+            }
 
             teamTag.name = omittedTeamTag.name
+            teamTag.sport = sport
             teamTag.updatedAt = LocalDateTime.now()
 
             teamTag.serializableModel()

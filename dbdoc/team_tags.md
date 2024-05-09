@@ -9,9 +9,12 @@
 CREATE TABLE `team_tags` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
+  `sport` int DEFAULT NULL,
   `created_at` datetime(6) NOT NULL,
   `updated_at` datetime(6) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `fk_team_tags_sport__id` (`sport`),
+  CONSTRAINT `fk_team_tags_sport__id` FOREIGN KEY (`sport`) REFERENCES `sports` (`id`) ON DELETE SET NULL ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=[Redacted by tbls] DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 
@@ -23,6 +26,7 @@ CREATE TABLE `team_tags` (
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
 | id | int |  | false | auto_increment | [teams](teams.md) |  |  |
 | name | varchar(64) |  | false |  |  |  |  |
+| sport | int |  | true |  |  | [sports](sports.md) |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 | updated_at | datetime(6) |  | false |  |  |  |  |
 
@@ -30,12 +34,14 @@ CREATE TABLE `team_tags` (
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
+| fk_team_tags_sport__id | FOREIGN KEY | FOREIGN KEY (sport) REFERENCES sports (id) |
 | PRIMARY | PRIMARY KEY | PRIMARY KEY (id) |
 
 ## Indexes
 
 | Name | Definition |
 | ---- | ---------- |
+| fk_team_tags_sport__id | KEY fk_team_tags_sport__id (sport) USING BTREE |
 | PRIMARY | PRIMARY KEY (id) USING BTREE |
 
 ## Relations

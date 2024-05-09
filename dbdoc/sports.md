@@ -30,7 +30,7 @@ CREATE TABLE `sports` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
-| id | int |  | false | auto_increment | [games](games.md) [matches](matches.md) |  |  |
+| id | int |  | false | auto_increment | [games](games.md) [matches](matches.md) [team_tags](team_tags.md) |  |  |
 | name | varchar(64) |  | false |  |  |  |  |
 | description | text |  | false |  |  |  |  |
 | icon_image | int |  | true |  |  | [images](images.md) |  |
