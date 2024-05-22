@@ -431,10 +431,23 @@ object GamesService {
 
             //  convert rate
             leagueTeamResults.values.forEach {
-                it.score /= it.matchCount.toDouble()
-                it.goal /= it.matchCount.toDouble()
-                it.loseGoal /= it.matchCount.toDouble()
-                it.goalDiff /= it.matchCount.toDouble()
+                //  print each team result
+                val matchCount = unfilteredMatches.count { match ->
+                    match.leftTeamId == it.teamId || match.rightTeamId == it.teamId
+                }
+
+                if (matchCount > 0) {
+                    it.score /= matchCount.toDouble()
+                    it.goal /= matchCount.toDouble()
+                    it.loseGoal /= matchCount.toDouble()
+                    it.goalDiff /= matchCount.toDouble()
+                }
+                else {
+                    it.score = -999.0
+                    it.goal = -999.0
+                    it.loseGoal = -999.0
+                    it.goalDiff = -999.0
+                }
             }
 
             var lastResult: LeagueTeamResult? = null
