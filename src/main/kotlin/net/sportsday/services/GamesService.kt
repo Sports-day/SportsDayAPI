@@ -441,8 +441,7 @@ object GamesService {
                     it.goal /= matchCount.toDouble()
                     it.loseGoal /= matchCount.toDouble()
                     it.goalDiff /= matchCount.toDouble()
-                }
-                else {
+                } else {
                     it.score = -999.0
                     it.goal = -999.0
                     it.loseGoal = -999.0
