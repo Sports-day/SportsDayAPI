@@ -2,6 +2,7 @@ package net.sportsday.services
 
 import io.ktor.server.plugins.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import net.sportsday.models.*
 import net.sportsday.utils.Cache
 import net.sportsday.utils.configuration.Key
@@ -373,10 +374,11 @@ object GamesService {
                     win = 0,
                     lose = 0,
                     draw = 0,
-                    score = 0,
-                    goal = 0,
-                    loseGoal = 0,
-                    goalDiff = 0,
+                    score = 0.0,
+                    goal = 0.0,
+                    loseGoal = 0.0,
+                    goalDiff = 0.0,
+                    matchCount = 0,
                 )
             }
 
@@ -421,6 +423,18 @@ object GamesService {
                 rightTeamResult.goal += match.rightScore
                 rightTeamResult.loseGoal += match.leftScore
                 rightTeamResult.goalDiff += match.rightScore - match.leftScore
+
+                //  match count
+                leftTeamResult.matchCount += 1
+                rightTeamResult.matchCount += 1
+            }
+
+            //  convert rate
+            leagueTeamResults.values.forEach {
+                it.score /= it.matchCount.toDouble()
+                it.goal /= it.matchCount.toDouble()
+                it.loseGoal /= it.matchCount.toDouble()
+                it.goalDiff /= it.matchCount.toDouble()
             }
 
             var lastResult: LeagueTeamResult? = null
@@ -662,10 +676,13 @@ data class LeagueTeamResult(
     //  0 point
     var draw: Int,
     //  total score
-    var score: Int,
-    var goal: Int,
-    var loseGoal: Int,
-    var goalDiff: Int,
+    var score: Double,
+    var goal: Double,
+    var loseGoal: Double,
+    var goalDiff: Double,
+    //  ignore
+    @Transient
+    var matchCount: Int = 0
 )
 
 @Serializable
