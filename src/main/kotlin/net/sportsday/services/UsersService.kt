@@ -45,13 +45,11 @@ object UsersService {
             val classEntity = omittedUser.classId?.let {
                 ClassEntity.findById(it) ?: throw NotFoundException("invalid class id")
             }
-            val pictureEntity = omittedUser.pictureId?.let { ImageEntity.findById(it) }
 
             val user = UserEntity.new {
                 this.name = omittedUser.name
                 this.email = omittedUser.email
                 this.gender = omittedUser.gender
-                this.picture = pictureEntity
                 this.classEntity = classEntity
                 this.createdAt = LocalDateTime.now()
                 this.updatedAt = LocalDateTime.now()
@@ -69,12 +67,10 @@ object UsersService {
             val classEntity = omittedUser.classId?.let {
                 ClassEntity.findById(it) ?: throw NotFoundException("invalid class id")
             }
-            val pictureEntity = omittedUser.pictureId?.let { ImageEntity.findById(it) }
 
             userEntity.name = omittedUser.name
             userEntity.email = omittedUser.email
             userEntity.gender = omittedUser.gender
-            userEntity.picture = pictureEntity
             userEntity.classEntity = classEntity
             userEntity.updatedAt = LocalDateTime.now()
 
