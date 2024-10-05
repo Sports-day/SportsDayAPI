@@ -22,7 +22,7 @@
 | [team_users](team_users.md) | 2 |  | BASE TABLE |
 | [teams](teams.md) | 7 |  | BASE TABLE |
 | [tournament_path](tournament_path.md) | 2 |  | BASE TABLE |
-| [users](users.md) | 9 |  | BASE TABLE |
+| [users](users.md) | 8 |  | BASE TABLE |
 
 ## Relations
 

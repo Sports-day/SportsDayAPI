@@ -20,7 +20,7 @@ CREATE TABLE `images` (
 
 | Name | Type | Default | Nullable | Extra Definition | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | ---------------- | -------- | ------- | ------- |
-| id | int |  | false | auto_increment | [sports](sports.md) [users](users.md) |  |  |
+| id | int |  | false | auto_increment | [sports](sports.md) |  |  |
 | data | text |  | false |  |  |  |  |
 | created_at | datetime(6) |  | false |  |  |  |  |
 
