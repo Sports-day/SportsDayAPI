@@ -17,7 +17,6 @@ object Users : IntIdTable("users") {
     val name = varchar("name", 128)
     val email = varchar("email", 320).uniqueIndex()
     val gender = enumerationByName<GenderType>("gender", 10).default(GenderType.MALE)
-    val picture = reference("picture_id", Images, onDelete = ReferenceOption.SET_NULL).nullable()
     val classEntity = reference("class_id", Classes, onDelete = ReferenceOption.CASCADE).nullable()
     val role = reference("role_id", Roles, onDelete = ReferenceOption.SET_NULL).nullable()
     val createdAt = datetime("created_at")
@@ -31,7 +30,6 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     var name by Users.name
     var email by Users.email
     var gender by Users.gender
-    var picture by ImageEntity optionalReferencedOn Users.picture
     var classEntity by ClassEntity optionalReferencedOn Users.classEntity
     var role by RoleEntity optionalReferencedOn Users.role
     var createdAt by Users.createdAt
@@ -44,7 +42,6 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
             name,
             email,
             gender,
-            picture?.id?.value,
             classEntity?.id?.value,
             teams.map { it.id.value },
             createdAt.toString(),
@@ -68,7 +65,6 @@ data class User(
     val name: String,
     val email: String,
     val gender: GenderType,
-    val pictureId: Int?,
     val classId: Int?,
     val teamIds: List<Int>,
     val createdAt: String,
@@ -80,6 +76,5 @@ data class OmittedUser(
     val name: String,
     val email: String,
     val gender: GenderType,
-    val pictureId: Int?,
     val classId: Int?,
 )
