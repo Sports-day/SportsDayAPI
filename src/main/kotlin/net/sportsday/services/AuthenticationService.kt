@@ -151,7 +151,7 @@ object AuthenticationService {
             if (user == null) {
                 //  create user
                 val createdUserEntity = UserEntity.new {
-                    this.name = userinfo.name
+                    this.name = email.username().toString()
                     this.email = userinfo.email
                     this.createdAt = LocalDateTime.now()
                     this.updatedAt = LocalDateTime.now()
@@ -159,7 +159,7 @@ object AuthenticationService {
                 createdUserEntity.serializableModel()
             } else {
                 //  update username
-                user.name = userinfo.name
+                user.name = email.username().toString()
                 //  update timestamp
                 user.updatedAt = LocalDateTime.now()
 
