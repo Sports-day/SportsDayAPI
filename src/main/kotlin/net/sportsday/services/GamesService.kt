@@ -452,48 +452,71 @@ object GamesService {
             var lastResult: LeagueTeamResult? = null
             var lastRank = 0
             //  sort by score. but if score is same, sort by goal diff
-            val sortedLeagueTeamResults = leagueTeamResults.values
-                .sortedWith(
-                    compareByDescending<LeagueTeamResult> { it.score }
-                        .apply {
-                            if (game.calculationType == CalculationType.DIFF_SCORE) {
-                                thenByDescending { it.goalDiff }
-                            } else if (game.calculationType == CalculationType.TOTAL_SCORE) {
-                                thenByDescending { it.goal }
-                            }
-                        },
-                )
-                .map { leagueTeamResult ->
-                    if (lastResult == null) {
-                        leagueTeamResult.rank = 1
-                    } else {
-                        //  if score is same, rank is same
-                        if (game.calculationType == CalculationType.TOTAL_SCORE) {
-                            if (
-                                lastResult!!.score == leagueTeamResult.score &&
-                                lastResult!!.goal == leagueTeamResult.goal
-                            ) {
-                                leagueTeamResult.rank = lastRank
+            val sortedLeagueTeamResults =
+                if (game.calculationType == CalculationType.DIFF_SCORE || game.calculationType == CalculationType.TOTAL_SCORE) {
+                    leagueTeamResults.values
+                        .sortedWith(
+                            compareByDescending<LeagueTeamResult> { it.score }
+                                .apply {
+                                    if (game.calculationType == CalculationType.DIFF_SCORE) {
+                                        thenByDescending { it.goalDiff }
+                                    } else if (game.calculationType == CalculationType.TOTAL_SCORE) {
+                                        thenByDescending { it.goal }
+                                    }
+                                },
+                        )
+                        .map { leagueTeamResult ->
+                            if (lastResult == null) {
+                                leagueTeamResult.rank = 1
                             } else {
-                                leagueTeamResult.rank = lastRank + 1
+                                //  if score is same, rank is same
+                                if (game.calculationType == CalculationType.TOTAL_SCORE) {
+                                    if (
+                                        lastResult!!.score == leagueTeamResult.score &&
+                                        lastResult!!.goal == leagueTeamResult.goal
+                                    ) {
+                                        leagueTeamResult.rank = lastRank
+                                    } else {
+                                        leagueTeamResult.rank = lastRank + 1
+                                    }
+                                } else {
+                                    if (
+                                        lastResult!!.score == leagueTeamResult.score &&
+                                        lastResult!!.goalDiff == leagueTeamResult.goalDiff
+                                    ) {
+                                        leagueTeamResult.rank = lastRank
+                                    } else {
+                                        leagueTeamResult.rank = lastRank + 1
+                                    }
+                                }
                             }
-                        } else {
-                            if (
-                                lastResult!!.score == leagueTeamResult.score &&
-                                lastResult!!.goalDiff == leagueTeamResult.goalDiff
-                            ) {
-                                leagueTeamResult.rank = lastRank
-                            } else {
-                                leagueTeamResult.rank = lastRank + 1
-                            }
+
+                            //  last result
+                            lastResult = leagueTeamResult
+                            lastRank = leagueTeamResult.rank
+
+                            leagueTeamResult
                         }
-                    }
+                } else {
+                    leagueTeamResults.values
+                        .sortedWith(compareByDescending { it.score })
+                        .map { leagueTeamResult ->
+                            if (lastResult == null) {
+                                leagueTeamResult.rank = 1
+                            } else {
+                                if (lastResult!!.score == leagueTeamResult.score) {
+                                    leagueTeamResult.rank = lastRank
+                                } else {
+                                    leagueTeamResult.rank = lastRank + 1
+                                }
+                            }
 
-                    //  last result
-                    lastResult = leagueTeamResult
-                    lastRank = leagueTeamResult.rank
+                            //  last result
+                            lastResult = leagueTeamResult
+                            lastRank = leagueTeamResult.rank
 
-                    leagueTeamResult
+                            leagueTeamResult
+                        }
                 }
 
             //  create league result
