@@ -73,6 +73,9 @@ enum class CalculationType(val type: String) {
 
     @SerialName("diff_score")
     DIFF_SCORE("diff_score"),
+
+    @SerialName("win_score")
+    WIN_SCORE("win_score"),
 }
 
 @Serializable
