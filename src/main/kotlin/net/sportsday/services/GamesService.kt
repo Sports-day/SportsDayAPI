@@ -12,6 +12,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.minutes
 
+private val Double.format8: String get() = "%,.8f".format(this)
+
 /**
  * Created by testusuke on 2023/05/05
  * @author testusuke
@@ -440,8 +442,6 @@ object GamesService {
                     match.leftTeamId == it.teamId || match.rightTeamId == it.teamId
                 }
 
-                d("TEAM=${it.teamId} raw[score=${it.score}, goal=${it.goal}, lose=${it.loseGoal}] matches=$matchCount")
-
                 if (matchCount > 0) {
                     it.score /= matchCount.toDouble()
                     it.goal /= matchCount.toDouble()
@@ -454,7 +454,7 @@ object GamesService {
                     it.goalDiff = -999.0
                 }
 
-                d("TEAM=${it.teamId} avg[score=${it.score}, goal=${it.goal}, diff=${it.goalDiff}]")
+                d("TEAM=${it.teamId} avg[score=${it.score.format8}, goal=${it.goal.format8}, diff=${it.goalDiff.format8}]")
             }
 
             var lastResult: LeagueTeamResult? = null
@@ -473,12 +473,17 @@ object GamesService {
                                     }
                                 },
                         )
+                        .mapIndexed { idx, r ->
+                            d("%2d位 TEAM=${r.teamId}  score=${r.score.format8}  diff=${r.goalDiff.format8}  goal=${r.goal.format8}"
+                                .format(idx + 1))
+                            r
+                        }
                         .map { leagueTeamResult ->
                             if (lastResult != null) {
                                 val scoreGap = (leagueTeamResult.score - lastResult!!.score)
                                 val diffGap  = (leagueTeamResult.goalDiff - lastResult!!.goalDiff)
                                 d("cmp TEAM=${leagueTeamResult.teamId}  "
-                                        + "scoreGap=${scoreGap}  diffGap=${diffGap}  "
+                                        + "scoreGap=${scoreGap.format8}  diffGap=${diffGap.format8}  "
                                         + "=> rank=${leagueTeamResult.rank}")
                             }
 
