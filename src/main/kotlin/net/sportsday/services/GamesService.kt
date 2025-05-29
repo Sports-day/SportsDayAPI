@@ -336,6 +336,10 @@ object GamesService {
      * @param id game id
      */
     fun calculateLeagueResults(id: Int, restrict: Boolean = false): Result<LeagueResult> {
+        val DEBUG = true
+        val EPSILON = 1e-6
+        fun d(msg: String) { if (DEBUG) println(msg) }
+
         val result = transaction {
             val game = GameEntity.findById(id) ?: throw NotFoundException("invalid game id")
 
@@ -436,6 +440,8 @@ object GamesService {
                     match.leftTeamId == it.teamId || match.rightTeamId == it.teamId
                 }
 
+                d("TEAM=${it.teamId} raw[score=${it.score}, goal=${it.goal}, lose=${it.loseGoal}] matches=$matchCount")
+
                 if (matchCount > 0) {
                     it.score /= matchCount.toDouble()
                     it.goal /= matchCount.toDouble()
@@ -447,6 +453,8 @@ object GamesService {
                     it.loseGoal = -999.0
                     it.goalDiff = -999.0
                 }
+
+                d("TEAM=${it.teamId} avg[score=${it.score}, goal=${it.goal}, diff=${it.goalDiff}]")
             }
 
             var lastResult: LeagueTeamResult? = null
@@ -466,6 +474,14 @@ object GamesService {
                                 },
                         )
                         .map { leagueTeamResult ->
+                            if (lastResult != null) {
+                                val scoreGap = (leagueTeamResult.score - lastResult!!.score)
+                                val diffGap  = (leagueTeamResult.goalDiff - lastResult!!.goalDiff)
+                                d("cmp TEAM=${leagueTeamResult.teamId}  "
+                                        + "scoreGap=${scoreGap}  diffGap=${diffGap}  "
+                                        + "=> rank=${leagueTeamResult.rank}")
+                            }
+
                             if (lastResult == null) {
                                 leagueTeamResult.rank = 1
                             } else {
