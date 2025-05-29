@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.minutes
 
-private val Double.format8: String get() = "%,.8f".format(this)
+private const val EPSILON = 1e-6
 
 /**
  * Created by testusuke on 2023/05/05
@@ -339,10 +339,6 @@ object GamesService {
      * @param id game id
      */
     fun calculateLeagueResults(id: Int, restrict: Boolean = false): Result<LeagueResult> {
-        val DEBUG = true
-        val EPSILON = 1e-6
-        fun d(msg: String) { if (DEBUG) println(msg) }
-
         val result = transaction {
             val game = GameEntity.findById(id) ?: throw NotFoundException("invalid game id")
 
@@ -454,8 +450,6 @@ object GamesService {
                     it.loseGoal = -999.0
                     it.goalDiff = -999.0
                 }
-
-                d("TEAM=${it.teamId} avg[score=${it.score.format8}, goal=${it.goal.format8}, diff=${it.goalDiff.format8}]")
             }
 
             var lastResult: LeagueTeamResult? = null
@@ -478,20 +472,7 @@ object GamesService {
                                     compareByDescending { it.score }
                             }
                         )
-                        .mapIndexed { idx, r ->
-                            d("%2d位 TEAM=${r.teamId}  score=${r.score.format8}  diff=${r.goalDiff.format8}  goal=${r.goal.format8}"
-                                .format(idx + 1))
-                            r
-                        }
                         .map { leagueTeamResult ->
-                            if (lastResult != null) {
-                                val scoreGap = (leagueTeamResult.score - lastResult!!.score)
-                                val diffGap  = (leagueTeamResult.goalDiff - lastResult!!.goalDiff)
-                                d("cmp TEAM=${leagueTeamResult.teamId}  "
-                                        + "scoreGap=${scoreGap.format8}  diffGap=${diffGap.format8}  "
-                                        + "=> rank=${leagueTeamResult.rank}")
-                            }
-
                             if (lastResult == null) {
                                 leagueTeamResult.rank = 1
                             } else {
