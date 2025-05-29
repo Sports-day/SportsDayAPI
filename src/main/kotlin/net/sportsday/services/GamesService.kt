@@ -10,6 +10,7 @@ import net.sportsday.utils.configuration.KeyValueStore
 import org.jetbrains.exposed.sql.SizedCollection
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
+import kotlin.math.abs
 import kotlin.time.Duration.Companion.minutes
 
 private val Double.format8: String get() = "%,.8f".format(this)
@@ -464,14 +465,18 @@ object GamesService {
                 if (game.calculationType == CalculationType.DIFF_SCORE || game.calculationType == CalculationType.TOTAL_SCORE) {
                     leagueTeamResults.values
                         .sortedWith(
-                            compareByDescending<LeagueTeamResult> { it.score }
-                                .apply {
-                                    if (game.calculationType == CalculationType.DIFF_SCORE) {
-                                        thenByDescending { it.goalDiff }
-                                    } else if (game.calculationType == CalculationType.TOTAL_SCORE) {
-                                        thenByDescending { it.goal }
-                                    }
-                                },
+                            when (game.calculationType) {
+                                CalculationType.DIFF_SCORE ->
+                                    compareByDescending<LeagueTeamResult> { it.score }
+                                        .thenByDescending { it.goalDiff }
+
+                                CalculationType.TOTAL_SCORE ->
+                                    compareByDescending<LeagueTeamResult> { it.score }
+                                        .thenByDescending { it.goal }
+
+                                else ->
+                                    compareByDescending { it.score }
+                            }
                         )
                         .mapIndexed { idx, r ->
                             d("%2d位 TEAM=${r.teamId}  score=${r.score.format8}  diff=${r.goalDiff.format8}  goal=${r.goal.format8}"
@@ -493,8 +498,8 @@ object GamesService {
                                 //  if score is same, rank is same
                                 if (game.calculationType == CalculationType.TOTAL_SCORE) {
                                     if (
-                                        lastResult!!.score == leagueTeamResult.score &&
-                                        lastResult!!.goal == leagueTeamResult.goal
+                                        abs(lastResult!!.score - leagueTeamResult.score) < EPSILON &&
+                                        abs(lastResult!!.goal - leagueTeamResult.goal) < EPSILON
                                     ) {
                                         leagueTeamResult.rank = lastRank
                                     } else {
@@ -502,8 +507,8 @@ object GamesService {
                                     }
                                 } else {
                                     if (
-                                        lastResult!!.score == leagueTeamResult.score &&
-                                        lastResult!!.goalDiff == leagueTeamResult.goalDiff
+                                        abs(lastResult!!.score - leagueTeamResult.score) < EPSILON &&
+                                        abs(lastResult!!.goalDiff - leagueTeamResult.goalDiff) < EPSILON
                                     ) {
                                         leagueTeamResult.rank = lastRank
                                     } else {
@@ -525,7 +530,7 @@ object GamesService {
                             if (lastResult == null) {
                                 leagueTeamResult.rank = 1
                             } else {
-                                if (lastResult!!.score == leagueTeamResult.score) {
+                                if (abs(lastResult!!.score - leagueTeamResult.score) < EPSILON) {
                                     leagueTeamResult.rank = lastRank
                                 } else {
                                     leagueTeamResult.rank = lastRank + 1
